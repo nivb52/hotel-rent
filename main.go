@@ -2,11 +2,25 @@
 package main
 
 import (
+	"context"
 	"flag"
+	"fmt"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/nivb52/hotel-rent/api"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
+
+const dburi = "mongodb://localhost:27017"
 func main() {
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(dburi))
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(client)
+	
 	listenAddr := flag.String("listenAddr", ":5000", "API PORT")
     flag.Parse()
 
@@ -20,5 +34,9 @@ func main() {
 		return c.SendString("Hello, World V1 👋!")
 	})
 	
+	apiv1User := app.Group("api/v1/user")
+
+	apiv1User.Get("/", api.HandleGetUsers)
+	apiv1User.Get("/:id", api.HandleGetUsers)
 	app.Listen(*listenAddr)
 }
