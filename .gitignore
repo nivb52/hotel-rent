@@ -21,3 +21,8 @@
 go.work
 
 *.code-workspace
+
+
+# Air hotreload
+temp
+tmp
