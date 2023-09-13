@@ -25,6 +25,9 @@ content-type: application/json
 ###  GET USERS
 GET http://localhost:5000/api/v1/users HTTP/1.1
 
-### 
 
+### GET USER
 GET http://localhost:5000/api/v1/users/6500a9a0068eebb03e9ad5d6 HTTP/1.1
+
+### DELETE USER 
+DELETE  http://localhost:5000/api/v1/users/6500ad25eb1122e8026f7873 HTTP/1.1
