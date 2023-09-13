@@ -39,7 +39,7 @@ func (h *UserHandler) HandleGetUsers(c *fiber.Ctx) error {
 }
 
 func (h *UserHandler) HandleCreateUser(c *fiber.Ctx) error {
-	var params types.UserParams
+	var params types.UserParamsForCreate
 	if err := c.BodyParser(&params); err != nil {
 		return err
 	}
@@ -77,7 +77,7 @@ func (h *UserHandler) HandleDeleteUser(c *fiber.Ctx) error {
 func (h *UserHandler) HandleUpdateUser(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	var params types.UserParams
+	var params types.UserParamsForUpdate
 	if err := c.BodyParser(&params); err != nil {
 		return err
 	}
@@ -86,7 +86,7 @@ func (h *UserHandler) HandleUpdateUser(c *fiber.Ctx) error {
 		return c.JSON(errors)
 	}
 
-	userData, err := types.NewUserFromParams(params)
+	userData, err := types.UpdatedUserFromParams(params)
 	if err != nil {
 		return err
 	}
