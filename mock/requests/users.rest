@@ -1,0 +1,18 @@
+
+POST http://localhost:5000/api/v1/users HTTP/1.1
+content-type: application/json
+
+{
+    "firstName": "John",
+    "lastName": "Due",
+    "email": "sample@g.com",
+    "time": "Wed, 21 Oct 2015 18:27:50 GMT"
+}
+
+### 
+
+GET http://localhost:5000/api/v1/users HTTP/1.1
+
+### 
+
+GET http://localhost:5000/api/v1/users/6500a9a0068eebb03e9ad5d6 HTTP/1.1
