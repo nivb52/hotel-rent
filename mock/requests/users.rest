@@ -1,16 +1,28 @@
-
+### CREATE VALID USER
 POST http://localhost:5000/api/v1/users HTTP/1.1
 content-type: application/json
 
 {
-    "firstName": "John",
-    "lastName": "Due",
-    "email": "sample@g.com",
-    "time": "Wed, 21 Oct 2015 18:27:50 GMT"
+    "firstName": "John2",
+    "lastName": "Due2",
+    "email": "sample@google.com",
+    "password" : "12345678"
+
 }
 
-### 
+### INVALID USER
+POST http://localhost:5000/api/v1/users HTTP/1.1
+content-type: application/json
 
+{
+    "firstName": "invalid",
+    "lastName": "password",
+    "email": "sample@google.com",
+    "password" : "2"
+
+}
+
+###  GET USERS
 GET http://localhost:5000/api/v1/users HTTP/1.1
 
 ### 
