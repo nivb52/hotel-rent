@@ -54,9 +54,10 @@ func main() {
 
 	// ROUTES - USERS
 	userHandler := api.NewUserHandler(db.NewMongoUserStore(client))
-	apiv1User := app.Group("api/v1/users")
+	apiv1User := apiv1.Group("/users")
 	apiv1User.Get("/", userHandler.HandleGetUsers)
 	apiv1User.Get("/:id", userHandler.HandleGetUser)
+	apiv1User.Post("/", userHandler.HandleCreateUser)
 
 	// INIT
 	app.Listen(*listenAddr)
