@@ -71,7 +71,7 @@ func (h *UserHandler) HandleDeleteUser(c *fiber.Ctx) error {
 		return err
 	}
 
-	return c.Status(200).SendString("{}")
+	return c.JSON(map[string]string{"msg": "ok", "deleted": id})
 }
 
 // func (h *UserHandler) HandleUpdateUser(c *fiber.Ctx, id string) error {
