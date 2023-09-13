@@ -40,8 +40,13 @@ func (h *UserHandler) HandleGetUsers(c *fiber.Ctx) error {
 }
 
 func (h *UserHandler) HandleCreateUser(c *fiber.Ctx) error {
-	userData := new(types.User)
-	if err := c.BodyParser(userData); err != nil {
+	var params types.UserParams
+	if err := c.BodyParser(&params); err != nil {
+		return err
+	}
+
+	userData, err := types.NewUserFromParams(params)
+	if err != nil {
 		return err
 	}
 
