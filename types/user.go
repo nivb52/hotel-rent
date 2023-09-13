@@ -28,21 +28,23 @@ type UserParams struct {
 	Password  string `json:"password"`
 }
 
-func (params UserParams) Validate() error {
+func (params UserParams) Validate() map[string]string {
+	errors := map[string]string{}
+
 	if len(params.FirstName) < minNameLen {
-		return fmt.Errorf("First Name length should be at leash %d characters", minNameLen)
+		errors["firstName"] = fmt.Sprintf("First Name length should be at leash %d characters", minNameLen)
 	}
 	if len(params.LastName) < minNameLen {
-		return fmt.Errorf("Last Name length should be at leash %d characters", minNameLen)
+		errors["lastName"] = fmt.Sprintf("Last Name length should be at leash %d characters", minNameLen)
 	}
 	if len(params.Password) < minPasswordLen {
-		return fmt.Errorf("Last Name length should be at leash %d characters", minPasswordLen)
+		errors["password"] = fmt.Sprintf("Password length should be at leash %d characters", minPasswordLen)
 	}
 	if !isEmailValid(params.Email) {
-		return fmt.Errorf("Email is invalid")
+		errors["email"] = fmt.Sprintf("Email is invalid")
 	}
 
-	return nil
+	return errors
 }
 
 func isEmailValid(e string) bool {

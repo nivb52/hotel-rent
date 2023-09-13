@@ -45,8 +45,8 @@ func (h *UserHandler) HandleCreateUser(c *fiber.Ctx) error {
 		return err
 	}
 
-	if err := params.Validate(); err != nil {
-		return err
+	if errors := params.Validate(); len(errors) > 0 {
+		return c.JSON(errors)
 	}
 
 	userData, err := types.NewUserFromParams(params)

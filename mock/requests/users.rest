@@ -16,8 +16,8 @@ content-type: application/json
 
 {
     "firstName": "invalid",
-    "lastName": "password",
-    "email": "sample@google.com",
+    "lastName": "data",
+    "email": "no-valid-email",
     "password" : "2"
 
 }
