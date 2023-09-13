@@ -59,6 +59,7 @@ func main() {
 	apiv1User.Get("/:id", userHandler.HandleGetUser)
 	apiv1User.Post("/", userHandler.HandleCreateUser)
 	apiv1User.Delete("/:id", userHandler.HandleDeleteUser)
+	apiv1User.Put("/:id", userHandler.HandleUpdateUser)
 
 	// INIT
 	app.Listen(*listenAddr)
