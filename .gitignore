@@ -26,3 +26,6 @@ go.work
 # Air hotreload
 temp
 tmp
+
+.idea
+*.myprivate.*
