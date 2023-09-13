@@ -54,8 +54,8 @@ func main() {
 
 	// ROUTES - USERS
 	userHandler := api.NewUserHandler(db.NewMongoUserStore(client))
-	apiv1User := app.Group("api/v1/user")
-	apiv1User.Get("/", api.HandleGetUsers)
+	apiv1User := app.Group("api/v1/users")
+	apiv1User.Get("/", userHandler.HandleGetUsers)
 	apiv1User.Get("/:id", userHandler.HandleGetUser)
 
 	// INIT
