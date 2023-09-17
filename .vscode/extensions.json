@@ -1,5 +1,11 @@
 {
     "recommendations": [
-        "jeff-hykin.better-go-syntax"
+        "jeff-hykin.better-go-syntax",
+        "golang.go",
+        "ricardoerikson.vscode-go-impl-methods",
+        "maxnatchanon.go-struct-tag-autogen",
+        "furkanozalp.go-syntax",
+        "premparihar.gotestexplorer",
+        "aldijav.golangwithdidi"
     ]
 }
