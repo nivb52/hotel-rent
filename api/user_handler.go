@@ -16,6 +16,7 @@ func NewUserHandler(userStore db.UserStore) *UserHandler {
 	}
 }
 
+// Function get a user, returning Json of the a user
 func (h *UserHandler) HandleGetUser(c *fiber.Ctx) error {
 	var (
 		id = c.Params("id")
@@ -29,6 +30,7 @@ func (h *UserHandler) HandleGetUser(c *fiber.Ctx) error {
 	return c.JSON(user)
 }
 
+// Function get a users, returning Json list of the a users
 func (h *UserHandler) HandleGetUsers(c *fiber.Ctx) error {
 	users, err := h.userStore.GetUsers(c.Context())
 	if err != nil {
@@ -38,6 +40,7 @@ func (h *UserHandler) HandleGetUsers(c *fiber.Ctx) error {
 	return c.JSON(users)
 }
 
+// Function create a user and returning Json of the new user
 func (h *UserHandler) HandleCreateUser(c *fiber.Ctx) error {
 	var params types.UserParamsForCreate
 	if err := c.BodyParser(&params); err != nil {
@@ -61,6 +64,7 @@ func (h *UserHandler) HandleCreateUser(c *fiber.Ctx) error {
 	return c.JSON(newUser)
 }
 
+// Function delete a user and returning Json {msg: "ok", deleted: id}
 func (h *UserHandler) HandleDeleteUser(c *fiber.Ctx) error {
 	var (
 		id = c.Params("id")
@@ -74,6 +78,7 @@ func (h *UserHandler) HandleDeleteUser(c *fiber.Ctx) error {
 	return c.JSON(map[string]string{"msg": "ok", "deleted": id})
 }
 
+// Function update a user and returning Json {msg: "ok", update: id}
 func (h *UserHandler) HandleUpdateUser(c *fiber.Ctx) error {
 	id := c.Params("id")
 
