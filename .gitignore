@@ -32,6 +32,7 @@ tmp
 #LOG
 log/
 logs/
+*.log
 
 #VS CODE
 *.code-workspace
