@@ -72,12 +72,18 @@ func (s *MongoUserStore) GetUsers(ctx context.Context) (*[]types.User, error) {
 }
 
 func (s *MongoUserStore) InsertUser(ctx context.Context, user *types.User) (*types.User, error) {
-	_, err := s.coll.InsertOne(ctx, user)
+	res, err := s.coll.InsertOne(ctx, user)
 	if err != nil {
 		return nil, err
 
 	}
-	// user.ID = res.InsertedID
+
+	if insertedID, ok := res.InsertedID.(primitive.ObjectID); ok {
+		user.ID = insertedID
+	} else {
+		fmt.Printf("Failed:: res.InsertedID is not a primitive.ObjectID: %v", res.InsertedID)
+		// Handle the case where the type assertion failed (?)
+	}
 	return user, nil
 }
 
