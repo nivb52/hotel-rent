@@ -6,6 +6,7 @@
         "maxnatchanon.go-struct-tag-autogen",
         "furkanozalp.go-syntax",
         "premparihar.gotestexplorer",
-        "aldijav.golangwithdidi"
+        "aldijav.golangwithdidi",
+        "humao.rest-client"
     ]
 }
