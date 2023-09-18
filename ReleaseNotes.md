@@ -1,7 +1,11 @@
 # Release Notes
 
+### V5:
+Adding the first test for the User API
+
 ### V4:
-Users complte CRUD with validation functions (24)
+Users complte CRUD with validation functions (23)
+
 ### V3:
 Add get users, create user, Validation
 
