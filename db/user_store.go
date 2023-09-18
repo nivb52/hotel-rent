@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/nivb52/hotel-rent/types"
 	"go.mongodb.org/mongo-driver/bson"
@@ -9,10 +10,15 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-const DBNAME = "hotel-rent"
 const userColl = "users"
 
+type Dorpper interface {
+	Drop(context.Context) error
+}
+
 type UserStore interface {
+	Dorpper
+
 	GetUserByID(context.Context, string) (*types.User, error)
 	GetUsers(context.Context) (*[]types.User, error)
 	InsertUser(context.Context, *types.User) (*types.User, error)
@@ -26,11 +32,17 @@ type MongoUserStore struct {
 	coll   *mongo.Collection
 }
 
-func NewMongoUserStore(client *mongo.Client) *MongoUserStore {
+func NewMongoUserStore(client *mongo.Client, dbname string) *MongoUserStore {
 	return &MongoUserStore{
 		client: client,
-		coll:   client.Database(DBNAME).Collection(userColl),
+		coll:   client.Database(dbname).Collection(userColl),
 	}
+}
+
+// Function allow dropping of the collection, ruturning an Error if exists
+func (s *MongoUserStore) Drop(ctx context.Context) error {
+	fmt.Println("--- DROPPING USER COLLECITON")
+	return s.coll.Drop(ctx)
 }
 
 func (s *MongoUserStore) GetUserByID(ctx context.Context, id string) (*types.User, error) {
