@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  mongo_primary:
+    image: mongo:latest
+    hostname: mongo_primary
+    container_name: mongo_hotel_rent
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${INITDB_DATABASE}
+      MONGO_INITDB_USERNAME: ${INITDB_USERNAME}
+      MONGO_INITDB_PASSWORD: ${INITDB_PASSWORD}
+    ports:
+      - "27017:27017" # Publish the MongoDB port to the host
+    volumes:
+      - mongo_data_hotel_rent:/data/db
+
+  mongo_testing:
+    image: mongo:latest
+    hostname: mongo_testing
+    container_name: mongo_hotel_rent_testing
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${TESTDB_DATABASE}
+      MONGO_INITDB_USERNAME: ${TESTDB_USERNAME}
+      MONGO_INITDB_PASSWORD: ${TESTDB_PASSWORD}
+    ports:
+      - "27018:27017" # Publish a different port for the testing node
+    volumes:
+      - mongo_data_testing:/data/db
+
+  
+networks:
+  my_network:
+    driver: bridge
+
+volumes:
+  mongo_data_hotel_rent:
+    driver: local
+  mongo_data_testing:
+    driver: local
+
