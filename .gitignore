@@ -20,12 +20,21 @@
 # Go workspace file
 go.work
 
-*.code-workspace
 
+dist/
+bin/
+__debug_bin.exe
 
 # Air hotreload
 temp
 tmp
+
+#LOG
+log/
+logs/
+
+#VS CODE
+*.code-workspace
 
 .idea
 *.myprivate.*
