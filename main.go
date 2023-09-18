@@ -15,9 +15,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const dburi = "mongodb://localhost:27017"
-const dbname = "hotel-rent"
-const userColl = "users"
+const dburi = db.DBURI
+const dbname = db.DBNAME
 
 var appConfig = fiber.Config{
 	// Override default error handler
