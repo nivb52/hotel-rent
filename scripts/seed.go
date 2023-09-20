@@ -1,12 +1,14 @@
-package scripts
+package main
 
 import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/nivb52/hotel-rent/db"
 	"github.com/nivb52/hotel-rent/types"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -44,6 +46,8 @@ func main() {
 		hotel := types.Hotel{
 			Name:     seedHotel.Name,
 			Location: seedHotel.Location,
+			CreateAt: primitive.NewDateTimeFromTime(time.Now()),
+			UpdateAt: primitive.NewDateTimeFromTime(time.Now()),
 		}
 
 		insertedHotel, err := hotelStore.InsertHotel(context.TODO(), &hotel)
