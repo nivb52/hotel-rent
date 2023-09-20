@@ -21,6 +21,10 @@ test:
 	go test -v ./...
 
 ########### DB ###########
+# SEED
+seed: 
+	go run ./scripts/seed.go
+
 # CONSINSTENT DB
 db_up: db_down
 	@echo "Docker compose up: db image..."
