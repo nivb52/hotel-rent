@@ -8,7 +8,7 @@ type Hotel struct {
 	Location string               `bson:"location" json:"location"`
 	Rooms    []primitive.ObjectID `bson:"rooms" json:"rooms"`
 	CreateAt primitive.DateTime   `bson:"create_at" json:"createAt"`
-	UpdateAt primitive.Timestamp  `bson:"update_at" json:"updateAt"`
+	UpdateAt primitive.DateTime   `bson:"update_at" json:"updateAt"`
 }
 
 type RoomType int
