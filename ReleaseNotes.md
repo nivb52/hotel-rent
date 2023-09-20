@@ -1,10 +1,17 @@
 # Release Notes
 
+### V5.5:
+Add Hotel & Rooms Types + scripts - Seeding hotels (25)
+partly implement rooms
+- FIXES:
+ - types/fix: ID type should be primitive.ObjectID
+ - api/fix: create user should return valid ID 
+
 ### V5:
 Adding the first test for the User API
 
 ### V4:
-Users complte CRUD with validation functions (23)
+Users complte CRUD with validation functions
 
 ### V3:
 Add get users, create user, Validation
@@ -13,4 +20,4 @@ Add get users, create user, Validation
 Integrate with MongoDB, init user handler
 
 ### V1 
-Start (20)
+Start
