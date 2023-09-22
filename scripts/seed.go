@@ -60,11 +60,13 @@ func main() {
 				Type:      randRoomType,
 				BasePrice: getRandomPrice(randInt),
 				CreateAt:  primitive.NewDateTimeFromTime(time.Now()),
+				UpdateAt:  primitive.NewDateTimeFromTime(time.Now()),
 			},
 			{
 				Type:      randRoomType,
 				BasePrice: getRandomPrice(randInt),
 				CreateAt:  primitive.NewDateTimeFromTime(time.Now()),
+				UpdateAt:  primitive.NewDateTimeFromTime(time.Now()),
 			},
 		}
 		for i := 0; i < numberOfRooms; i++ {
