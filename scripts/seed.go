@@ -69,6 +69,7 @@ func main() {
 				UpdateAt:  primitive.NewDateTimeFromTime(time.Now()),
 			},
 		}
+
 		for i := 0; i < numberOfRooms; i++ {
 			rooms = append(rooms, types.Room{
 				Type:      randRoomType,
