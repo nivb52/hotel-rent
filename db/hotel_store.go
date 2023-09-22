@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 
@@ -12,8 +13,18 @@ import (
 
 const hotelColl = "hotels"
 
+type FilterString struct {
+	Key   string
+	Value string
+}
+
+type FilterInt struct {
+	Key   string
+	Value int
+}
 type HotelStore interface {
 	InsertHotel(context.Context, *types.Hotel) (*types.Hotel, error)
+	UpdateHotelByID(context.Context, string, *types.Hotel) (*types.Hotel, error)
 }
 
 type MongoHotelStore struct {
@@ -43,5 +54,23 @@ func (s *MongoHotelStore) InsertHotel(ctx context.Context, hotel *types.Hotel) (
 	}
 
 	return hotel, nil
+}
 
+func (s *MongoHotelStore) UpdateHotelByID(ctx context.Context, id string, values *types.Hotel) (*types.Hotel, error) {
+	oid, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = s.coll.UpdateOne(ctx,
+		bson.M{"_id": oid},
+		bson.D{
+			{Key: "$set", Value: values},
+		})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return values, err
 }
