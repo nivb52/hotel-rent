@@ -1,6 +1,13 @@
 # If you prefer the allow list template instead of the deny list, see community template:
 # https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
 #
+# Secrets
+.env
+.env.secrets
+.env.production
+.env.testing
+.env.staging
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
@@ -25,7 +32,7 @@ dist/
 bin/
 __debug_bin.exe
 
-# Air hotreload
+# TEMP Folder (using for Air hot reload)
 temp
 tmp
 
@@ -37,5 +44,8 @@ logs/
 #VS CODE
 *.code-workspace
 
+# InteliJ
 .idea
+
+# Private
 *.myprivate.*
