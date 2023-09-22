@@ -19,6 +19,7 @@ const (
 	DoubleRoomType
 	SeaSideRoomType
 	DeluxRoomType
+	ClosedRoomType // Not For Reservations @attention: keep it last
 )
 
 type Room struct {
