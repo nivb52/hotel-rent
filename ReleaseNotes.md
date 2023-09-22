@@ -1,7 +1,11 @@
 # Release Notes
 
+### V5.9:
+Seed Rooms + Imp. room types  (25)
+Update hotel rooms from the hotel store
+ 
 ### V5.5:
-Add Hotel & Rooms Types + scripts - Seeding hotels (25)
+Add Hotel & Rooms Types + scripts - Seeding hotels
 partly implement rooms
 - FIXES:
  - types/fix: ID type should be primitive.ObjectID
