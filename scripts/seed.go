@@ -85,10 +85,10 @@ func main() {
 		}
 		fmt.Println("New Hotel: ", insertedHotel)
 
-		for _, room := range rooms {
+		for i, room := range rooms {
 			room.HotelID = insertedHotel.ID
-			fmt.Printf("hotelID: %s", insertedHotel.ID)
-
+			rooms[i] = room
+			fmt.Printf("room.hotelID: %s \n", room.HotelID)
 		}
 
 		updatedCount, err := roomStrore.InsertRooms(context.TODO(), &rooms, insertedHotel.ID)
@@ -96,7 +96,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		fmt.Printf("Update Hotel with %d rooms\n", updatedCount)
+		fmt.Printf("Update Hotel with %d rooms \n", updatedCount)
 	}
 }
 
