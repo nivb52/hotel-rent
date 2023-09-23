@@ -85,10 +85,8 @@ func main() {
 		}
 		fmt.Println("New Hotel: ", insertedHotel)
 
-		for i, room := range rooms {
-			room.HotelID = insertedHotel.ID
-			rooms[i] = room
-			fmt.Printf("room.hotelID: %s \n", room.HotelID)
+		for i := range rooms {
+			rooms[i].HotelID = insertedHotel.ID
 		}
 
 		updatedCount, err := roomStrore.InsertRooms(context.TODO(), &rooms, insertedHotel.ID)
