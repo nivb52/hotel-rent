@@ -19,19 +19,17 @@ type SeedHotel struct {
 	Location string
 }
 
-func main() {
-	fmt.Println(" Seeding the db")
+var (
+	client     *mongo.Client
+	hotelStore *db.MongoHotelStore
+	roomStore  *db.MongoRoomStore
+	ctx        = context.Background()
+)
 
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(db.DBURI))
-	if err != nil {
-		log.Fatal(err)
-	}
+func seedHotels(numberOfHotels int) {
 
-	hotelStore := db.NewMongoHotelStore(client, db.DBNAME)
-	roomStrore := db.NewMongoRoomStore(client, db.DBNAME, hotelStore)
-
-	// Create 10 hotel instances
-	seedHotels := []SeedHotel{
+	// 10 hotel options
+	seedHotels10 := []SeedHotel{
 		{"The Ritz-Carlton", "Los Angeles, California"},
 		{"Grand Hyatt", "New York City, New York"},
 		{"Marriott Marquis", "Atlanta, Georgia"},
@@ -43,6 +41,8 @@ func main() {
 		{"The Savoy", "London, United Kingdom"},
 		{"Hotel del Coronado", "San Diego, California"},
 	}
+
+	seedHotels := seedHotels10[0:numberOfHotels]
 
 	for _, seedHotel := range seedHotels {
 		hotel := types.Hotel{
@@ -79,7 +79,7 @@ func main() {
 			})
 		}
 
-		insertedHotel, err := hotelStore.InsertHotel(context.TODO(), &hotel)
+		insertedHotel, err := hotelStore.InsertHotel(ctx, &hotel)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -89,13 +89,33 @@ func main() {
 			rooms[i].HotelID = insertedHotel.ID
 		}
 
-		updatedCount, err := roomStrore.InsertRooms(context.TODO(), &rooms, insertedHotel.ID)
+		updatedCount, err := roomStore.InsertRooms(ctx, &rooms, insertedHotel.ID)
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		fmt.Printf("Update Hotel with %d rooms \n", updatedCount)
 	}
+}
+
+func main() {
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(db.DBURI))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := client.Database(db.DBNAME).Drop(ctx); err != nil {
+		log.Fatal(err)
+	}
+
+	hotelStore = db.NewMongoHotelStore(client, db.DBNAME)
+	roomStore = db.NewMongoRoomStore(client, db.DBNAME, hotelStore)
+
+	seedHotels(6)
+}
+
+func init() {
+	fmt.Println(" Seeding the db")
 }
 
 /** ============= Helpers ============= */
