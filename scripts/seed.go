@@ -28,7 +28,7 @@ func main() {
 	}
 
 	hotelStore := db.NewMongoHotelStore(client, db.DBNAME)
-	roomStrore := db.NewMongoRoomStore(client, db.DBNAME)
+	roomStrore := db.NewMongoRoomStore(client, db.DBNAME, hotelStore)
 
 	// Create 10 hotel instances
 	seedHotels := []SeedHotel{
@@ -87,18 +87,21 @@ func main() {
 
 		for _, room := range rooms {
 			room.HotelID = insertedHotel.ID
-			insertedRoom, err := roomStrore.InsertRoom(context.TODO(), &room)
-			if err != nil {
-				log.Fatal(err)
-			}
+			fmt.Printf("hotelID: %s", insertedHotel.ID)
 
-			fmt.Println("New Room: ", insertedRoom)
 		}
 
+		updatedCount, err := roomStrore.InsertRooms(context.TODO(), &rooms, insertedHotel.ID)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Printf("Update Hotel with %d rooms\n", updatedCount)
 	}
 }
 
-// Helpers
+/** ============= Helpers ============= */
+
 func getRandomRoomType() (types.RoomType, int) {
 	randInt := rand.Intn(int(types.ClosedRoomType))
 	switch randInt {
