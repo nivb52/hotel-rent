@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -60,7 +61,7 @@ func (s *MongoHotelStore) InsertHotel(ctx context.Context, hotel *types.Hotel) (
 	return hotel, nil
 }
 
-// function to update
+// function to update using stricly mongo bson.M for filter and update
 func (s *MongoHotelStore) UpdateHotel(ctx context.Context, filter bson.M, update bson.M) error {
 	_, err := s.coll.UpdateOne(ctx,
 		filter,
@@ -81,6 +82,7 @@ func (s *MongoHotelStore) UpdateHotelByID(ctx context.Context, id string, values
 	}
 
 	update, err := convertToMongoUpdateValues(values)
+	fmt.Println("update: ", update)
 	if err != nil {
 		fmt.Printf("Failed:: convert to bson.Map type failed: %v", err)
 		return nil, err
@@ -116,10 +118,25 @@ func (s *MongoHotelStore) AddHotelRoom(ctx context.Context, id string, roomId st
 	)
 
 	if err != nil {
-		fmt.Printf("Failed to update room id %s in Hotel, reason: %s", roomId, err)
-		return err
-	}
+		fmt.Printf("(1st try) Failed to update room id %s in Hotel, reason: %s", roomId, err)
 
+		errorWhichCanBeHandeld := `The field 'rooms' must be an array but is of type null in document`
+		isNilInRoomField := strings.Contains(err.Error(), errorWhichCanBeHandeld)
+		fmt.Println(isNilInRoomField)
+		if isNilInRoomField == true {
+			_, err = s.coll.UpdateOne(ctx,
+				bson.M{"_id": hotelOid},
+				bson.M{"$set": bson.M{"rooms": []primitive.ObjectID{roomOid}}},
+			)
+			if err != nil {
+				fmt.Printf("(2nd try) Failed to create room array of room id %s in Hotel, reason: %s", roomId, err)
+				return err
+			}
+		} else {
+
+			return err
+		}
+	}
 	return nil
 }
 
