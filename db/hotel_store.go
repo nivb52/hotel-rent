@@ -23,13 +23,17 @@ type FilterInt struct {
 	Key   string
 	Value int
 }
+
+//@TODO: consider not use in the interface the filter as bson.M
+// maybe try use []*FilterString, []*FilterInt or json ?
+
 type HotelStore interface {
 	InsertHotel(context.Context, *types.Hotel) (*types.Hotel, error)
 	UpdateHotelByID(context.Context, string, *types.Hotel) (*types.Hotel, error)
 
-	// TODO: instead of filter as bson.M use []*FilterString, []*FilterInt or json ?
 	UpdateHotel(context.Context, bson.M, bson.M) error
 	AddHotelRoom(context.Context, string, string) error
+	AddHotelRooms(context.Context, primitive.ObjectID, *[]primitive.ObjectID) error
 }
 
 type MongoHotelStore struct {
@@ -100,13 +104,13 @@ func (s *MongoHotelStore) UpdateHotelByID(ctx context.Context, id string, values
 }
 
 // function to add room in hotel
-func (s *MongoHotelStore) AddHotelRoom(ctx context.Context, id string, roomId string) error {
-	hotelOid, err := primitive.ObjectIDFromHex(id)
+func (s *MongoHotelStore) AddHotelRoom(ctx context.Context, hotelID string, roomID string) error {
+	hotelOid, err := primitive.ObjectIDFromHex(hotelID)
 	if err != nil {
 		return err
 	}
 
-	roomOid, err := primitive.ObjectIDFromHex(id)
+	roomOid, err := primitive.ObjectIDFromHex(hotelID)
 	if err != nil {
 		return err
 	}
@@ -117,7 +121,7 @@ func (s *MongoHotelStore) AddHotelRoom(ctx context.Context, id string, roomId st
 	)
 
 	if err != nil {
-		fmt.Printf("(1st try) Failed to update room id %s in Hotel, reason: %s", roomId, err)
+		fmt.Printf("(1st try) Failed to update room id %s in Hotel, reason: %s", roomID, err)
 
 		errorWhichCanBeHandeld := `The field 'rooms' must be an array but is of type null in document`
 		isNilInRoomField := strings.Contains(err.Error(), errorWhichCanBeHandeld)
@@ -128,7 +132,7 @@ func (s *MongoHotelStore) AddHotelRoom(ctx context.Context, id string, roomId st
 				bson.M{"$set": bson.M{"rooms": []primitive.ObjectID{roomOid}}},
 			)
 			if err != nil {
-				fmt.Printf("(2nd try) Failed to create room array of room id %s in Hotel, reason: %s", roomId, err)
+				fmt.Printf("(2nd try) Failed to create room array of room id %s in Hotel, reason: %s", roomID, err)
 				return err
 			}
 		} else {
@@ -136,6 +140,31 @@ func (s *MongoHotelStore) AddHotelRoom(ctx context.Context, id string, roomId st
 			return err
 		}
 	}
+	return nil
+}
+
+// function to add many rooms in hotel
+func (s *MongoHotelStore) AddHotelRooms(ctx context.Context, hotelOID primitive.ObjectID, roomOIDs *[]primitive.ObjectID) error {
+	// hotelOID, err := primitive.ObjectIDFromHex(hotelID)
+	// if err != nil {
+	// 	return err
+	// }
+	// var roomOIDs ObjectID = make([].Hex().ObjectID, len(*roomIDs))
+	// for i, roomID := range *roomIDs {
+	// 	roomOid, err := primitive.ObjectIDFromHex(roomID)
+	// 	if err == nil {
+	// 		roomOIDs[i] = roomOid
+	// 	}
+	// }
+
+	_, err := s.coll.UpdateOne(ctx,
+		bson.M{"_id": hotelOID},
+		bson.M{"$set": bson.M{"rooms": roomOIDs}},
+	)
+	if err != nil {
+		fmt.Printf("Failed to create room array of room in Hotel Id %s , reason: %s", hotelOID, err)
+	}
+
 	return nil
 }
 
