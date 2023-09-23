@@ -74,7 +74,7 @@ func (s *MongoHotelStore) UpdateHotel(ctx context.Context, filter bson.M, update
 	return nil
 }
 
-// update hotel by Id (will not work properly for rooms)
+// function tp update hotel by Id
 func (s *MongoHotelStore) UpdateHotelByID(ctx context.Context, id string, values *types.Hotel) (*types.Hotel, error) {
 	oid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -82,7 +82,6 @@ func (s *MongoHotelStore) UpdateHotelByID(ctx context.Context, id string, values
 	}
 
 	update, err := convertToMongoUpdateValues(values)
-	fmt.Println("update: ", update)
 	if err != nil {
 		fmt.Printf("Failed:: convert to bson.Map type failed: %v", err)
 		return nil, err
