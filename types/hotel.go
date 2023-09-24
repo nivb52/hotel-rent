@@ -24,7 +24,7 @@ const (
 
 type Room struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
-	HotelID   primitive.ObjectID `bson:"hotelID" json:"hotelID"`
+	HotelID   primitive.ObjectID `bson:"hotelID,omitempty " json:"hotelID,omitempty"`
 	Type      RoomType           `bson:"type" json:"type"`
 	BasePrice int                `bson:"base_price" json:"basePrice"`
 	Price     int                `bson:"price" json:"price"` // we can use it as promotion price
