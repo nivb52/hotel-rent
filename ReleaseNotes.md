@@ -1,7 +1,8 @@
 # Release Notes
 
-### V6: (26)
-Seed now uses Insert Many for rooms and update the corresponding hotel,
+### V6: (26 [half way])
+Seeding hotel and rooms - 
+Using Insert Many for rooms and update the corresponding hotel,
 the room store interface includes the hotel store interface.
 
 FEAT: 
