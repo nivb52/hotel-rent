@@ -89,7 +89,7 @@ func seedHotels(numberOfHotels int) {
 			rooms[i].HotelID = insertedHotel.ID
 		}
 
-		updatedCount, err := roomStore.InsertRooms(ctx, &rooms, insertedHotel.ID)
+		updatedCount, err := roomStore.InsertRooms(ctx, &rooms, insertedHotel.ID.Hex())
 		if err != nil {
 			log.Fatal(err)
 		}

@@ -12,12 +12,9 @@ import (
 
 const roomColl = "rooms"
 
-//@TODO: consider not use in the interface the primitive.ObjectID of MongoD
-
 type RoomStore interface {
 	InsertRoom(context.Context, *types.Room) (*types.Room, error)
-
-	InsertRooms(context.Context, *[]types.Room, primitive.ObjectID) (int, error)
+	InsertRooms(context.Context, *[]types.Room, string) (int, error)
 }
 
 type MongoRoomStore struct {
@@ -58,7 +55,13 @@ func (s *MongoRoomStore) InsertRoom(ctx context.Context, room *types.Room) (*typ
 }
 
 // function to insert many rooms and update the relevant hotel
-func (s *MongoRoomStore) InsertRooms(ctx context.Context, rooms *[]types.Room, hotelID primitive.ObjectID) (int, error) {
+func (s *MongoRoomStore) InsertRooms(ctx context.Context, rooms *[]types.Room, hotelID string) (int, error) {
+	hotelOID, err := primitive.ObjectIDFromHex(hotelID)
+	if err != nil {
+		fmt.Printf("Failed:: supplied hotelID cannot be transformed to primitive.ObjectID: %v \n", hotelID)
+		return 0, err
+	}
+
 	// https://github.com/golang/go/wiki/InterfaceSlice
 	var roomsAsInterfaceSlice []interface{} = make([]interface{}, len(*rooms))
 	for i, room := range *rooms {
@@ -81,7 +84,7 @@ func (s *MongoRoomStore) InsertRooms(ctx context.Context, rooms *[]types.Room, h
 		}
 	}
 
-	err = s.HotelStore.AddHotelRooms(ctx, hotelID, &verefiedInsertedIDs)
+	err = s.HotelStore.AddHotelRooms(ctx, hotelOID, &verefiedInsertedIDs)
 	if err != nil {
 		fmt.Printf("Inserting an Rooms Failed, reason: %s", err)
 		return 0, err
