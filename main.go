@@ -46,9 +46,10 @@ func main() {
 		userHandler = api.NewUserHandler(db.NewMongoUserStore(client, dbname))
 
 		hotelStore   = db.NewMongoHotelStore(client, dbname)
+		roomStore    = db.NewMongoRoomStore(client, dbname, hotelStore)
 		hotelHandler = api.NewHotelHandler(
 			hotelStore,
-			db.NewMongoRoomStore(client, dbname, hotelStore),
+			roomStore,
 		)
 	)
 
@@ -72,6 +73,7 @@ func main() {
 	apiv1Hotel := apiv1.Group("/hotels")
 	apiv1Hotel.Get("/", hotelHandler.HandleGetHotels)
 	apiv1Hotel.Get("/:id", hotelHandler.HandleGetHotel)
+	apiv1Hotel.Get("/:id/rooms", hotelHandler.HandleGetHotelRooms)
 
 	// INIT
 	app.Listen(*listenAddr)
