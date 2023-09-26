@@ -17,6 +17,7 @@ import (
 type SeedHotel struct {
 	Name     string
 	Location string
+	Rating   int8
 }
 
 var (
@@ -30,16 +31,16 @@ func seedHotels(numberOfHotels int) {
 
 	// 10 hotel options
 	seedHotels10 := []SeedHotel{
-		{"The Ritz-Carlton", "Los Angeles, California"},
-		{"Grand Hyatt", "New York City, New York"},
-		{"Marriott Marquis", "Atlanta, Georgia"},
-		{"Four Seasons Resort", "Maui, Hawaii"},
-		{"Hilton Garden Inn", "Chicago, Illinois"},
-		{"Fairmont Empress", "Victoria, British Columbia, Canada"},
-		{"The Venetian", "Las Vegas, Nevada"},
-		{"Burj Al Arab Jumeirah", "Dubai, United Arab Emirates"},
-		{"The Savoy", "London, United Kingdom"},
-		{"Hotel del Coronado", "San Diego, California"},
+		{"The Ritz-Carlton", "Los Angeles, California", 5},
+		{"Grand Hyatt", "New York City, New York", 4},
+		{"Marriott Marquis", "Atlanta, Georgia", 3},
+		{"Four Seasons Resort", "Maui, Hawaii", 5},
+		{"Hilton Garden Inn", "Chicago, Illinois", 3},
+		{"Fairmont Empress", "Victoria, British Columbia, Canada", 5},
+		{"The Venetian", "Las Vegas, Nevada", 4},
+		{"Burj Al Arab Jumeirah", "Dubai, United Arab Emirates", 5},
+		{"The Savoy", "London, United Kingdom", 3},
+		{"Hotel del Coronado", "San Diego, California", 4},
 	}
 
 	seedHotels := seedHotels10[0:numberOfHotels]
@@ -48,6 +49,7 @@ func seedHotels(numberOfHotels int) {
 		hotel := types.Hotel{
 			Name:     seedHotel.Name,
 			Location: seedHotel.Location,
+			Rating:   seedHotel.Rating,
 			CreateAt: primitive.NewDateTimeFromTime(time.Now()),
 			UpdateAt: primitive.NewDateTimeFromTime(time.Now()),
 		}
