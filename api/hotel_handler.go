@@ -23,11 +23,11 @@ type HotelQueryParams struct {
 }
 
 func (h *HotelHandler) HandleGetHotels(c *fiber.Ctx) error {
-	var qParams HotelQueryParams
-	err := c.QueryParser(qParams)
-	if err != nil {
-		return err
-	}
+	// var qParams HotelQueryParams
+	// err := c.QueryParser(qParams)
+	// if err != nil {
+	// 	return err
+	// }
 
 	hotels, err := h.hotelStore.GetHotels(c.Context())
 	if err != nil {
