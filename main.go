@@ -60,6 +60,16 @@ func main() {
 	apiv1User.Delete("/:id", userHandler.HandleDeleteUser)
 	apiv1User.Put("/:id", userHandler.HandleUpdateUser)
 
+	// ROUTES - HOTEL
+	hotelStore := db.NewMongoHotelStore(client, dbname)
+	hotelHandler := api.NewHotelHandler(
+		hotelStore,
+		db.NewMongoRoomStore(client, dbname, hotelStore),
+	)
+	apiv1Hotel := apiv1.Group("/hotel")
+	apiv1Hotel.Get("/", hotelHandler.HandleGetHotels)
+	apiv1Hotel.Get("/:id", hotelHandler.HandleGetHotel)
+
 	// INIT
 	app.Listen(*listenAddr)
 }
