@@ -177,18 +177,6 @@ func (s *MongoHotelStore) AddHotelRoom(ctx context.Context, hotelID string, room
 
 // function to add many rooms in hotel
 func (s *MongoHotelStore) AddHotelRooms(ctx context.Context, hotelOID primitive.ObjectID, roomOIDs *[]primitive.ObjectID) error {
-	// hotelOID, err := primitive.ObjectIDFromHex(hotelID)
-	// if err != nil {
-	// 	return err
-	// }
-	// var roomOIDs ObjectID = make([].Hex().ObjectID, len(*roomIDs))
-	// for i, roomID := range *roomIDs {
-	// 	roomOid, err := primitive.ObjectIDFromHex(roomID)
-	// 	if err == nil {
-	// 		roomOIDs[i] = roomOid
-	// 	}
-	// }
-
 	_, err := s.coll.UpdateOne(ctx,
 		bson.M{"_id": hotelOID},
 		bson.M{"$set": bson.M{"rooms": roomOIDs}},
