@@ -28,7 +28,7 @@ type FilterInt struct {
 // maybe try use []*FilterString, []*FilterInt or json ?
 
 type HotelStore interface {
-	GetHotel(context.Context, string) (*types.Hotel, error)
+	GetHotelByID(context.Context, string) (*types.Hotel, error)
 	GetHotels(context.Context) (*[]types.Hotel, error)
 	InsertHotel(context.Context, *types.Hotel) (*types.Hotel, error)
 	UpdateHotelByID(context.Context, string, *types.Hotel) (*types.Hotel, error)
@@ -50,7 +50,7 @@ func NewMongoHotelStore(client *mongo.Client, dbname string) *MongoHotelStore {
 	}
 }
 
-func (s *MongoHotelStore) GetHotel(ctx context.Context, id string) (*types.Hotel, error) {
+func (s *MongoHotelStore) GetHotelByID(ctx context.Context, id string) (*types.Hotel, error) {
 	oid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, err
