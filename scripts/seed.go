@@ -55,29 +55,37 @@ func seedHotels(numberOfHotels int) {
 		}
 
 		randRoomType, randInt := getRandomRoomType()
+		randBedType := getRandomBedType(types.RoomType(randInt))
+		randSize := getRandomSizeStirng(types.RoomType(randInt))
 		numberOfRooms := randomIntByMaxAndMin(10, 1)
 
 		rooms := []types.Room{
 			{
-				Type:      randRoomType,
-				BasePrice: getRandomPrice(randInt),
-				CreateAt:  primitive.NewDateTimeFromTime(time.Now()),
-				UpdateAt:  primitive.NewDateTimeFromTime(time.Now()),
+				Type:     randRoomType,
+				BedType:  randBedType,
+				Size:     randSize,
+				Price:    getRandomPrice(randInt),
+				CreateAt: primitive.NewDateTimeFromTime(time.Now()),
+				UpdateAt: primitive.NewDateTimeFromTime(time.Now()),
 			},
 			{
-				Type:      randRoomType,
-				BasePrice: getRandomPrice(randInt),
-				CreateAt:  primitive.NewDateTimeFromTime(time.Now()),
-				UpdateAt:  primitive.NewDateTimeFromTime(time.Now()),
+				Type:     randRoomType,
+				BedType:  randBedType,
+				Size:     randSize,
+				Price:    getRandomPrice(randInt),
+				CreateAt: primitive.NewDateTimeFromTime(time.Now()),
+				UpdateAt: primitive.NewDateTimeFromTime(time.Now()),
 			},
 		}
 
 		for i := 0; i < numberOfRooms; i++ {
 			rooms = append(rooms, types.Room{
-				Type:      randRoomType,
-				BasePrice: getRandomPrice(randInt),
-				CreateAt:  primitive.NewDateTimeFromTime(time.Now()),
-				UpdateAt:  primitive.NewDateTimeFromTime(time.Now()),
+				Type:     randRoomType,
+				BedType:  randBedType,
+				Size:     randSize,
+				Price:    getRandomPrice(randInt),
+				CreateAt: primitive.NewDateTimeFromTime(time.Now()),
+				UpdateAt: primitive.NewDateTimeFromTime(time.Now()),
 			})
 		}
 
@@ -130,12 +138,64 @@ func getRandomRoomType() (types.RoomType, int) {
 	case 2:
 		return types.DoubleRoomType, randInt
 	case 3:
-		return types.SeaSideRoomType, randInt
+		return types.TripleRoomType, randInt
 	case 4:
-		return types.DeluxRoomType, randInt
+		return types.QuadRoomType, randInt
 	default:
 		return types.SingleRoomType, randInt
 	}
+}
+
+func getRandomSizeStirng(randInt types.RoomType) string {
+	switch randInt {
+	case 1:
+		return types.RoomSizeSmall
+	case 2:
+		return types.RoomSizeNormal
+	case 3:
+		return types.RoomSizeNormal
+	case 4:
+		return types.RoomSizeKingSize
+	default:
+		return types.RoomSizeSmall
+	}
+}
+
+func getRandomBedType(randInt types.RoomType) types.BedType {
+	anotherRandInt := rand.Intn(int(types.ClosedBedType))
+	switch randInt {
+	default:
+		return types.QueenBedType
+	case types.SingleRoomType:
+	case types.DoubleRoomType:
+		switch anotherRandInt {
+		case 1:
+		case 2:
+			return types.KingBedType
+		case 3:
+			return types.TwinBedType
+		default:
+			return types.QueenBedType
+		}
+	case types.TripleRoomType:
+		switch anotherRandInt {
+		case 1:
+		case 2:
+			return types.KingBedType
+		case 3:
+			return types.NormalBedType
+		default:
+			return types.QueenBedType
+		}
+	case types.QuadRoomType:
+		switch anotherRandInt {
+		case 3:
+			return types.TwinBedType
+		default:
+			return types.DoubleDoubleBedType
+		}
+	}
+	return types.QueenBedType
 }
 
 func getRandomPrice(ranInt int) int {
