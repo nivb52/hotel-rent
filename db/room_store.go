@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 
@@ -12,7 +13,14 @@ import (
 
 const roomColl = "rooms"
 
+type RoomsFilter struct {
+	BasePrice int
+}
+
 type RoomStore interface {
+	GetRoomByIds(context.Context, *[]string) (*[]types.Room, error)
+	//  2nd Argument - hotel ID
+	GetHotelRooms(context.Context, string) (*[]types.Room, error)
 	InsertRoom(context.Context, *types.Room) (*types.Room, error)
 	InsertRooms(context.Context, *[]types.Room, string) (int, error)
 }
@@ -30,6 +38,57 @@ func NewMongoRoomStore(client *mongo.Client, dbname string, HotelStore *MongoHot
 		coll:       client.Database(dbname).Collection(roomColl),
 		HotelStore: HotelStore,
 	}
+}
+
+// function to retrive rooms data using the hotel ID
+func (s *MongoRoomStore) GetHotelRooms(ctx context.Context, id string) (*[]types.Room, error) {
+	oid, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+
+	var rooms []types.Room
+	cur, err := s.coll.Find(ctx, bson.M{"hotelID": oid})
+	if err != nil {
+		return nil, err
+	}
+
+	err = cur.All(ctx, &rooms)
+	if err != nil {
+		return nil, err
+	}
+
+	return &rooms, nil
+}
+
+func (s *MongoRoomStore) GetRoomByIds(ctx context.Context, roomIDs *[]string) (*[]types.Room, error) {
+	var roomOIDs []primitive.ObjectID = make([]primitive.ObjectID, len(*roomIDs))
+	var errors []error = make([]error, len(*roomIDs))
+
+	for i, id := range *roomIDs {
+		oid, err := primitive.ObjectIDFromHex(id)
+		roomOIDs[i] = oid
+		if err != nil {
+			errors = append(errors, err)
+		}
+	}
+
+	var rooms []types.Room
+	cur, err := s.coll.Find(ctx, bson.M{})
+	if err != nil {
+		return nil, err
+	}
+
+	err = cur.All(ctx, &rooms)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(errors) > 0 {
+		return &rooms, errors[0]
+	}
+
+	return &rooms, nil
 }
 
 func (s *MongoRoomStore) InsertRoom(ctx context.Context, room *types.Room) (*types.Room, error) {
