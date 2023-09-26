@@ -18,9 +18,7 @@ type RoomsFilter struct {
 }
 
 type RoomStore interface {
-	//  2nd Argument -  roomIDs
-	GetRooms(context.Context, RoomsFilter) (*[]types.Room, error)
-	GetRoomByIds(context.Context, *[]string) (*[]types.Room, error)
+	GetRoomByIDs(context.Context, *[]string) (*[]types.Room, error)
 	//  2nd Argument - hotel ID
 	GetHotelRooms(context.Context, string) (*[]types.Room, error)
 	InsertRoom(context.Context, *types.Room) (*types.Room, error)
@@ -40,30 +38,6 @@ func NewMongoRoomStore(client *mongo.Client, dbname string, HotelStore *MongoHot
 		coll:       client.Database(dbname).Collection(roomColl),
 		HotelStore: HotelStore,
 	}
-}
-
-func (s *MongoRoomStore) GetRooms(ctx context.Context, filters RoomsFilter) (*[]types.Room, error) {
-	return nil, fmt.Errorf("Not Implemented")
-
-	// var bsonFilter = bson.M{}
-	// for _, filter := range filters {
-	// 	switch(filter) {
-	// 		case
-	// 	}
-	// }
-
-	// var rooms []types.Room
-	// cur, err := s.coll.Find(ctx)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	// err = cur.All(ctx, &rooms)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	// return &rooms, nil
 }
 
 // function to retrive rooms data using the hotel ID
@@ -87,7 +61,7 @@ func (s *MongoRoomStore) GetHotelRooms(ctx context.Context, id string) (*[]types
 	return &rooms, nil
 }
 
-func (s *MongoRoomStore) GetRoomByIds(ctx context.Context, roomIDs *[]string) (*[]types.Room, error) {
+func (s *MongoRoomStore) GetRoomByIDs(ctx context.Context, roomIDs *[]string) (*[]types.Room, error) {
 	var roomOIDs []primitive.ObjectID = make([]primitive.ObjectID, len(*roomIDs))
 	var errors []error = make([]error, len(*roomIDs))
 
