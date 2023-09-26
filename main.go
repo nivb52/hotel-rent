@@ -41,16 +41,20 @@ func main() {
 	flag.Parse()
 
 	var (
-		app         = fiber.New(appConfig)
-		apiv1       = app.Group("api/v1")
-		userHandler = api.NewUserHandler(db.NewMongoUserStore(client, dbname))
+		app   = fiber.New(appConfig)
+		apiv1 = app.Group("api/v1")
 
-		hotelStore   = db.NewMongoHotelStore(client, dbname)
-		roomStore    = db.NewMongoRoomStore(client, dbname, hotelStore)
-		hotelHandler = api.NewHotelHandler(
-			hotelStore,
-			roomStore,
-		)
+		userStore  = db.NewMongoUserStore(client, dbname)
+		hotelStore = db.NewMongoHotelStore(client, dbname)
+		roomStore  = db.NewMongoRoomStore(client, dbname, hotelStore)
+		store      = db.Store{
+			User:  userStore,
+			Hotel: hotelStore,
+			Room:  roomStore,
+		}
+
+		userHandler  = api.NewUserHandler(userStore)
+		hotelHandler = api.NewHotelHandler(&store)
 	)
 
 	// ROUTES
