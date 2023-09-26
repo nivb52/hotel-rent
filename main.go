@@ -40,10 +40,19 @@ func main() {
 	listenAddr := flag.String("listenAddr", ":5000", "API PORT")
 	flag.Parse()
 
-	app := fiber.New(appConfig)
+	var (
+		app         = fiber.New(appConfig)
+		apiv1       = app.Group("api/v1")
+		userHandler = api.NewUserHandler(db.NewMongoUserStore(client, dbname))
+
+		hotelStore   = db.NewMongoHotelStore(client, dbname)
+		hotelHandler = api.NewHotelHandler(
+			hotelStore,
+			db.NewMongoRoomStore(client, dbname, hotelStore),
+		)
+	)
 
 	// ROUTES
-	apiv1 := app.Group("api/v1")
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Nothing here ! (choose api version)")
 	})
@@ -52,7 +61,6 @@ func main() {
 	})
 
 	// ROUTES - USERS
-	userHandler := api.NewUserHandler(db.NewMongoUserStore(client, dbname))
 	apiv1User := apiv1.Group("/users")
 	apiv1User.Get("/", userHandler.HandleGetUsers)
 	apiv1User.Get("/:id", userHandler.HandleGetUser)
@@ -61,12 +69,7 @@ func main() {
 	apiv1User.Put("/:id", userHandler.HandleUpdateUser)
 
 	// ROUTES - HOTEL
-	hotelStore := db.NewMongoHotelStore(client, dbname)
-	hotelHandler := api.NewHotelHandler(
-		hotelStore,
-		db.NewMongoRoomStore(client, dbname, hotelStore),
-	)
-	apiv1Hotel := apiv1.Group("/hotel")
+	apiv1Hotel := apiv1.Group("/hotels")
 	apiv1Hotel.Get("/", hotelHandler.HandleGetHotels)
 	apiv1Hotel.Get("/:id", hotelHandler.HandleGetHotel)
 
