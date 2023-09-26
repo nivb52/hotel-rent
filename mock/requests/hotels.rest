@@ -1,0 +1,47 @@
+# ### CREATE VALID USER
+# POST http://localhost:5000/api/v1/hotels HTTP/1.1
+# content-type: application/json
+
+# {
+#     "??": "??",
+#     "??": "??"
+
+# }
+
+# ### INVALID HOTEL
+# POST http://localhost:5000/api/v1/hotels HTTP/1.1
+# content-type: application/json
+
+# {
+#     "??": "invalid",
+#     "??": "data",
+#     "??": "no-valid-field"
+
+# }
+
+###  GET ALL HOTELS
+GET http://localhost:5000/api/v1/hotels HTTP/1.1
+
+### GET HOTEL
+GET http://localhost:5000/api/v1/hotels/650ff621a2d09d59ef4ae781 HTTP/1.1
+
+### DELETE HOTEL - TO BE IMPLEMENT 
+DELETE  http://localhost:5000/api/v1/hotels/650ff621a2d09d59ef4ae781 HTTP/1.1
+
+### Update HOTEL - TO BE IMPLEMENT 
+PUT  http://localhost:5000/api/v1/hotels/650ff621a2d09d59ef4ae781 HTTP/1.1
+content-type: application/json
+
+{
+    "??": "??",
+    "??": "??"
+}
+
+### INVALID Update HOTEL - TO BE IMPLEMENT 
+PUT  http://localhost:5000/api/v1/hotels/650ff621a2d09d59ef4ae781 HTTP/1.1
+content-type: application/json
+
+{
+    "??": "??",
+    "??": "??"
+}
