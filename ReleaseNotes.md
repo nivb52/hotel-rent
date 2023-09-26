@@ -1,5 +1,16 @@
 # Release Notes
 
+### v8: (27)
+API: 
+    - Get Rooms By Ids
+    - Get Hotel Rooms
+Types: Room - add size as string & BedType
+Scripts: add new room fields in seed 
+REFCTORING: 
+    - encapsulating stores, 
+    - func names,
+    - remove unused
+
 ### v7: 
 API: Get Hotel/s
 Types: Hotel - add rating
