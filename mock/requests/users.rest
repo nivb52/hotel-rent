@@ -1,6 +1,16 @@
+@protocol = http://
+@hostname = localhost
+@port = 5000
+@host = {{protocol}}{{hostname}}:{{port}}/api/v1
+@endpoint = users
+
+@contentType = application/json
+
 ### CREATE VALID USER
-POST http://localhost:5000/api/v1/users HTTP/1.1
-content-type: application/json
+# @name CreateUser
+
+POST {{host}}/users HTTP/1.1
+content-type: {{contentType}}
 
 {
     "firstName": "John2",
@@ -11,8 +21,10 @@ content-type: application/json
 }
 
 ### INVALID USER
-POST http://localhost:5000/api/v1/users HTTP/1.1
-content-type: application/json
+# @name CreateUserInvalid
+
+POST {{host}}/users HTTP/1.1
+content-type: {{contentType}}
 
 {
     "firstName": "invalid",
@@ -23,26 +35,40 @@ content-type: application/json
 }
 
 ###  GET ALL USERS
-GET http://localhost:5000/api/v1/users HTTP/1.1
+# @name GetAllUsers
+
+GET {{host}}/users HTTP/1.1
 
 ### GET USER
-GET http://localhost:5000/api/v1/users/6500a9a0068eebb03e9ad5d6 HTTP/1.1
+# @name GetUser
+
+@userId = {{GetAllUsers.response.body.$.id}}
+GET {{host}}/users/{{userId}} HTTP/1.1
 
 ### DELETE USER 
-DELETE  http://localhost:5000/api/v1/users/6500ad25eb1122e8026f7873 HTTP/1.1
+# @name DeleteUser
+@userId = {{GetUser.response.body.$.id}}
+
+DELETE  {{host}}/users/{{userId}} HTTP/1.1
 
 ### Update USER 
-PUT  http://localhost:5000/api/v1/users/6500ad25eb1122e8026f7873 HTTP/1.1
-content-type: application/json
+# @name UpdateUser
+@userId = {{GetUser.response.body.$.id}}
+
+PUT  {{host}}/users/{{userId}} HTTP/1.1
+content-type: {{contentType}}
 
 {
     "firstName": "Alice",
     "lastName": "Bob"
 }
 
-### INVALID Update USER 
-PUT  http://localhost:5000/api/v1/users/6500ad25eb1122e8026f7873 HTTP/1.1
-content-type: application/json
+### INVALID Update USER
+# @name UpdateUserInvalid
+@userId = {{GetUser.response.body.$.id}}
+
+PUT  {{host}}/users/{{userId}} HTTP/1.1
+content-type: {{contentType}}
 
 {
     "firstName": "Bob",

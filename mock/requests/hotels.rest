@@ -1,14 +1,15 @@
-# ### CREATE VALID USER
-# POST http://localhost:5000/api/v1/hotels HTTP/1.1
-# content-type: application/json
+@protocol = http://
+@hostname = localhost
+@port = 5000
+@host = {{protocol}}{{hostname}}:{{port}}/api/v1
+@endpoint = hotels
 
-# {
-#     "??": "??",
-#     "??": "??"
+@contentType = application/json
+# @authToken = {{login.response.headers.X-AuthToken}}
 
-# }
 
 # ### INVALID HOTEL
+# @name CreateHotelINVALID
 # POST http://localhost:5000/api/v1/hotels HTTP/1.1
 # content-type: application/json
 
@@ -20,20 +21,37 @@
 # }
 
 ###  GET ALL HOTELS
-GET http://localhost:5000/api/v1/hotels HTTP/1.1
+# @name GetHotels
+GET {{host}}/hotels HTTP/1.1
+content-type: {{contentType}}
 
 ### GET HOTEL
-GET http://localhost:5000/api/v1/hotels/65131d11018dc4d220422108 HTTP/1.1
+# @name GetHotel
+@hotelId = {{GetHotels.response.body.$.id}}
+
+GET {{host}}/hotels/{{hotelId}} HTTP/1.1
+content-type: {{contentType}}
 
 ### GET HOTEL ROOMS
-GET http://localhost:5000/api/v1/hotels/65131d11018dc4d220422108/rooms HTTP/1.1
+# @name GetHotelRooms
+@hotelId = {{GetHotel.response.body.$.id}}
+
+GET {{host}}/hotels/{{hotelId}}/rooms HTTP/1.1
+content-type: {{contentType}}
 
 ### DELETE HOTEL - TO BE IMPLEMENT 
-DELETE  http://localhost:5000/api/v1/hotels/65131d11018dc4d220422108 HTTP/1.1
+# @name DeleteHotel
+@hotelId = {{GetHotel.response.body.$.id}}
+
+DELETE  {{host}}/hotels/{{hotelId}} HTTP/1.1
+content-type: {{contentType}}
 
 ### Update HOTEL - TO BE IMPLEMENT 
-PUT  http://localhost:5000/api/v1/hotels/65131d11018dc4d220422108 HTTP/1.1
-content-type: application/json
+# @name  UpdateHotel
+@hotelId = {{GetHotel.response.body.$.id}}
+
+PUT  {{host}}/hotels/{{hotelId}} HTTP/1.1
+content-type: {{contentType}}
 
 {
     "??": "??",
@@ -41,8 +59,10 @@ content-type: application/json
 }
 
 ### INVALID Update HOTEL - TO BE IMPLEMENT 
-PUT  http://localhost:5000/api/v1/hotels/65131d11018dc4d220422108 HTTP/1.1
-content-type: application/json
+# @name UpdateHotelINVALID
+
+PUT  {{host}}/hotels/65131d11018dc4d220422108 HTTP/1.1
+content-type: {{contentType}}
 
 {
     "??": "??",
