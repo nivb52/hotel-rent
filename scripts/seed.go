@@ -289,8 +289,8 @@ func getRandomRoomType() (types.RoomType, int) {
 	}
 }
 
-func getRandomSizeStirng(randInt types.RoomType) string {
-	switch randInt {
+func getRandomSizeStirng(randRoomType types.RoomType) string {
+	switch randRoomType {
 	case 1:
 		return types.RoomSizeSmall
 	case 2:
@@ -304,14 +304,14 @@ func getRandomSizeStirng(randInt types.RoomType) string {
 	}
 }
 
-func getRandomBedType(randInt types.RoomType) types.BedType {
-	anotherRandInt := rand.Intn(int(types.ClosedBedType))
-	switch randInt {
+func getRandomBedType(randRoomType types.RoomType) types.BedType {
+	bedTypeRand := rand.Intn(int(types.ClosedBedType))
+	switch randRoomType {
 	default:
 		return types.QueenBedType
 	case types.SingleRoomType:
 	case types.DoubleRoomType:
-		switch anotherRandInt {
+		switch bedTypeRand {
 		case 1:
 		case 2:
 			return types.KingBedType
@@ -321,7 +321,7 @@ func getRandomBedType(randInt types.RoomType) types.BedType {
 			return types.QueenBedType
 		}
 	case types.TripleRoomType:
-		switch anotherRandInt {
+		switch bedTypeRand {
 		case 1:
 		case 2:
 			return types.KingBedType
@@ -331,7 +331,7 @@ func getRandomBedType(randInt types.RoomType) types.BedType {
 			return types.QueenBedType
 		}
 	case types.QuadRoomType:
-		switch anotherRandInt {
+		switch bedTypeRand {
 		case 3:
 			return types.TwinBedType
 		default:
