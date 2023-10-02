@@ -1,6 +1,13 @@
 # Release Notes
 
-### v8: (27)
+### v9: (28)
+API: 
+    - Get user by email
+    - Start implement Auth    
+Scripts: add new data + seed users
+    
+
+### v8: 
 API: 
     - Get Rooms By Ids
     - Get Hotel Rooms
