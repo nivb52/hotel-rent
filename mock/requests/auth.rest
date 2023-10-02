@@ -1,0 +1,30 @@
+@protocol = http://
+@hostname = localhost
+@port = 5000
+@host = {{protocol}}{{hostname}}:{{port}}/api
+
+@contentType = application/json
+# @authToken = {{login.response.headers.X-AuthToken}}
+
+
+###  Auth
+# @name Test
+# @hotelId = {{GetHotels.response.body.$.id}}
+
+GET {{host}}/ HTTP/1.1
+content-type: {{contentType}}
+
+
+
+###  Auth
+# @name Auth
+# @hotelId = {{GetHotels.response.body.$.id}}
+
+POST {{host}}/auth HTTP/1.1
+content-type: {{contentType}}
+
+{
+    "email": "john.smith@email.com",
+    "password" : "supersecretpassword"
+
+}
