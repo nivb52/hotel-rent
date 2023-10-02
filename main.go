@@ -41,8 +41,9 @@ func main() {
 	flag.Parse()
 
 	var (
-		app   = fiber.New(appConfig)
-		apiv1 = app.Group("api/v1")
+		app        = fiber.New(appConfig)
+		apiGeneral = app.Group("api")
+		apiv1      = app.Group("api/v1")
 
 		userStore  = db.NewMongoUserStore(client, dbname)
 		hotelStore = db.NewMongoHotelStore(client, dbname)
@@ -55,12 +56,23 @@ func main() {
 
 		userHandler  = api.NewUserHandler(userStore)
 		hotelHandler = api.NewHotelHandler(&store)
+		authHandler  = api.NewAuthHandler(userStore)
 	)
 
 	// ROUTES
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Nothing here ! (choose api version)")
+		return c.SendString("Nothing here ! (choose api/version)")
 	})
+
+	apiGeneral.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("Nothing here ! (choose api version - latest is 1 )")
+	})
+
+	// AUTH
+	apiGeneral.Post("/auth", authHandler.HandleAuth)
+	apiGeneral.Post("/auth:id", authHandler.HandleAuth)
+
+	//API V1
 	apiv1.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, World V1 👋!")
 	})
