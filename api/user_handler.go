@@ -30,6 +30,19 @@ func (h *UserHandler) HandleGetUser(c *fiber.Ctx) error {
 	return c.JSON(user)
 }
 
+func (h *UserHandler) GetUserByEmail(c *fiber.Ctx) error {
+	var (
+		email = c.Params("email")
+	)
+
+	user, err := h.userStore.GetUserByEmail(c.Context(), email)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(user)
+}
+
 // Function get a users, returning Json list of the a users
 func (h *UserHandler) HandleGetUsers(c *fiber.Ctx) error {
 	users, err := h.userStore.GetUsers(c.Context())
