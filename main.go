@@ -10,6 +10,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/nivb52/hotel-rent/api"
+	"github.com/nivb52/hotel-rent/api/middleware"
 	"github.com/nivb52/hotel-rent/db"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -70,7 +71,6 @@ func main() {
 
 	// AUTH
 	apiGeneral.Post("/auth", authHandler.HandleAuth)
-	apiGeneral.Post("/auth:id", authHandler.HandleAuth)
 
 	//API V1
 	apiv1.Get("/", func(c *fiber.Ctx) error {
@@ -78,7 +78,7 @@ func main() {
 	})
 
 	// ROUTES - USERS
-	apiv1User := apiv1.Group("/users")
+	apiv1User := apiv1.Group("/users", middleware.JWTAuthentication)
 	apiv1User.Get("/", userHandler.HandleGetUsers)
 	apiv1User.Get("/:id", userHandler.HandleGetUser)
 	apiv1User.Post("/", userHandler.HandleCreateUser)
