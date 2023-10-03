@@ -5,17 +5,37 @@
 @endpoint = users
 
 @contentType = application/json
+@token = {{Auth.response.body.$.token}}
+###  GET ALL USERS
+# @name GetAllUsers
+
+GET {{host}}/users HTTP/1.1
+X-Api-Token: {{token}}
+Content-Type: {{contentType}}
+
+
+### GET USER
+# @name GetUser
+@note due to the plugin but, it might not work at first using varible
+@USER_ID = {{GetAllUsers.response.body.$.[2].id}}
+GET {{host}}/users/{{USER_ID}} HTTP/1.1
+X-Api-Token: {{token}}
+Cache-Control: "no-cache"
+
 
 ### CREATE VALID USER
 # @name CreateUser
+# @prompt firstName Provide firstName
+# @prompt lastName Provide lastName
 
 POST {{host}}/users HTTP/1.1
+X-Api-Token: {{token}}
 content-type: {{contentType}}
 
 {
-    "firstName": "John2",
-    "lastName": "Due2",
-    "email": "sample@google.com",
+    "firstName": "{{firstName}}",
+    "lastName": "{{lastName}}",
+    "email": "{{firstName}}_{{lastName}}@google.com",
     "password" : "12345678"
 
 }
@@ -24,6 +44,7 @@ content-type: {{contentType}}
 # @name CreateUserInvalid
 
 POST {{host}}/users HTTP/1.1
+X-Api-Token: {{token}}
 content-type: {{contentType}}
 
 {
@@ -34,40 +55,30 @@ content-type: {{contentType}}
 
 }
 
-###  GET ALL USERS
-# @name GetAllUsers
-
-GET {{host}}/users HTTP/1.1
-
-### GET USER
-# @name GetUser
-
-@userId = {{GetAllUsers.response.body.$.id}}
-GET {{host}}/users/{{userId}} HTTP/1.1
-
-### DELETE USER 
-# @name DeleteUser
-@userId = {{GetUser.response.body.$.id}}
-
-DELETE  {{host}}/users/{{userId}} HTTP/1.1
 
 ### Update USER 
 # @name UpdateUser
 @userId = {{GetUser.response.body.$.id}}
 
 PUT  {{host}}/users/{{userId}} HTTP/1.1
+X-Api-Token: {{token}}
 content-type: {{contentType}}
+Cache-Control: "no-cache"
 
 {
     "firstName": "Alice",
     "lastName": "Bob"
 }
 
+
+
 ### INVALID Update USER
 # @name UpdateUserInvalid
 @userId = {{GetUser.response.body.$.id}}
 
 PUT  {{host}}/users/{{userId}} HTTP/1.1
+X-Api-Token: {{token}}
+
 content-type: {{contentType}}
 
 {
@@ -75,5 +86,29 @@ content-type: {{contentType}}
     "lastName": "Alice",
     "email": "alice@google.com",
     "password" : "12345678"
+
+}
+
+
+
+### DELETE USER 
+# @name DeleteUser
+@userId = {{GetUser.response.body.$.id}}
+
+DELETE  {{host}}/users/{{userId}} HTTP/1.1
+X-Api-Token: {{token}}
+Cache-Control: "no-cache"
+
+
+
+###  Auth
+# @name Auth
+
+POST {{protocol}}{{hostname}}:{{port}}/api/auth HTTP/1.1
+content-type: {{contentType}}
+
+{
+    "email": "john.smith@email.com",
+    "password" : "supersecretpassword"
 
 }
