@@ -95,8 +95,19 @@ func (params UserParamsForUpdate) Validate() map[string]string {
 	return errors
 }
 
-// //
 func isEmailValid(e string) bool {
 	emailReg := regexp.MustCompile(`^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$`)
 	return emailReg.MatchString(e)
+}
+
+func IsPasswordValid(encryptedPassword, password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(encryptedPassword), []byte(password))
+	if err != nil {
+		fmt.Println("No Match Of Compared Hash and Password")
+		return false
+	}
+	return true
+
+	// one liner can be:
+	// return bcrypt.CompareHashAndPassword([]byte(encryptedPassword), []byte(password)) == nil
 }
