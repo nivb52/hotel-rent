@@ -1,6 +1,12 @@
 # Release Notes
-
-### v9: (28)
+### v10: (29)
+Complete implement JWT Auth
+API: 
+    - Protect users route by JWT Auth
+    - Create custom token with 4 hour expiration time 
+Scripts: Improve the VSCode api checking using varibles
+    
+### v9:
 API: 
     - Get user by email
     - Start implement Auth    
