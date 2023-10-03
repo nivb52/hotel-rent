@@ -69,5 +69,9 @@ func validateToken(tokenStr string) (jwt.MapClaims, error) {
 		return nil, fmt.Errorf("Token expired")
 	}
 
+	if claims["exp"].(int64) > time.Now().Unix() {
+		return nil, fmt.Errorf("Token expired")
+	}
+
 	return claims, nil
 }
