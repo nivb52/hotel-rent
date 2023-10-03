@@ -8,40 +8,64 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+var SECRET []byte
+
+// function return a string in bytes which use as the secret for the JWT
+func GetSecret() []byte {
+	if SECRET != nil {
+		return SECRET
+	}
+	secretString := os.Getenv("JWT_SECRET")
+	if secretString == "" {
+		secretString = "secret-key"
+	}
+	SECRET = []byte(secretString)
+	return SECRET
+}
+
 func JWTAuthentication(c *fiber.Ctx) error {
 	token, ok := c.GetReqHeaders()["X-Api-Token"]
 	if !ok {
 		return fmt.Errorf("Unauthorized")
 	}
 
-	err := parseJWTToken(token)
+	claims, err := validateToken(token)
+	fmt.Println("claims exp", claims["exp"])
+
 	if err != nil {
 		return err
 	}
 
-	fmt.Println("token", token)
 	return c.Next()
 }
 
-func parseJWTToken(tokenStr string) error {
+func validateToken(tokenStr string) (jwt.MapClaims, error) {
 	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			fmt.Println("Unexpected signing method: /%v", token.Header["X-Api-Token"])
+		_, ok := token.Method.(*jwt.SigningMethodHMAC)
+		if !ok {
+			fmt.Printf("Unexpected signing method: /%v", token.Header["alg"])
 			return nil, fmt.Errorf("Invalid")
 		}
 
-		secret := os.Getenv("JWT_SECRET")
-		return []byte(secret), nil
+		secret := GetSecret()
+		return secret, nil
 	})
 
 	if err != nil {
 		fmt.Println("failed to parse JWT token", err)
-		return fmt.Errorf("Unauthorized")
+		return nil, fmt.Errorf("Unauthorized")
 	}
 
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		fmt.Println(claims)
+	if !token.Valid {
+		fmt.Println("invalid token", err)
+		return nil, fmt.Errorf("Unauthorized")
 	}
 
-	return nil
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		fmt.Println("invalid claims", claims)
+		return nil, fmt.Errorf("Unauthorized")
+	}
+
+	return claims, nil
 }
