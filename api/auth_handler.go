@@ -33,7 +33,7 @@ type AuthResponse struct {
 	Token string      `json:"token,omitempty"`
 }
 
-func (h *AuthHandler) HandleAuth(c *fiber.Ctx) error {
+func (h *AuthHandler) HandleAuthenticate(c *fiber.Ctx) error {
 	var params AuthParams
 	err := c.BodyParser(&params)
 	if err != nil {

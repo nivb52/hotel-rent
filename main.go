@@ -70,7 +70,7 @@ func main() {
 	})
 
 	// AUTH
-	apiGeneral.Post("/auth", authHandler.HandleAuth)
+	apiGeneral.Post("/auth", authHandler.HandleAuthenticate)
 
 	//API V1
 	apiv1.Get("/", func(c *fiber.Ctx) error {
