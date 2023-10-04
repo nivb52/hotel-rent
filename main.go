@@ -48,7 +48,7 @@ func main() {
 
 		userStore  = db.NewMongoUserStore(client, dbname)
 		hotelStore = db.NewMongoHotelStore(client, dbname)
-		roomStore  = db.NewMongoRoomStore(client, dbname, hotelStore)
+		roomStore  = db.NewMongoRoomStore(client, hotelStore, dbname)
 		store      = db.Store{
 			User:  userStore,
 			Hotel: hotelStore,
