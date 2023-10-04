@@ -144,7 +144,7 @@ func main() {
 	}
 
 	hotelStore = db.NewMongoHotelStore(client, db.DBNAME)
-	roomStore = db.NewMongoRoomStore(client, db.DBNAME, hotelStore)
+	roomStore = db.NewMongoRoomStore(client, hotelStore, db.DBNAME)
 	userStore = db.NewMongoUserStore(client, db.DBNAME)
 
 	seedHotels(6)
