@@ -145,6 +145,6 @@ func TestHandlAuthUser(t *testing.T) {
 	}
 
 	if authBadBody.Msg != "invalid credentials" {
-		t.Errorf("expected Token to no exists - but found %s", authBadBody.Msg)
+		t.Errorf("expected Msg to be <invalid credentials> - but found %s", authBadBody.Msg)
 	}
 }
