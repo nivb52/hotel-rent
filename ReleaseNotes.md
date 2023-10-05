@@ -1,5 +1,13 @@
 # Release Notes
-### v10: (29)
+### v11: (30)
+Test JWT Auth
+Test: 
+    - Authenticate handler
+    - ref: use context with timeout in test db
+API:
+    - ref: use invalid credentials response 
+
+### v10:
 Complete implement JWT Auth
 API: 
     - Protect users route by JWT Auth
