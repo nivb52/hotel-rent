@@ -33,6 +33,19 @@ type AuthResponse struct {
 	Token string      `json:"token,omitempty"`
 }
 
+type ForbiddenResponse struct {
+	Msg    string `json:"msg"`
+	Reason string `json:"reason"`
+}
+
+// return ForbiddenRequest
+func invalidCredentials(c *fiber.Ctx) error {
+	return c.Status(fiber.StatusForbidden).JSON(ForbiddenResponse{
+		Msg:    "invalid credentials",
+		Reason: "wrong password or email",
+	})
+}
+
 func (h *AuthHandler) HandleAuthenticate(c *fiber.Ctx) error {
 	var params AuthParams
 	err := c.BodyParser(&params)
@@ -43,14 +56,14 @@ func (h *AuthHandler) HandleAuthenticate(c *fiber.Ctx) error {
 	user, err := h.userStore.GetUserByEmail(c.Context(), params.Email)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return fmt.Errorf("invalid credentials")
+			return invalidCredentials(c)
 		}
 		return err
 	}
 
 	isValid := types.IsPasswordValid(user.EncryptedPassword, params.Password)
 	if !isValid {
-		return fmt.Errorf("invalid credentials")
+		return invalidCredentials(c)
 	}
 
 	tokenString, err := createToken(user.ID.Hex(), user.Email)
@@ -66,7 +79,7 @@ func (h *AuthHandler) HandleAuthenticate(c *fiber.Ctx) error {
 	return c.JSON(resp)
 }
 
-// function to create token From User data - id and email.
+// create token From User data of id and email.
 func createToken(userID, userEmail string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
