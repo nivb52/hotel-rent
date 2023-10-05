@@ -9,33 +9,47 @@ import (
 	"net/http/httptest"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/nivb52/hotel-rent/db"
 	"github.com/nivb52/hotel-rent/types"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-const testdburi = "mongodb://localhost:27017"
-const dbname = "hotel-rent-testing"
+const testdburi = db.TestDBURI
+const dbname = db.TestDBNAME
 
 type testdb struct {
 	db.UserStore
 }
 
 func (tdb *testdb) teardown(t *testing.T) {
-	if err := tdb.UserStore.Drop(context.TODO()); err != nil {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	if err := tdb.UserStore.Drop(ctx); err != nil {
 		t.Fatal(err)
 	}
 }
 
 func setup(t *testing.T) *testdb {
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(testdburi))
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(testdburi))
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	err = client.Ping(ctx, readpref.PrimaryPreferred())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("setup success")
 	return &testdb{
 		UserStore: db.NewMongoUserStore(client, dbname),
 	}

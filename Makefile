@@ -23,7 +23,7 @@ test:
 ########### DB ###########
 # SEED
 seed: 
-	go run ./scripts/seed.go
+	go run ./scripts/cmd/main.go
 
 # CONSINSTENT DB
 db_up: db_down

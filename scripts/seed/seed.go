@@ -1,4 +1,4 @@
-package main
+package scripts
 
 import (
 	"context"
@@ -11,64 +11,92 @@ import (
 	"github.com/nivb52/hotel-rent/types"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type SeedHotel struct {
+type MockedHotel struct {
 	Name     string
 	Location string
 	Rating   int8
 }
 
-type SeedUser struct {
+type MockedUser struct {
 	FName string
 	LName string
 	Email string
 }
+
+type Stores map[string]interface{}
 
 var (
 	client     *mongo.Client
 	hotelStore *db.MongoHotelStore
 	roomStore  *db.MongoRoomStore
 	userStore  *db.MongoUserStore
-	ctx        = context.Background()
 )
 
-func seedUser(seed *SeedUser) error {
+const USER_PASSWORD = "supersecretpassword"
+
+func SeedUser(seed *MockedUser, ctx context.Context, userStore *db.MongoUserStore) (*types.User, error) {
 	user, err := types.NewUserFromParams(types.UserParamsForCreate{
 		Email:     seed.Email,
 		FirstName: seed.FName,
 		LastName:  seed.LName,
-		Password:  "supersecretpassword",
+		Password:  USER_PASSWORD,
 	})
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	_, err = userStore.InsertUser(ctx, user)
+	insertedUser, err := userStore.InsertUser(ctx, user)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return insertedUser, nil
 }
 
-func seedUsers(numberOfUsers int) int {
-	seedUsers := mockUsers(numberOfUsers)
-	var errors []error = make([]error, len(*seedUsers))
-	for _, user := range *seedUsers {
-		err := seedUser(&user)
-		if err != nil {
-			errors = append(errors, err)
+func SeedUsers(numberOfUsers int, ctx context.Context, stores Stores) ([]*types.User, []error) {
+
+	if userStore == nil {
+		userStore := stores["userStore"]
+		if userStore == nil {
+			log.Fatal("User Store must be provided inside stores map")
 		}
 	}
 
-	return len(errors)
+	seedUsers := MockUsers(numberOfUsers)
+	var errors []error = make([]error, numberOfUsers)
+	var insertedUsers []*types.User = make([]*types.User, numberOfUsers)
+	for i, user := range seedUsers {
+		insertedU, err := SeedUser(&user, ctx, userStore)
+		if err != nil {
+			fmt.Printf("failed to seed user, due: %s \n", err)
+			errors[i] = err
+		}
+		insertedUsers[i] = insertedU
+	}
+
+	return insertedUsers, errors
 }
 
-func seedHotels(numberOfHotels int) {
-	seedHotels := mockHotels(numberOfHotels)
+func SeedHotels(numberOfHotels int, ctx context.Context, stores Stores) (int, *[]MockedHotel) {
+	if hotelStore == nil {
+		hotelStore := stores["hotelStore"]
+		if hotelStore == nil {
+			log.Fatal("Hotel Store must be provided inside stores map")
+		}
+	}
+
+	if roomStore == nil {
+		roomStore := stores["roomStore"]
+		if roomStore == nil {
+			log.Fatal("Room Store must be provided inside stores map")
+		}
+	}
+
+	seedHotels := MockHotels(numberOfHotels)
+	var errors []error = make([]error, len(seedHotels))
 
 	for _, seedHotel := range seedHotels {
 		hotel := types.Hotel{
@@ -116,50 +144,33 @@ func seedHotels(numberOfHotels int) {
 
 		insertedHotel, err := hotelStore.InsertHotel(ctx, &hotel)
 		if err != nil {
-			log.Fatal(err)
+			errors = append(errors, err)
+			fmt.Println(err)
+			continue
 		}
-		fmt.Println("New Hotel: ", insertedHotel)
 
+		fmt.Println("New Hotel: ", insertedHotel)
 		for i := range rooms {
 			rooms[i].HotelID = insertedHotel.ID
 		}
 
 		updatedCount, err := roomStore.InsertRooms(ctx, &rooms, insertedHotel.ID.Hex())
 		if err != nil {
-			log.Fatal(err)
+			errors = append(errors, err)
+			fmt.Println("Falied to update Hotel with rooms, due: \n", err)
+			continue
 		}
 
 		fmt.Printf("Update Hotel with %d rooms \n", updatedCount)
 	}
-}
 
-func main() {
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(db.DBURI))
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if err := client.Database(db.DBNAME).Drop(ctx); err != nil {
-		log.Fatal(err)
-	}
-
-	hotelStore = db.NewMongoHotelStore(client, db.DBNAME)
-	roomStore = db.NewMongoRoomStore(client, hotelStore, db.DBNAME)
-	userStore = db.NewMongoUserStore(client, db.DBNAME)
-
-	seedHotels(6)
-	seedUsers(7)
-
-}
-
-func init() {
-	fmt.Println(" Seeding the db")
+	return len(errors), &seedHotels
 }
 
 /** ============= Data ============= */
-func mockUsers(numberOfUsers int) *[]SeedUser {
+func MockUsers(numberOfUsers int) []MockedUser {
 
-	usersMock := []SeedUser{
+	usersMock := []MockedUser{
 		{"John", "Smith", "john.smith@email.com"},
 		{"Sarah", "Johnson", "sarah.johnson@email.com"},
 		{"Michael", "Brown", "michael.brown@email.com"},
@@ -203,11 +214,11 @@ func mockUsers(numberOfUsers int) *[]SeedUser {
 	}
 
 	res := usersMock[0:numberOfUsers]
-	return &res
+	return res
 }
 
-func mockHotels(numberOfHotels int) []SeedHotel {
-	hotelsMock := []SeedHotel{
+func MockHotels(numberOfHotels int) []MockedHotel {
+	hotelsMock := []MockedHotel{
 		{"The Ritz-Carlton", "Los Angeles, California", 5},
 		{"Grand Hyatt", "New York City, New York", 4},
 		{"Marriott Marquis", "Atlanta, Georgia", 3},

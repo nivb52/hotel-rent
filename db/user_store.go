@@ -97,7 +97,14 @@ func (s *MongoUserStore) InsertUser(ctx context.Context, user *types.User) (*typ
 		fmt.Printf("Failed:: res.InsertedID is not a primitive.ObjectID: %v", res.InsertedID)
 		// Handle the case where the type assertion failed (?)
 	}
-	return user, nil
+	u := types.User{
+		ID:                res.InsertedID.(primitive.ObjectID),
+		FirstName:         user.FirstName,
+		LastName:          user.LastName,
+		Email:             user.Email,
+		EncryptedPassword: user.EncryptedPassword,
+	}
+	return &u, nil
 }
 
 func (s *MongoUserStore) DeleteUser(ctx context.Context, id string) error {
