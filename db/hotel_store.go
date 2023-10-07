@@ -14,16 +14,6 @@ import (
 
 const hotelColl = "hotels"
 
-type FilterString struct {
-	Key   string
-	Value string
-}
-
-type FilterInt struct {
-	Key   string
-	Value int
-}
-
 //@TODO: consider not use in the interface the filter as bson.M
 // maybe try use []*FilterString, []*FilterInt or json ?
 

@@ -11,3 +11,13 @@ type Store struct {
 	Hotel HotelStore
 	Room  RoomStore
 }
+
+type FilterString struct {
+	Key   string
+	Value string
+}
+
+type FilterInt struct {
+	Key   string
+	Value int
+}
