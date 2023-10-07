@@ -30,10 +30,13 @@ func JWTAuthentication(c *fiber.Ctx) error {
 		return fmt.Errorf("Unauthorized")
 	}
 
-	_, err := validateToken(token)
+	claims, err := validateToken(token)
 	if err != nil {
 		return err
 	}
+
+	c.Set("userID", claims["id"].(string))
+	c.Set("userEmail", claims["email"].(string))
 	return c.Next()
 }
 
@@ -65,7 +68,9 @@ func validateToken(tokenStr string) (jwt.MapClaims, error) {
 		return nil, fmt.Errorf("Unauthorized")
 	}
 
-	if claims["exp"].(int64) > time.Now().Unix() {
+	exp := int64(claims["exp"].(float64))
+	if time.Now().UTC().Unix() > exp {
+		fmt.Printf("\n token expired, current value: %d, token value: %d", time.Now().UTC().Unix(), exp)
 		return nil, fmt.Errorf("token expired")
 	}
 
