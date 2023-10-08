@@ -3,11 +3,11 @@
 @protocol = http://
 @hostname = localhost
 @port = 5000
-@apiVersion = 1
 @hostNoVersion = {{protocol}}{{hostname}}:{{port}}/api
-@host = {{protocol}}{{hostname}}:{{port}}/api/v{{apiVersion}}
+@host = {{protocol}}{{hostname}}:{{port}}/api/v1
 @contentType = application/json
 
+@token = {{Auth.response.body.$.token}}
 
 ###  Test
 # @name Test
@@ -15,7 +15,3 @@
 
 GET {{hostNoVersion}}/ HTTP/1.1
 content-type: {{contentType}}
-
-
-
-// end const

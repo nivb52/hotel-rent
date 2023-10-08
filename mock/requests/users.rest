@@ -8,10 +8,8 @@
 
 //COPY-FROM-HERE
 
-@token = {{Auth.response.body.$.token}}
 ###  GET ALL USERS
 # @name GetAllUsers
-
 GET {{host}}/users HTTP/1.1
 X-Api-Token: {{token}}
 Content-Type: {{contentType}}
