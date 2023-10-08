@@ -5,6 +5,9 @@
 @endpoint = users
 
 @contentType = application/json
+
+//COPY-FROM-HERE
+
 @token = {{Auth.response.body.$.token}}
 ###  GET ALL USERS
 # @name GetAllUsers

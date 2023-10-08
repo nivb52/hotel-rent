@@ -5,8 +5,8 @@
 @endpoint = hotels
 
 @contentType = application/json
-# @authToken = {{login.response.headers.X-AuthToken}}
 
+//COPY-FROM-HERE
 
 # ### INVALID HOTEL
 # @name CreateHotelINVALID

@@ -48,3 +48,9 @@ dbtemp_down:
 build:
 	@echo Building app..
 	go build -o bin/main main.go
+
+
+
+########### Make Rest File  ###########
+rest: 
+	generate_main_rest_file.cmd

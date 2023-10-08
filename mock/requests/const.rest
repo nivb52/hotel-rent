@@ -1,23 +1,21 @@
+//COPY-FROM-HERE
+
 @protocol = http://
 @hostname = localhost
 @port = 5000
+@apiVersion = 1
 @hostNoVersion = {{protocol}}{{hostname}}:{{port}}/api
-
+@host = {{protocol}}{{hostname}}:{{port}}/api/v{{apiVersion}}
 @contentType = application/json
-# @authToken = {{login.response.headers.X-AuthToken}}
-
-//COPY-FROM-HERE
 
 
-###  Auth
-# @name Auth
+###  Test
+# @name Test
 # @hotelId = {{GetHotels.response.body.$.id}}
 
-POST {{hostNoVersion}}/auth HTTP/1.1
+GET {{hostNoVersion}}/ HTTP/1.1
 content-type: {{contentType}}
 
-{
-    "email": "john.smith@email.com",
-    "password" : "supersecretpassword"
 
-}
+
+// end const
