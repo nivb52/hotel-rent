@@ -14,6 +14,8 @@ const bookingColl = "bookings"
 
 type BookingStore interface {
 	InsertBooking(context.Context, *types.BookingParamsForCreate) (*types.Booking, error)
+	GetBookings(context.Context, *types.BookingFilter) ([]*types.Booking, error)
+	GetBookingsByRoomId(context.Context, string) ([]*types.Booking, error)
 	IsRoomAvailable(context.Context, *types.BookingFilter) (bool, error)
 }
 
@@ -31,6 +33,28 @@ func NewMongoBookingStore(client *mongo.Client, dbname string) *MongoBookingStor
 		client: client,
 		coll:   client.Database(dbname).Collection(bookingColl),
 	}
+}
+
+// get bookings per room
+func (s *MongoBookingStore) GetBookingsByRoomId(ctx context.Context, roomID string) ([]*types.Booking, error) {
+	roomOID, err := primitive.ObjectIDFromHex(roomID)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.M{"_id": roomOID}
+	cur, err := s.coll.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+
+	var bookings []*types.Booking
+	err = cur.All(ctx, &bookings)
+	if err != nil {
+		return nil, err
+	}
+
+	return bookings, nil
 }
 
 // build query for lookup a booking
@@ -62,6 +86,27 @@ func buildFilter(filterData *types.BookingFilter) (bson.M, error) {
 	fmt.Println("built filter: ", filter, " Out of: ", filterData)
 	return filter, nil
 
+}
+
+func (s *MongoBookingStore) GetBookings(ctx context.Context, where *types.BookingFilter) ([]*types.Booking, error) {
+	filter, err := buildFilter(where)
+	if err != nil {
+		fmt.Println("Failed to build booking filter due: ", err)
+		return nil, err
+	}
+
+	cur, err := s.coll.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+
+	var bookings []*types.Booking
+	err = cur.All(ctx, &bookings)
+	if err != nil {
+		return nil, err
+	}
+
+	return bookings, nil
 }
 
 func (s *MongoBookingStore) IsRoomAvailable(ctx context.Context, where *types.BookingFilter) (bool, error) {
