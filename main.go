@@ -46,18 +46,21 @@ func main() {
 		apiGeneral = app.Group("api")
 		apiv1      = app.Group("api/v1")
 
-		userStore  = db.NewMongoUserStore(client, dbname)
-		hotelStore = db.NewMongoHotelStore(client, dbname)
-		roomStore  = db.NewMongoRoomStore(client, hotelStore, dbname)
-		store      = db.Store{
-			User:  userStore,
-			Hotel: hotelStore,
-			Room:  roomStore,
+		userStore    = db.NewMongoUserStore(client, dbname)
+		hotelStore   = db.NewMongoHotelStore(client, dbname)
+		roomStore    = db.NewMongoRoomStore(client, hotelStore, dbname)
+		bookingStore = db.NewMongoBookingStore(client, dbname)
+		store        = db.Store{
+			User:    userStore,
+			Hotel:   hotelStore,
+			Room:    roomStore,
+			Booking: bookingStore,
 		}
 
-		userHandler  = api.NewUserHandler(userStore)
-		hotelHandler = api.NewHotelHandler(&store)
-		authHandler  = api.NewAuthHandler(userStore)
+		userHandler    = api.NewUserHandler(userStore)
+		hotelHandler   = api.NewHotelHandler(&store)
+		authHandler    = api.NewAuthHandler(userStore)
+		bookingHandler = api.NewBookingHandler(&store)
 	)
 
 	// ROUTES
@@ -90,6 +93,12 @@ func main() {
 	apiv1Hotel.Get("/", hotelHandler.HandleGetHotels)
 	apiv1Hotel.Get("/:id", hotelHandler.HandleGetHotel)
 	apiv1Hotel.Get("/:id/rooms", hotelHandler.HandleGetHotelRooms)
+
+	// ROUTES - Rooms (booking)
+	apiv1.Post("/room/:id/book",
+		middleware.JWTAuthentication,
+		bookingHandler.BookARoomByUser)
+	apiv1.Post("/room/:id/gbook", bookingHandler.BookARoomByGuest)
 
 	// INIT
 	app.Listen(*listenAddr)
