@@ -16,14 +16,14 @@
 @USER_ID = {{GetAllUsers.response.body.$.[0].id}}
 @ROOM_ID = {{GetHotels.response.body.$.[0].rooms.[0]}}
 
-POST {{host}}/{{apiVersion}}/room/{{ROOM_ID}}/book HTTP/1.1
+POST {{host}}/room/{{ROOM_ID}}/book HTTP/1.1
 X-Api-Token: {{token}}
 content-type: {{contentType}}
 Cache-Control: "no-cache"
 
 {
-    "fromDate": "10-08-23",
-    "tillDate": "13-08-23",
+    "fromDate": "{{$datetime iso8601}}",
+    "tillDate": "{{$datetime iso8601}}",
     "numPersons": 1
 }
 //# @prompt fromDate Provide fromDate
@@ -32,3 +32,71 @@ Cache-Control: "no-cache"
 // <@RAND_USER_ID = {{./GetAllUsers.response.body.$.[{{$randomInt 0 5}}].id}}
 // <@RAND_ROOM_ID = {{./GetHotels.response.body.$.[{{$randomInt 0 5}}].rooms.[0]}}
 
+###
+# @name CreateBooking-Error-InvalidDate-DateInThePast
+@USER_ID = {{GetAllUsers.response.body.$.[0].id}}
+@ROOM_ID = {{GetHotels.response.body.$.[0].rooms.[0]}}
+
+POST {{host}}/room/{{ROOM_ID}}/book HTTP/1.1
+X-Api-Token: {{token}}
+content-type: {{contentType}}
+Cache-Control: "no-cache"
+
+{
+    "fromDate": "{{$datetime iso8601 -5 d}}",
+    "tillDate": "{{$datetime iso8601 -2 d}}",
+    "numPersons": 1
+}
+
+
+
+###
+# @name CreateBooking-Error-InvalidDate-TillSmallerThenFrom
+@USER_ID = {{GetAllUsers.response.body.$.[0].id}}
+@ROOM_ID = {{GetHotels.response.body.$.[0].rooms.[0]}}
+
+POST {{host}}/room/{{ROOM_ID}}/book HTTP/1.1
+X-Api-Token: {{token}}
+content-type: {{contentType}}
+Cache-Control: "no-cache"
+
+{
+    "fromDate": "{{$datetime iso8601 +5 d}}",
+    "tillDate": "{{$datetime iso8601 +2 d}}",
+    "numPersons": 1
+}
+
+
+
+###
+# @name CreateBooking-Error-InvalidePersons-LessThen1
+@USER_ID = {{GetAllUsers.response.body.$.[0].id}}
+@ROOM_ID = {{GetHotels.response.body.$.[0].rooms.[0]}}
+
+POST {{host}}/room/{{ROOM_ID}}/book HTTP/1.1
+X-Api-Token: {{token}}
+content-type: {{contentType}}
+Cache-Control: "no-cache"
+
+{
+    "fromDate": "{{$datetime iso8601}}",
+    "tillDate": "{{$datetime iso8601}}",
+    "numPersons": 0
+}
+
+
+###
+# @name CreateBooking-Error-InvalidePersons-MoreThen100
+@USER_ID = {{GetAllUsers.response.body.$.[0].id}}
+@ROOM_ID = {{GetHotels.response.body.$.[0].rooms.[0]}}
+
+POST {{host}}/room/{{ROOM_ID}}/book HTTP/1.1
+X-Api-Token: {{token}}
+content-type: {{contentType}}
+Cache-Control: "no-cache"
+
+{
+    "fromDate": "{{$datetime iso8601 }}",
+    "tillDate": "{{$datetime iso8601 }}",
+    "numPersons": 101
+}
