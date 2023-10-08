@@ -41,7 +41,7 @@ type ForbiddenResponse struct {
 // return ForbiddenRequest
 func invalidCredentials(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusForbidden).JSON(ForbiddenResponse{
-		Msg:    "invalid credentials",
+		Msg:    "invalid credentials", // fiber.ErrForbidden.Message
 		Reason: "wrong password or email",
 	})
 }
@@ -85,7 +85,7 @@ func createToken(userID, userEmail string) (string, error) {
 		jwt.MapClaims{
 			"id":    userID,
 			"email": userEmail,
-			"exp":   time.Now().Add(time.Hour * 4).Unix(),
+			"exp":   time.Now().Add(time.Hour * 12).UTC().Unix(),
 		})
 
 	secret := middleware.GetSecret()
