@@ -99,6 +99,7 @@ func main() {
 		middleware.JWTAuthentication,
 		bookingHandler.BookARoomByUser)
 	apiv1.Post("/room/:id/gbook", bookingHandler.BookARoomByGuest)
+	apiv1.Get("/room/:id/bookings", bookingHandler.GetBookings)
 
 	// INIT
 	app.Listen(*listenAddr)
