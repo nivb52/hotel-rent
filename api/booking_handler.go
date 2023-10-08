@@ -20,14 +20,17 @@ func NewBookingHandler(store *db.Store) *BookingHandler {
 	}
 }
 
+//	--- Make Bookings ---
+//
+// Make a booking without register
 func (h *BookingHandler) BookARoomByGuest(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusNotImplemented).SendString(fiber.ErrNotImplemented.Message)
 
 }
 
+// Make a booking for register user
 func (h *BookingHandler) BookARoomByUser(c *fiber.Ctx) error {
 
-	//
 	var (
 		roomID = c.Params("id")
 		userID = c.Context().UserValue("userID")
@@ -52,7 +55,21 @@ func (h *BookingHandler) BookARoomByUser(c *fiber.Ctx) error {
 		return c.Status(fiber.ErrBadRequest.Code).JSON(errors)
 	}
 
-	// verify the date are valid & free?
+	var whereClause types.BookingFilter
+	whereClause.RoomID = roomID
+	whereClause.FromDate = params.FromDate
+	whereClause.TillDate = params.TillDate
+	isBooked, err := h.store.Booking.IsRoomAvailable(c.Context(), &whereClause)
+	if err != nil {
+		fmt.Println("Booking Failed, due: ", err)
+		return c.Status(fiber.ErrConflict.Code).SendString(fiber.ErrConflict.Message)
+	}
+
+	if isBooked {
+		fmt.Println("Booked Already")
+		return c.Status(fiber.ErrConflict.Code).SendString("Those dates where just booked for this room")
+	}
+
 	booking, err := h.store.Booking.InsertBooking(c.Context(), &params)
 	if err != nil {
 		fmt.Println("Booking Failed, due: ", err)
