@@ -53,4 +53,4 @@ build:
 
 ########### Make Rest File  ###########
 rest: 
-	generate_main_rest_file.cmd
+	$(shell powershell  ./generate_main_rest_file.ps1)
