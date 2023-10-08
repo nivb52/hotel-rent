@@ -2,8 +2,10 @@ package db
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/nivb52/hotel-rent/types"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -12,6 +14,7 @@ const bookingColl = "bookings"
 
 type BookingStore interface {
 	InsertBooking(context.Context, *types.BookingParamsForCreate) (*types.Booking, error)
+	IsRoomAvailable(context.Context, *types.BookingFilter) (bool, error)
 }
 
 type MongoBookingStore struct {
@@ -30,30 +33,81 @@ func NewMongoBookingStore(client *mongo.Client, dbname string) *MongoBookingStor
 	}
 }
 
-func (s *MongoBookingStore) InsertBooking(ctx context.Context, data *types.BookingParamsForCreate) (*types.Booking, error) {
+// build query for lookup a booking
+// return example bson.M{"_id": roomOID, "fromDate": {$gte: fromDate}, "tillDate": {$lte: tillDate}}
+func buildFilter(filterData *types.BookingFilter) (bson.M, error) {
+	filter := bson.M{}
 
-	res, err := s.coll.InsertOne(ctx, data)
+	if filterData.RoomID != "" {
+		roomOID, err := primitive.ObjectIDFromHex(filterData.RoomID)
+		if err != nil {
+			return nil, err
+		}
+
+		filter["roomID"] = roomOID
+	}
+
+	if !filterData.FromDate.IsZero() {
+		filter["fromDate"] = bson.M{
+			"$gte": filterData.FromDate,
+		}
+	}
+
+	if !filterData.TillDate.IsZero() {
+		filter["tillDate"] = bson.M{
+			"$lte": filterData.TillDate,
+		}
+	}
+
+	fmt.Println("built filter: ", filter, " Out of: ", filterData)
+	return filter, nil
+
+}
+
+func (s *MongoBookingStore) IsRoomAvailable(ctx context.Context, where *types.BookingFilter) (bool, error) {
+	filter, err := buildFilter(where)
+	if err != nil {
+		fmt.Println("Failed to build booking filter due: ", err)
+		return false, err
+	}
+
+	var reserved *types.Booking
+	if err = s.coll.FindOne(ctx, filter).Decode(&reserved); err != nil {
+		return false, err
+	}
+
+	if reserved.ID.IsZero() {
+		return false, nil
+	}
+
+	return true, nil
+}
+
+func (s *MongoBookingStore) InsertBooking(ctx context.Context, rawData *types.BookingParamsForCreate) (*types.Booking, error) {
+
+	RoomOID, err := primitive.ObjectIDFromHex(rawData.RoomID)
 	if err != nil {
 		return nil, err
 	}
 
-	var newBooking types.Booking
-	newBooking.NumPersons = data.NumPersons
-	newBooking.FromDate = data.FromDate
-	newBooking.TillDate = data.TillDate
-	newBooking.ID = res.InsertedID.(primitive.ObjectID)
-
-	RoomOID, err := primitive.ObjectIDFromHex(data.RoomID)
+	UserOID, err := primitive.ObjectIDFromHex(rawData.UserID)
 	if err != nil {
 		return nil, err
 	}
 
-	UserOID, err := primitive.ObjectIDFromHex(data.UserID)
+	var bookingData types.Booking
+	bookingData.NumPersons = rawData.NumPersons
+	bookingData.FromDate = rawData.FromDate
+	bookingData.TillDate = rawData.TillDate
+
+	bookingData.RoomID = RoomOID
+	bookingData.UserID = UserOID
+
+	res, err := s.coll.InsertOne(ctx, bookingData)
 	if err != nil {
 		return nil, err
 	}
 
-	newBooking.RoomID = RoomOID
-	newBooking.UserID = UserOID
-	return &newBooking, nil
+	bookingData.ID = res.InsertedID.(primitive.ObjectID)
+	return &bookingData, nil
 }
