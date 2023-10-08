@@ -35,8 +35,8 @@ func JWTAuthentication(c *fiber.Ctx) error {
 		return err
 	}
 
-	c.Set("userID", claims["id"].(string))
-	c.Set("userEmail", claims["email"].(string))
+	c.Context().SetUserValue("userID", claims["id"].(string))
+	c.Context().SetUserValue("userEmail", claims["email"].(string))
 	return c.Next()
 }
 
