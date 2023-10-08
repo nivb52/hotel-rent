@@ -71,3 +71,9 @@ func (p BookingParamsForCreate) Validate() map[string]string {
 
 	return errors
 }
+
+type BookingFilter struct {
+	RoomID   string    `bson:"room_id,omitempty" json:"roomId"`
+	FromDate time.Time `bson:"fromDate,omitempty" json:"fromDate"`
+	TillDate time.Time `bson:"tillDate,omitempty" json:"tillDate"`
+}
