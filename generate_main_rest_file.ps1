@@ -1,8 +1,9 @@
 $copyFlag = $false
 $copyMarker = "//COPY-FROM-HERE"
+$firstLine = "//ATTNETION: THIS FILE IS AUTO GENERATED DON'T EDIT IT HERE - EDIT IN THE mock\requests folder"
 
 # Clear the existing main.rest file or create an empty one
-$null > mock\main_auto_generated.rest
+$firstLine > mock\main_auto_generated.rest
 
 # Define a list of files to process
 $files = "const.rest", "auth.rest", "users.rest", "hotels.rest", "booking.rest"
