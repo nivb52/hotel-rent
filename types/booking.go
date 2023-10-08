@@ -44,7 +44,10 @@ func (p BookingParamsForCreate) Validate() map[string]string {
 	if p.FromDate.After(p.TillDate) { // also prevent TillDate < now
 		formatedDate := strings.Split(p.TillDate.Format(time.RFC3339), "T")[0]
 		errors["tillDate"] = fmt.Sprintf("Till date (end date) can't be before From date, reviced: %s", formatedDate)
-	} else if p.FromDate == p.TillDate {
+	} else if p.FromDate.Equal(p.TillDate) {
+		formatedFromDate := strings.Split(p.FromDate.Format(time.RFC3339), "T")[0]
+		formatedTillDate := strings.Split(p.TillDate.Format(time.RFC3339), "T")[0]
+		fmt.Printf("form: %s  til: %s", formatedFromDate, formatedTillDate)
 		errors["tillDate"] = "End date can't be equal to start date"
 	}
 
