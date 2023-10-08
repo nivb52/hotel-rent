@@ -4,14 +4,12 @@
 @hostNoVersion = {{protocol}}{{hostname}}:{{port}}/api
 
 @contentType = application/json
-# @authToken = {{login.response.headers.X-AuthToken}}
 
 //COPY-FROM-HERE
 
 
 ###  Auth
 # @name Auth
-# @hotelId = {{GetHotels.response.body.$.id}}
 
 POST {{hostNoVersion}}/auth HTTP/1.1
 content-type: {{contentType}}
