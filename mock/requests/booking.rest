@@ -41,6 +41,63 @@ Cache-Control: "no-cache"
     "numPersons": 2
 }
 
+
+###
+# @name GetBooking-ForRoomId
+
+GET {{host}}/room/{{ROOM_ID}}/bookings HTTP/1.1
+X-Api-Token: {{token}}
+content-type: {{contentType}}
+Cache-Control: "no-cache"
+
+{
+    
+}
+
+###
+# @name CreateBooking-Error-InvalidAvilability
+@JUST_INVOKE = {{CreateBooking.response.body.$}}
+
+POST {{host}}/room/65229767e609349a679b7faf/book HTTP/1.1
+X-Api-Token: {{token}}
+content-type: {{contentType}}
+Cache-Control: "no-cache"
+
+{
+    "fromDate": "{{$datetime iso8601 1 d}}",
+    "tillDate": "{{$datetime iso8601 4 d}}",
+    "numPersons": 3
+}
+
+
+###
+# @name GetBooking-ForRoomId-AndDates
+
+GET {{host}}/room/{{ROOM_ID}}/bookings HTTP/1.1
+X-Api-Token: {{token}}
+content-type: {{contentType}}
+Cache-Control: "no-cache"
+
+{
+    "fromDate": "{{$datetime iso8601 1 d}}",
+    "tillDate": "{{$datetime iso8601 5 d}}"
+}
+
+
+# ###
+# # @name GetBooking-ForRoomId-AndDates-Custom
+
+# GET {{host}}/room/6522faebd9b9e430e328d901/bookings HTTP/1.1
+# X-Api-Token: {{token}}
+# content-type: {{contentType}}
+# Cache-Control: "no-cache"
+
+# {
+#     "fromDate": "2023-10-09T12:20:16.136+00:00",
+#     "tillDate": "2023-10-12T19:20:16.136+00:00"
+# }
+
+
 ###
 # @name CreateBooking-Error-InvalidDate-DateInThePast
 
@@ -102,56 +159,4 @@ Cache-Control: "no-cache"
     "numPersons": 101
 }
 
-
-###
-# @name CreateBooking-Error-InvalidAvilability-Custom
-
-POST {{host}}/room/65229767e609349a679b7faf/book HTTP/1.1
-X-Api-Token: {{token}}
-content-type: {{contentType}}
-Cache-Control: "no-cache"
-
-{
-    "fromDate": "2023-10-11T12:20:16.136+00:00",
-    "tillDate": "2023-10-15T19:20:16.136+00:00"
-}
-
-
-###
-# @name GetBooking-ForRoomId-AndDates
-
-GET {{host}}/room/{{ROOM_ID}}/bookings HTTP/1.1
-X-Api-Token: {{token}}
-content-type: {{contentType}}
-Cache-Control: "no-cache"
-
-{
-    "fromDate": "{{$datetime iso8601 4 d}}",
-    "tillDate": "{{$datetime iso8601 5 d}}"
-}
-
-###
-# @name GetBooking-ForRoomId
-
-GET {{host}}/room/{{ROOM_ID}}/bookings HTTP/1.1
-X-Api-Token: {{token}}
-content-type: {{contentType}}
-Cache-Control: "no-cache"
-
-{
-    
-}
-
-###
-# @name GetBooking-ForRoomId-AndDates-Custom
-
-GET {{host}}/room/6522faebd9b9e430e328d901/bookings HTTP/1.1
-X-Api-Token: {{token}}
-content-type: {{contentType}}
-Cache-Control: "no-cache"
-
-{
-    "fromDate": "2023-10-09T12:20:16.136+00:00",
-    "tillDate": "2023-10-12T19:20:16.136+00:00"
-}
 
