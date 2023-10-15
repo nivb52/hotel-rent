@@ -15,6 +15,7 @@ const bookingColl = "bookings"
 type BookingStore interface {
 	InsertBooking(context.Context, *types.BookingParamsForCreate) (*types.Booking, error)
 	GetBookings(context.Context, *types.BookingFilter) ([]*types.Booking, error)
+	GetBookingsById(ctx context.Context, ID string) (*types.Booking, error)
 	GetBookingsByRoomId(context.Context, string) ([]*types.Booking, error)
 	IsRoomAvailable(context.Context, *types.BookingFilter) (bool, error)
 }
@@ -33,6 +34,22 @@ func NewMongoBookingStore(client *mongo.Client, dbname string) *MongoBookingStor
 		client: client,
 		coll:   client.Database(dbname).Collection(bookingColl),
 	}
+}
+
+// get booking by id
+func (s *MongoBookingStore) GetBookingsById(ctx context.Context, ID string) (*types.Booking, error) {
+	OID, err := primitive.ObjectIDFromHex(ID)
+	if err != nil {
+		return nil, err
+	}
+
+	var booking types.Booking
+	err = s.coll.FindOne(ctx, bson.M{"_id": OID}).Decode(&booking)
+	if err != nil {
+		return nil, err
+	}
+
+	return &booking, nil
 }
 
 // get bookings per room
