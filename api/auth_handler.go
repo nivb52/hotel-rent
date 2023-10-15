@@ -66,7 +66,7 @@ func (h *AuthHandler) HandleAuthenticate(c *fiber.Ctx) error {
 		return invalidCredentials(c)
 	}
 
-	tokenString, err := createToken(user.ID.Hex(), user.Email)
+	tokenString, err := createToken(user.ID.Hex(), user.Email, user.IsAdmin)
 	if err != nil {
 		return err
 	}
@@ -80,12 +80,13 @@ func (h *AuthHandler) HandleAuthenticate(c *fiber.Ctx) error {
 }
 
 // create token From User data of id and email.
-func createToken(userID, userEmail string) (string, error) {
+func createToken(userID, userEmail string, isAdmin bool) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
-			"id":    userID,
-			"email": userEmail,
-			"exp":   time.Now().Add(time.Hour * 12).UTC().Unix(),
+			"id":      userID,
+			"email":   userEmail,
+			"isAdmin": isAdmin,
+			"exp":     time.Now().Add(time.Hour * 12).UTC().Unix(),
 		})
 
 	secret := middleware.GetSecret()

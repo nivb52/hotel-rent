@@ -102,7 +102,7 @@ func main() {
 
 	// ROUTES - BOOKINGS
 	apiv1Bookings := apiv1.Group("/bookings")
-	apiv1Bookings.Get("/", bookingHandler.GetBookings)
+	apiv1Bookings.Get("/", middleware.IsAdmin, bookingHandler.GetBookings)
 	apiv1Bookings.Get("/:id/", bookingHandler.GetBookingsById)
 
 	// INIT
