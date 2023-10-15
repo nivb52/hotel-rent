@@ -9,13 +9,11 @@ import (
 )
 
 type BookingHandler struct {
-	// bookingStore db.BookingStore
 	store *db.Store
 }
 
 func NewBookingHandler(store *db.Store) *BookingHandler {
 	return &BookingHandler{
-		// bookingStore: bookingStore, // ?
 		store: store,
 	}
 }

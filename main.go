@@ -94,10 +94,8 @@ func main() {
 	apiv1Hotel.Get("/:id", hotelHandler.HandleGetHotel)
 	apiv1Hotel.Get("/:id/rooms", hotelHandler.HandleGetHotelRooms)
 
-	// ROUTES - Rooms (booking)
-	apiv1.Post("/room/:id/book",
-		middleware.JWTAuthentication,
-		bookingHandler.BookARoomByUser)
+	// ROUTES - ROOMS
+	apiv1.Post("/room/:id/book", middleware.JWTAuthentication, bookingHandler.BookARoomByUser)
 	apiv1.Post("/room/:id/gbook", bookingHandler.BookARoomByGuest)
 	apiv1.Get("/room/:id/bookings", bookingHandler.GetBookings)
 
