@@ -18,8 +18,43 @@ func NewBookingHandler(store *db.Store) *BookingHandler {
 	}
 }
 
+// --- GET Booking by Id ---
+func (h *BookingHandler) GetBookingsById(c *fiber.Ctx) error {
+	id := c.Params("id")
+	booking, err := h.store.Booking.GetBookingsById(c.Context(), id)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString(fiber.ErrInternalServerError.Message)
+	}
+
+	return c.JSON(booking)
+}
+
 // --- GET Bookings ---
 func (h *BookingHandler) GetBookings(c *fiber.Ctx) error {
+	var (
+		whereClause types.BookingFilter
+	)
+
+	// isAdmin := c.Context().UserValue("isAdmin")
+	// if !isAdmin {
+	// 	whereClause.UserID = c.Context().UserValue("userID")
+	// }
+
+	bookings, err := h.store.Booking.GetBookings(c.Context(), &whereClause)
+	if err != nil {
+		fmt.Println("GetBookings with filter failed, due: ", err)
+		return c.Status(fiber.StatusInternalServerError).SendString(fiber.ErrInternalServerError.Message)
+	}
+
+	if len(bookings) > 0 {
+		return c.JSON(bookings)
+	}
+
+	return c.Status(fiber.StatusNotFound).SendString(fiber.ErrNotFound.Message)
+}
+
+// --- GET Bookings ---
+func (h *BookingHandler) GetBookingsByFilter(c *fiber.Ctx) error {
 	var (
 		roomID      = c.Params("id")
 		whereClause types.BookingFilter
@@ -38,6 +73,11 @@ func (h *BookingHandler) GetBookings(c *fiber.Ctx) error {
 
 	fmt.Println("whereClause: ", whereClause)
 	whereClause.RoomID = roomID
+	// isAdmin := c.Context().UserValue("isAdmin")
+	// if !isAdmin {
+	// 	whereClause.UserID = c.Context().UserValue("userID")
+	// }
+
 	bookings, err := h.store.Booking.GetBookings(c.Context(), &whereClause)
 	if err != nil {
 		fmt.Println("GetBookings with filter failed, due: ", err)
