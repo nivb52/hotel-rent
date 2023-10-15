@@ -33,7 +33,7 @@ Cache-Control: "no-cache"
 # @name GetSingleBooking
 @BOOKING_ID = {{GetAllBookings.response.body.$.[0].id}}
 
-GET {{host}}/booking/{{BOOKING_ID}}/ HTTP/1.1
+GET {{host}}/bookings/{{BOOKING_ID}}/ HTTP/1.1
 X-Api-Token: {{token}}
 content-type: {{contentType}}
 Cache-Control: "no-cache"
