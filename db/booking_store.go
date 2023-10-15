@@ -42,7 +42,7 @@ func (s *MongoBookingStore) GetBookingsByRoomId(ctx context.Context, roomID stri
 		return nil, err
 	}
 
-	filter := bson.M{"_id": roomOID}
+	filter := bson.M{"roomID": roomOID}
 	cur, err := s.coll.Find(ctx, filter)
 	if err != nil {
 		return nil, err
