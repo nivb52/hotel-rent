@@ -100,6 +100,11 @@ func main() {
 	apiv1Room.Post("/:id/gbook", bookingHandler.BookARoomByGuest)
 	apiv1Room.Post("/:id/bookings", bookingHandler.GetBookingsByFilter)
 
+	// ROUTES - BOOKINGS
+	apiv1Bookings := apiv1.Group("/bookings")
+	apiv1Bookings.Get("/", bookingHandler.GetBookings)
+	apiv1Bookings.Get("/:id/", bookingHandler.GetBookingsById)
+
 	// INIT
 	app.Listen(*listenAddr)
 }
