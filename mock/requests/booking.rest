@@ -17,20 +17,46 @@
 
 //COPY-FROM-HERE
 
+
 ###
 # @name GetAllBookings
 @USER_ID = {{GetAllUsers.response.body.$.[0].id}}
 @ROOM_ID = {{GetHotels.response.body.$.[0].rooms.[0]}}
 
-POST {{host}}/room/{{ROOM_ID}}/book HTTP/1.1
+GET {{host}}/bookings/ HTTP/1.1
 X-Api-Token: {{token}}
 content-type: {{contentType}}
 Cache-Control: "no-cache"
 
+
+###
+# @name GetSingleBooking
+@BOOKING_ID = {{GetAllBookings.response.body.$.[0].id}}
+
+GET {{host}}/booking/{{BOOKING_ID}}/ HTTP/1.1
+X-Api-Token: {{token}}
+content-type: {{contentType}}
+Cache-Control: "no-cache"
+
+
+###
+# @name GetBookingsByFilter
+@USER_ID = {{GetAllUsers.response.body.$.[0].id}}
+@ROOM_ID = {{GetHotels.response.body.$.[0].rooms.[0]}}
+
+Post {{host}}/rooms/{{ROOM_ID}}/bookings HTTP/1.1
+X-Api-Token: {{token}}
+content-type: {{contentType}}
+Cache-Control: "no-cache"
+
+{
+
+}
+
 ###
 # @name CreateBooking
 
-POST {{host}}/room/{{ROOM_ID}}/book HTTP/1.1
+POST {{host}}/rooms/{{ROOM_ID}}/book HTTP/1.1
 X-Api-Token: {{token}}
 content-type: {{contentType}}
 Cache-Control: "no-cache"
@@ -45,7 +71,7 @@ Cache-Control: "no-cache"
 ###
 # @name GetBooking-ForRoomId
 
-GET {{host}}/room/{{ROOM_ID}}/bookings HTTP/1.1
+GET {{host}}/rooms/{{ROOM_ID}}/bookings HTTP/1.1
 X-Api-Token: {{token}}
 content-type: {{contentType}}
 Cache-Control: "no-cache"
@@ -58,7 +84,7 @@ Cache-Control: "no-cache"
 # @name CreateBooking-Error-InvalidAvilability
 @JUST_INVOKE = {{CreateBooking.response.body.$}}
 
-POST {{host}}/room/65229767e609349a679b7faf/book HTTP/1.1
+POST {{host}}/rooms/65229767e609349a679b7faf/book HTTP/1.1
 X-Api-Token: {{token}}
 content-type: {{contentType}}
 Cache-Control: "no-cache"
@@ -73,7 +99,7 @@ Cache-Control: "no-cache"
 ###
 # @name GetBooking-ForRoomId-AndDates
 
-GET {{host}}/room/{{ROOM_ID}}/bookings HTTP/1.1
+GET {{host}}/rooms/{{ROOM_ID}}/bookings HTTP/1.1
 X-Api-Token: {{token}}
 content-type: {{contentType}}
 Cache-Control: "no-cache"
@@ -87,7 +113,7 @@ Cache-Control: "no-cache"
 # ###
 # # @name GetBooking-ForRoomId-AndDates-Custom
 
-# GET {{host}}/room/6522faebd9b9e430e328d901/bookings HTTP/1.1
+# GET {{host}}/rooms/6522faebd9b9e430e328d901/bookings HTTP/1.1
 # X-Api-Token: {{token}}
 # content-type: {{contentType}}
 # Cache-Control: "no-cache"
@@ -101,7 +127,7 @@ Cache-Control: "no-cache"
 ###
 # @name CreateBooking-Error-InvalidDate-DateInThePast
 
-POST {{host}}/room/{{ROOM_ID}}/book HTTP/1.1
+POST {{host}}/rooms/{{ROOM_ID}}/book HTTP/1.1
 X-Api-Token: {{token}}
 content-type: {{contentType}}
 Cache-Control: "no-cache"
@@ -117,7 +143,7 @@ Cache-Control: "no-cache"
 ###
 # @name CreateBooking-Error-InvalidDate-TillSmallerThenFrom
 
-POST {{host}}/room/{{ROOM_ID}}/book HTTP/1.1
+POST {{host}}/rooms/{{ROOM_ID}}/book HTTP/1.1
 X-Api-Token: {{token}}
 content-type: {{contentType}}
 Cache-Control: "no-cache"
@@ -133,7 +159,7 @@ Cache-Control: "no-cache"
 ###
 # @name CreateBooking-Error-InvalidePersons-LessThen1
 
-POST {{host}}/room/{{ROOM_ID}}/book HTTP/1.1
+POST {{host}}/rooms/{{ROOM_ID}}/book HTTP/1.1
 X-Api-Token: {{token}}
 content-type: {{contentType}}
 Cache-Control: "no-cache"
@@ -148,7 +174,7 @@ Cache-Control: "no-cache"
 ###
 # @name CreateBooking-Error-InvalidePersons-MoreThen100
 
-POST {{host}}/room/{{ROOM_ID}}/book HTTP/1.1
+POST {{host}}/rooms/{{ROOM_ID}}/book HTTP/1.1
 X-Api-Token: {{token}}
 content-type: {{contentType}}
 Cache-Control: "no-cache"
