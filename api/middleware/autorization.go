@@ -4,7 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func IsAdmin(c *fiber.Ctx) error {
+func IsAdminAuth(c *fiber.Ctx) error {
 	isAdmin := c.Context().UserValue("isAdmin")
 	if isAdmin == nil {
 		return c.Status(fiber.StatusForbidden).SendString(fiber.ErrForbidden.Message)

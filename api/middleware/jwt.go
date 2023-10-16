@@ -35,9 +35,11 @@ func JWTAuthentication(c *fiber.Ctx) error {
 		return err
 	}
 
+	isAdmin := IsAdminNormelize(claims["isAdmin"].(bool))
 	c.Context().SetUserValue("userID", claims["id"].(string))
 	c.Context().SetUserValue("userEmail", claims["email"].(string))
-	c.Context().SetUserValue("isAdmin", claims["isAdmin"].(bool))
+	c.Context().SetUserValue("isAdmin", isAdmin)
+
 	return c.Next()
 }
 
@@ -76,4 +78,17 @@ func validateToken(tokenStr string) (jwt.MapClaims, error) {
 	}
 
 	return claims, nil
+}
+
+func IsAdminNormelize(isAdmin any) bool {
+	if isAdmin == nil {
+		return false
+	} else {
+		isAdmin = isAdmin.(bool)
+		if isAdmin == true {
+			return true
+		} else {
+			return false
+		}
+	}
 }

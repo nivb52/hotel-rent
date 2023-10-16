@@ -98,12 +98,12 @@ func main() {
 	apiv1Room := apiv1.Group("/rooms")
 	apiv1Room.Post("/:id/book", middleware.JWTAuthentication, bookingHandler.BookARoomByUser)
 	apiv1Room.Post("/:id/gbook", bookingHandler.BookARoomByGuest)
-	apiv1Room.Post("/:id/bookings", bookingHandler.GetBookingsByFilter)
+	apiv1Room.Post("/:id/bookings", middleware.JWTAuthentication, bookingHandler.GetBookingsByFilter)
 
 	// ROUTES - BOOKINGS
 	apiv1Bookings := apiv1.Group("/bookings")
-	apiv1Bookings.Get("/", middleware.IsAdmin, bookingHandler.GetBookings)
-	apiv1Bookings.Get("/:id/", bookingHandler.GetBookingsById)
+	apiv1Bookings.Get("/", middleware.JWTAuthentication, middleware.IsAdminAuth, bookingHandler.GetBookings)
+	apiv1Bookings.Get("/:id/", middleware.JWTAuthentication, middleware.IsAdminAuth, bookingHandler.GetBookingsById)
 
 	// INIT
 	app.Listen(*listenAddr)

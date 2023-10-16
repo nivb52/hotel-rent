@@ -35,11 +35,6 @@ func (h *BookingHandler) GetBookings(c *fiber.Ctx) error {
 		whereClause types.BookingFilter
 	)
 
-	// isAdmin := c.Context().UserValue("isAdmin")
-	// if !isAdmin {
-	// 	whereClause.UserID = c.Context().UserValue("userID")
-	// }
-
 	bookings, err := h.store.Booking.GetBookings(c.Context(), &whereClause)
 	if err != nil {
 		fmt.Println("GetBookings with filter failed, due: ", err)
@@ -73,10 +68,10 @@ func (h *BookingHandler) GetBookingsByFilter(c *fiber.Ctx) error {
 
 	fmt.Println("whereClause: ", whereClause)
 	whereClause.RoomID = roomID
-	// isAdmin := c.Context().UserValue("isAdmin")
-	// if !isAdmin {
-	// 	whereClause.UserID = c.Context().UserValue("userID")
-	// }
+	isAdmin := c.Context().UserValue("isAdmin").(bool)
+	if !isAdmin {
+		whereClause.UserID = c.Context().UserValue("userID").(string)
+	}
 
 	bookings, err := h.store.Booking.GetBookings(c.Context(), &whereClause)
 	if err != nil {
