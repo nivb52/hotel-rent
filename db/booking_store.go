@@ -74,39 +74,8 @@ func (s *MongoBookingStore) GetBookingsByRoomId(ctx context.Context, roomID stri
 	return bookings, nil
 }
 
-// build query for lookup a booking
-// return example bson.M{"_id": roomOID, "fromDate": {$gte: fromDate}, "tillDate": {$lte: tillDate}}
-func buildFilter(filterData *types.BookingFilter) (bson.M, error) {
-	filter := bson.M{}
-
-	if filterData.RoomID != "" {
-		roomOID, err := primitive.ObjectIDFromHex(filterData.RoomID)
-		if err != nil {
-			return nil, err
-		}
-
-		filter["roomID"] = roomOID
-	}
-
-	if !filterData.FromDate.IsZero() {
-		filter["fromDate"] = bson.M{
-			"$gte": filterData.FromDate,
-		}
-	}
-
-	if !filterData.TillDate.IsZero() {
-		filter["tillDate"] = bson.M{
-			"$lte": filterData.TillDate,
-		}
-	}
-
-	fmt.Println("built filter: ", filter, " Out of: ", filterData)
-	return filter, nil
-
-}
-
 func (s *MongoBookingStore) GetBookings(ctx context.Context, where *types.BookingFilter) ([]*types.Booking, error) {
-	filter, err := buildFilter(where)
+	filter, err := buildBookingFilter(where)
 	if err != nil {
 		fmt.Println("Failed to build booking filter due: ", err)
 		return nil, err
@@ -127,7 +96,7 @@ func (s *MongoBookingStore) GetBookings(ctx context.Context, where *types.Bookin
 }
 
 func (s *MongoBookingStore) IsRoomAvailable(ctx context.Context, where *types.BookingFilter) (bool, error) {
-	filter, err := buildFilter(where)
+	filter, err := buildBookingFilter(where)
 	if err != nil {
 		fmt.Println("Failed to build booking filter due: ", err)
 		return false, err
@@ -172,4 +141,34 @@ func (s *MongoBookingStore) InsertBooking(ctx context.Context, rawData *types.Bo
 
 	bookingData.ID = res.InsertedID.(primitive.ObjectID)
 	return &bookingData, nil
+}
+
+// build query for lookup a booking
+// return example bson.M{"_id": roomOID, "fromDate": {$gte: fromDate}, "tillDate": {$lte: tillDate}}
+func buildBookingFilter(filterData *types.BookingFilter) (bson.M, error) {
+	filter := bson.M{}
+
+	if filterData.RoomID != "" {
+		roomOID, err := primitive.ObjectIDFromHex(filterData.RoomID)
+		if err != nil {
+			return nil, err
+		}
+
+		filter["roomID"] = roomOID
+	}
+
+	if !filterData.FromDate.IsZero() {
+		filter["fromDate"] = bson.M{
+			"$gte": filterData.FromDate,
+		}
+	}
+
+	if !filterData.TillDate.IsZero() {
+		filter["tillDate"] = bson.M{
+			"$lte": filterData.TillDate,
+		}
+	}
+
+	fmt.Println("built filter: ", filter, " Out of: ", filterData)
+	return filter, nil
 }
