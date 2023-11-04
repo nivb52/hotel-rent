@@ -44,7 +44,7 @@ const (
 	ClosedBedType // Not For Reservations @attention: keep it last while using seed script
 )
 
-type RoomSize int
+type RoomSize string
 
 const (
 	RoomSizeSmall    = "small"
