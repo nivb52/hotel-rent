@@ -44,8 +44,6 @@ const (
 	ClosedBedType // Not For Reservations @attention: keep it last while using seed script
 )
 
-type RoomSize string
-
 const (
 	RoomSizeSmall    = "small"
 	RoomSizeNormal   = "normal"
@@ -57,7 +55,7 @@ type Room struct {
 	HotelID primitive.ObjectID `bson:"hotelID,omitempty " json:"hotelID,omitempty"`
 	Type    RoomType           `bson:"type" json:"type"`
 	BedType BedType            `bson:"bedType" json:"bedType"`
-	Size    RoomSize           `bson:"size" json:"size"`
+	Size    string             `bson:"size" json:"size"`
 
 	Price    int                `bson:"price" json:"price"` // we can use it as promotion price
 	CreateAt primitive.DateTime `bson:"create_at" json:"createAt"`
