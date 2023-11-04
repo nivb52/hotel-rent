@@ -1,6 +1,8 @@
 package types
 
 import (
+	"time"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -60,4 +62,16 @@ type Room struct {
 	Price    int                `bson:"price" json:"price"` // we can use it as promotion price
 	CreateAt primitive.DateTime `bson:"create_at" json:"createAt"`
 	UpdateAt primitive.DateTime `bson:"update_at" json:"updateAt"`
+}
+
+type HotelFilter struct {
+	FromDate time.Time `bson:"fromDate,omitempty" json:"fromDate"`
+	TillDate time.Time `bson:"tillDate,omitempty" json:"tillDate"`
+
+	Rating    int8 `bson:"rating,omitempty" json:"rating,omitempty"`
+	RoomType  int  `bson:"type,omitempty" json:"type,omitempty"`
+	BedType   int  `bson:"bedType,omitempty" json:"bedType,omitempty"`
+	RoomSize  int  `bson:"size,omitempty" json:"size,omitempty"`
+	TillPrice int  `bson:"tillPrice,omitempty" json:"tillPrice,omitempty"`
+	FromPrice int  `bson:"from_price,omitempty" json:"fromPrice,omitempty"`
 }

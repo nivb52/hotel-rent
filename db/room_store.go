@@ -20,7 +20,7 @@ type RoomsFilter struct {
 type RoomStore interface {
 	GetRoomByIDs(context.Context, *[]string) (*[]types.Room, error)
 	//  2nd Argument - hotel ID
-	GetHotelRooms(context.Context, string) (*[]types.Room, error)
+	GetHotelRooms(context.Context, string, *types.HotelFilter) (*[]types.Room, error)
 	InsertRoom(context.Context, *types.Room) (*types.Room, error)
 	InsertRooms(context.Context, *[]types.Room, string) (int, error)
 }
@@ -44,14 +44,22 @@ func NewMongoRoomStore(client *mongo.Client, HotelStore *MongoHotelStore, dbname
 }
 
 // function to retrive rooms data using the hotel ID
-func (s *MongoRoomStore) GetHotelRooms(ctx context.Context, id string) (*[]types.Room, error) {
+func (s *MongoRoomStore) GetHotelRooms(ctx context.Context, id string, where *types.HotelFilter) (*[]types.Room, error) {
+
+	filter, err := buildHotelRoomsFilter(where)
+	if err != nil {
+		fmt.Println("Failed to build hotel-rooms filter due: ", err)
+		return nil, err
+	}
+
 	oid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, err
 	}
+	filter["hotelID"] = oid
 
 	var rooms []types.Room
-	cur, err := s.coll.Find(ctx, bson.M{"hotelID": oid})
+	cur, err := s.coll.Find(ctx, filter)
 	if err != nil {
 		return nil, err
 	}
@@ -158,4 +166,38 @@ func (s *MongoRoomStore) InsertRooms(ctx context.Context, rooms *[]types.Room, h
 	}
 
 	return len(verefiedInsertedIDs), nil
+}
+
+func buildHotelRoomsFilter(filterData *types.HotelFilter) (bson.M, error) {
+	filter := bson.M{}
+
+	if filterData.Rating > 0 {
+		filter["rating"] = bson.M{
+			"$gte": filterData.Rating,
+		}
+	}
+
+	if filterData.TillPrice > 0 && filterData.TillPrice > 0 {
+		filter["price"] = bson.M{
+			"$gte": filterData.TillPrice,
+			"$lte": filterData.TillPrice,
+		}
+	} else {
+		if filterData.TillPrice > 0 && filterData.FromPrice == 0 {
+			filter["price"] = bson.M{
+				"$gte": filterData.TillPrice,
+			}
+		} else if filterData.FromPrice > 0 && filterData.TillPrice == 0 {
+			filter["price"] = bson.M{
+				"$lte": filterData.FromPrice,
+			}
+		}
+	}
+
+	// @TODO: find better way to validate IOTA
+	// if filterData.BedType > 0 && filterData.BedType < int(types.ClosedBedType) {
+	// 	filter["bedType"] =
+	// }
+
+	return filter, nil
 }
