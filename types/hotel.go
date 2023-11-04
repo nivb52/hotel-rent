@@ -1,6 +1,8 @@
 package types
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type Hotel struct {
 	ID       primitive.ObjectID   `bson:"_id,omitempty" json:"id,omitempty"`
@@ -42,6 +44,8 @@ const (
 	ClosedBedType // Not For Reservations @attention: keep it last while using seed script
 )
 
+type RoomSize int
+
 const (
 	RoomSizeSmall    = "small"
 	RoomSizeNormal   = "normal"
@@ -53,7 +57,7 @@ type Room struct {
 	HotelID primitive.ObjectID `bson:"hotelID,omitempty " json:"hotelID,omitempty"`
 	Type    RoomType           `bson:"type" json:"type"`
 	BedType BedType            `bson:"bedType" json:"bedType"`
-	Size    string             `bson:"size" json:"size"`
+	Size    RoomSize           `bson:"size" json:"size"`
 
 	Price    int                `bson:"price" json:"price"` // we can use it as promotion price
 	CreateAt primitive.DateTime `bson:"create_at" json:"createAt"`
