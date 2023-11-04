@@ -81,7 +81,7 @@ func seedHotels(numberOfHotels int) {
 
 		randRoomType, randInt := getRandomRoomType()
 		randBedType := getRandomBedType(types.RoomType(randInt))
-		randSize := getRandomSizeStirng(types.RoomType(randInt))
+		randSize := getRandomSizeString(types.RoomType(randInt))
 		numberOfRooms := randomIntByMaxAndMin(10, 1)
 
 		rooms := []types.Room{
@@ -289,7 +289,7 @@ func getRandomRoomType() (types.RoomType, int) {
 	}
 }
 
-func getRandomSizeStirng(randRoomType types.RoomType) string {
+func getRandomSizeString(randRoomType types.RoomType) string {
 	switch randRoomType {
 	case 1:
 		return types.RoomSizeSmall
