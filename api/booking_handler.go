@@ -62,7 +62,7 @@ func (h *BookingHandler) GetBookingsByFilter(c *fiber.Ctx) error {
 
 	err := c.BodyParser(&whereClause)
 	if err != nil {
-		fmt.Println("Booking Params to create - Failed to parse, due: ", err)
+		fmt.Println("Booking Params Filter  - Failed to parse, due: ", err)
 		return c.Status(fiber.ErrBadRequest.Code).SendString(fiber.ErrBadRequest.Message)
 	}
 
@@ -90,6 +90,7 @@ func (h *BookingHandler) GetBookingsByFilter(c *fiber.Ctx) error {
 //	--- Make Bookings ---
 //
 // Make a booking without register
+// not implemented
 func (h *BookingHandler) BookARoomByGuest(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusNotImplemented).SendString(fiber.ErrNotImplemented.Message)
 
