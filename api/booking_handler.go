@@ -49,13 +49,13 @@ func (h *BookingHandler) GetBookings(c *fiber.Ctx) error {
 }
 
 // --- GET Bookings ---
-func (h *BookingHandler) GetBookingsByFilter(c *fiber.Ctx) error {
+func (h *BookingHandler) GetBookingsByFilter(c *fiber.Ctx, isUserOnlyBookings bool) error {
 	var (
 		roomID      = c.Params("id")
 		whereClause types.BookingFilter
 	)
 
-	if roomID == "" {
+	if roomID == "" && !isUserOnlyBookings {
 		fmt.Printf("\n Booking Data missing RoomID: %s", roomID)
 		return c.Status(fiber.ErrBadRequest.Code).SendString(fiber.ErrBadRequest.Message)
 	}
@@ -67,9 +67,12 @@ func (h *BookingHandler) GetBookingsByFilter(c *fiber.Ctx) error {
 	}
 
 	fmt.Println("whereClause: ", whereClause)
-	whereClause.RoomID = roomID
+	if !isUserOnlyBookings {
+		whereClause.RoomID = roomID
+	}
+
 	isAdmin := c.Context().UserValue("isAdmin").(bool)
-	if !isAdmin {
+	if !isAdmin || isUserOnlyBookings {
 		whereClause.UserID = c.Context().UserValue("userID").(string)
 	}
 
@@ -129,7 +132,7 @@ func (h *BookingHandler) BookARoomByUser(c *fiber.Ctx) error {
 	whereClause.TillDate = params.TillDate
 	isBooked, err := h.store.Booking.IsRoomAvailable(c.Context(), &whereClause)
 	if err != nil {
-		fmt.Println("Booking Failed, due: ", err)
+		fmt.Println("Booking Failed - no available room, due: ", err)
 		return c.Status(fiber.ErrConflict.Code).SendString(fiber.ErrConflict.Message)
 	}
 
@@ -140,7 +143,7 @@ func (h *BookingHandler) BookARoomByUser(c *fiber.Ctx) error {
 
 	booking, err := h.store.Booking.InsertBooking(c.Context(), &params)
 	if err != nil {
-		fmt.Println("Booking Failed, due: ", err)
+		fmt.Println("Booking Insertion Failed, due: ", err)
 		return c.Status(fiber.ErrConflict.Code).SendString(fiber.ErrConflict.Message)
 	}
 
