@@ -149,3 +149,32 @@ func (h *BookingHandler) BookARoomByUser(c *fiber.Ctx) error {
 
 	return c.JSON(booking)
 }
+
+// Cancel Booking
+func (h *BookingHandler) HandleCancelBooking(c *fiber.Ctx) error {
+	id := c.Params("id")
+	booking, err := h.store.Booking.GetBookingsById(c.Context(), id)
+	if err != nil {
+		fmt.Println("GetBookingsById failed, due: ", err)
+		return c.Status(fiber.StatusInternalServerError).SendString(fiber.ErrInternalServerError.Message)
+	}
+
+	userID, ok := c.Context().UserValue("userID").(string)
+	if !ok {
+		return c.Status(fiber.StatusInternalServerError).SendString(fiber.ErrInternalServerError.Message)
+	}
+
+	isSameId, err := db.CompareIDs(userID, booking.UserID)
+	if !isSameId {
+		fmt.Println("CompareIDs failed, due: ", err)
+		return c.Status(fiber.StatusMethodNotAllowed).SendString(fiber.ErrMethodNotAllowed.Message)
+	}
+
+	err = h.store.Booking.CancelBooking(c.Context(), id)
+	if err != nil {
+		fmt.Println("CancelBooking failed, due: ", err)
+		return c.Status(fiber.StatusInternalServerError).SendString(fiber.ErrInternalServerError.Message)
+	}
+
+	return c.Status(fiber.StatusAccepted).SendString("success")
+}

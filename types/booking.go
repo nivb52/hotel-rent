@@ -18,6 +18,7 @@ type Booking struct {
 	// Number Of Guests Adults And young
 	NumPersons int `bson:"numPersons" json:"numPersons"`
 
+	IsCanceled bool `bson:"isCanceled,omitempty" json:"isCanceled"`
 	// is Cofirmed, is Canceled, is Payed, privateNotes, ....
 }
 

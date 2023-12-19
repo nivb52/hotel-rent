@@ -18,6 +18,7 @@ type BookingStore interface {
 	GetBookingsById(ctx context.Context, ID string) (*types.Booking, error)
 	GetBookingsByRoomId(context.Context, string) ([]*types.Booking, error)
 	IsRoomAvailable(context.Context, *types.BookingFilter) (bool, error)
+	CancelBooking(context.Context, string) error
 }
 
 type MongoBookingStore struct {
@@ -114,6 +115,8 @@ func (s *MongoBookingStore) IsRoomAvailable(ctx context.Context, where *types.Bo
 	return true, nil
 }
 
+// ## Updates
+
 func (s *MongoBookingStore) InsertBooking(ctx context.Context, rawData *types.BookingParamsForCreate) (*types.Booking, error) {
 
 	RoomOID, err := primitive.ObjectIDFromHex(rawData.RoomID)
@@ -142,6 +145,19 @@ func (s *MongoBookingStore) InsertBooking(ctx context.Context, rawData *types.Bo
 	bookingData.ID = res.InsertedID.(primitive.ObjectID)
 	return &bookingData, nil
 }
+
+func (s *MongoBookingStore) CancelBooking(ctx context.Context, id string) error {
+	oid, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+
+	s.coll.UpdateByID(ctx, oid, bson.M{"isCanceled": true})
+
+	return nil
+}
+
+// ## Helpers
 
 // build query for lookup a booking
 // return example bson.M{"_id": roomOID, "fromDate": {$gte: fromDate}, "tillDate": {$lte: tillDate}}
