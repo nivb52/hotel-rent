@@ -1,0 +1,396 @@
+
+@protocol = http://
+@hostname = localhost
+@port = 5000
+@hostNoVersion = {{protocol}}{{hostname}}:{{port}}/api
+@host = {{protocol}}{{hostname}}:{{port}}/api/v1
+@contentType = application/json
+
+@token = {{Auth.response.body.$.token}}
+
+###  Test
+# @name Test
+# @hotelId = {{GetHotels.response.body.$.id}}
+
+GET {{hostNoVersion}}/ HTTP/1.1
+content-type: {{contentType}}
+
+
+###  Auth
+# @name Auth
+
+POST {{hostNoVersion}}/auth HTTP/1.1
+content-type: {{contentType}}
+
+{
+    "email": "john.smith@email.com",
+    "password" : "supersecretpassword"
+
+}
+
+###  GET ALL USERS
+# @name GetAllUsers
+GET {{host}}/users HTTP/1.1
+X-Api-Token: {{token}}
+Content-Type: {{contentType}}
+
+
+### GET USER
+# @name GetUser
+@note due to the plugin but, it might not work at first using varible
+@USER_ID = {{GetAllUsers.response.body.$.[2].id}}
+GET {{host}}/users/{{USER_ID}} HTTP/1.1
+X-Api-Token: {{token}}
+Cache-Control: "no-cache"
+
+
+### CREATE VALID USER
+# @name CreateUser
+# @prompt firstName Provide firstName
+# @prompt lastName Provide lastName
+
+POST {{host}}/users HTTP/1.1
+X-Api-Token: {{token}}
+content-type: {{contentType}}
+
+{
+    "firstName": "{{firstName}}",
+    "lastName": "{{lastName}}",
+    "email": "{{firstName}}_{{lastName}}@google.com",
+    "password" : "12345678"
+
+}
+
+### INVALID USER
+# @name CreateUserInvalid
+
+POST {{host}}/users HTTP/1.1
+X-Api-Token: {{token}}
+content-type: {{contentType}}
+
+{
+    "firstName": "invalid",
+    "lastName": "data",
+    "email": "no-valid-email",
+    "password" : "2"
+
+}
+
+
+### Update USER 
+# @name UpdateUser
+@userId = {{GetUser.response.body.$.id}}
+
+PUT  {{host}}/users/{{userId}} HTTP/1.1
+X-Api-Token: {{token}}
+content-type: {{contentType}}
+Cache-Control: "no-cache"
+
+{
+    "firstName": "Alice",
+    "lastName": "Bob"
+}
+
+
+
+### INVALID Update USER
+# @name UpdateUserInvalid
+@userId = {{GetUser.response.body.$.id}}
+
+PUT  {{host}}/users/{{userId}} HTTP/1.1
+X-Api-Token: {{token}}
+
+content-type: {{contentType}}
+
+{
+    "firstName": "Bob",
+    "lastName": "Alice",
+    "email": "alice@google.com",
+    "password" : "12345678"
+
+}
+
+
+
+### DELETE USER 
+# @name DeleteUser
+@userId = {{GetUser.response.body.$.id}}
+
+DELETE  {{host}}/users/{{userId}} HTTP/1.1
+X-Api-Token: {{token}}
+Cache-Control: "no-cache"
+
+
+
+###  Auth
+# @name Auth
+
+POST {{protocol}}{{hostname}}:{{port}}/api/auth HTTP/1.1
+content-type: {{contentType}}
+
+{
+    "email": "john.smith@email.com",
+    "password" : "supersecretpassword"
+
+}
+
+# ### INVALID HOTEL
+# @name CreateHotelINVALID
+# POST http://localhost:5000/api/v1/hotels HTTP/1.1
+# content-type: application/json
+
+# {
+#     "??": "invalid",
+#     "??": "data",
+#     "??": "no-valid-field"
+
+# }
+
+###  GET ALL HOTELS
+# @name GetHotels
+GET {{host}}/hotels HTTP/1.1
+content-type: {{contentType}}
+
+### GET HOTEL
+# @name GetHotel
+@hotelId = {{GetHotels.response.body.$.id}}
+
+GET {{host}}/hotels/{{hotelId}} HTTP/1.1
+content-type: {{contentType}}
+
+### GET HOTEL ROOMS
+# @name GetHotelRooms
+@hotelId = {{GetHotel.response.body.$.id}}
+
+GET {{host}}/hotels/{{hotelId}}/rooms HTTP/1.1
+content-type: {{contentType}}
+
+### DELETE HOTEL - TO BE IMPLEMENT 
+# @name DeleteHotel
+@hotelId = {{GetHotel.response.body.$.id}}
+
+DELETE  {{host}}/hotels/{{hotelId}} HTTP/1.1
+content-type: {{contentType}}
+
+### Update HOTEL - TO BE IMPLEMENT 
+# @name  UpdateHotel
+@hotelId = {{GetHotel.response.body.$.id}}
+
+PUT  {{host}}/hotels/{{hotelId}} HTTP/1.1
+content-type: {{contentType}}
+
+{
+    "??": "??",
+    "??": "??"
+}
+
+### INVALID Update HOTEL - TO BE IMPLEMENT 
+# @name UpdateHotelINVALID
+
+PUT  {{host}}/hotels/65131d11018dc4d220422108 HTTP/1.1
+content-type: {{contentType}}
+
+{
+    "??": "??",
+    "??": "??"
+}
+
+
+###
+# @name GetAllBookings
+@USER_ID = {{GetAllUsers.response.body.$.[0].id}}
+@ROOM_ID = {{GetHotels.response.body.$.[0].rooms.[3]}}
+# Admins Only
+GET {{host}}/bookings/admin HTTP/1.1
+X-Api-Token: {{token}}
+content-type: {{contentType}}
+Cache-Control: "no-cache"
+
+###
+# @name GetAllUserBookings
+@USER_ID = {{GetAllUsers.response.body.$.[0].id}}
+# Admins Only
+GET {{host}}/bookings/ HTTP/1.1
+X-Api-Token: {{token}}
+content-type: {{contentType}}
+Cache-Control: "no-cache"
+
+{
+    
+}
+
+
+###
+# @name GetSingleBooking
+@BOOKING_ID = {{GetAllBookings.response.body.$.[0].id}}
+
+GET {{host}}/bookings/{{BOOKING_ID}}/ HTTP/1.1
+X-Api-Token: {{token}}
+content-type: {{contentType}}
+Cache-Control: "no-cache"
+
+
+###
+# @name GetBookingsByFilter
+@USER_ID = {{GetAllUsers.response.body.$.[0].id}}
+@ROOM_ID = {{GetHotels.response.body.$.[0].rooms.[0]}}
+
+Post {{host}}/rooms/{{ROOM_ID}}/bookings HTTP/1.1
+X-Api-Token: {{token}}
+content-type: {{contentType}}
+Cache-Control: "no-cache"
+
+{
+
+}
+
+###
+# @name CreateBooking
+
+POST {{host}}/rooms/{{ROOM_ID}}/book HTTP/1.1
+X-Api-Token: {{token}}
+content-type: {{contentType}}
+Cache-Control: "no-cache"
+
+{
+    "fromDate": "{{$datetime iso8601}}",
+    "tillDate": "{{$datetime iso8601 5 d}}",
+    "numPersons": 2
+}
+
+
+###
+# @name GetBooking-ForRoomId
+
+GET {{host}}/rooms/{{ROOM_ID}}/bookings HTTP/1.1
+X-Api-Token: {{token}}
+content-type: {{contentType}}
+Cache-Control: "no-cache"
+
+{
+    
+}
+
+###
+# @name CreateBooking-Error-InvalidAvilability
+@JUST_INVOKE = {{CreateBooking.response.body.$}}
+
+POST {{host}}/rooms/65229767e609349a679b7faf/book HTTP/1.1
+X-Api-Token: {{token}}
+content-type: {{contentType}}
+Cache-Control: "no-cache"
+
+{
+    "fromDate": "{{$datetime iso8601 1 d}}",
+    "tillDate": "{{$datetime iso8601 4 d}}",
+    "numPersons": 3
+}
+
+
+###
+# @name GetBooking-ForRoomId-AndDates
+
+GET {{host}}/rooms/{{ROOM_ID}}/bookings HTTP/1.1
+X-Api-Token: {{token}}
+content-type: {{contentType}}
+Cache-Control: "no-cache"
+
+{
+    "fromDate": "{{$datetime iso8601 1 d}}",
+    "tillDate": "{{$datetime iso8601 5 d}}"
+}
+
+
+###
+# @name cancelBooking 
+
+###
+# @name CancelBooking
+@BOOKING_ID_FOR_CANCEL = {{GetAllUserBookings.response.body.$.[0].id}}
+@ROOM_ID_FOR_CANCEL_BOOKING =  {{GetAllUserBookings.response.body.$.[0].roomID}}
+Delete {{host}}/bookings/{{BOOKING_ID_FOR_CANCEL}} HTTP/1.1
+X-Api-Token: {{token}}
+content-type: {{contentType}}
+Cache-Control: "no-cache"
+
+{
+
+}
+
+
+# ###
+# # @name GetBooking-ForRoomId-AndDates-Custom
+
+# GET {{host}}/rooms/6522faebd9b9e430e328d901/bookings HTTP/1.1
+# X-Api-Token: {{token}}
+# content-type: {{contentType}}
+# Cache-Control: "no-cache"
+
+# {
+#     "fromDate": "2023-10-09T12:20:16.136+00:00",
+#     "tillDate": "2023-10-12T19:20:16.136+00:00"
+# }
+
+
+###
+# @name CreateBooking-Error-InvalidDate-DateInThePast
+
+POST {{host}}/rooms/{{ROOM_ID}}/book HTTP/1.1
+X-Api-Token: {{token}}
+content-type: {{contentType}}
+Cache-Control: "no-cache"
+
+{
+    "fromDate": "{{$datetime iso8601 -5 d}}",
+    "tillDate": "{{$datetime iso8601 -2 d}}",
+    "numPersons": 1
+}
+
+
+
+###
+# @name CreateBooking-Error-InvalidDate-TillSmallerThenFrom
+
+POST {{host}}/rooms/{{ROOM_ID}}/book HTTP/1.1
+X-Api-Token: {{token}}
+content-type: {{contentType}}
+Cache-Control: "no-cache"
+
+{
+    "fromDate": "{{$datetime iso8601 5 d}}",
+    "tillDate": "{{$datetime iso8601 2 d}}",
+    "numPersons": 1
+}
+
+
+
+###
+# @name CreateBooking-Error-InvalidePersons-LessThen1
+
+POST {{host}}/rooms/{{ROOM_ID}}/book HTTP/1.1
+X-Api-Token: {{token}}
+content-type: {{contentType}}
+Cache-Control: "no-cache"
+
+{
+    "fromDate": "{{$datetime iso8601}}",
+    "tillDate": "{{$datetime iso8601 1 d}}",
+    "numPersons": 0
+}
+
+
+###
+# @name CreateBooking-Error-InvalidePersons-MoreThen100
+
+POST {{host}}/rooms/{{ROOM_ID}}/book HTTP/1.1
+X-Api-Token: {{token}}
+content-type: {{contentType}}
+Cache-Control: "no-cache"
+
+{
+    "fromDate": "{{$datetime iso8601}}",
+    "tillDate": "{{$datetime iso8601 1 d}}",
+    "numPersons": 101
+}
+
+
