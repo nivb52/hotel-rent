@@ -3,7 +3,7 @@ $copyMarker = "//COPY-FROM-HERE"
 $firstLine = "//ATTNETION: THIS FILE IS AUTO GENERATED DON'T EDIT IT HERE - EDIT IN THE mock\requests folder"
 
 # Clear the existing main.rest file or create an empty one
-$firstLine > mock\main.rest
+$firstLine > mock\main.auto.rest
 
 # Define a list of files to process
 $files = "const.rest", "auth.rest", "users.rest", "hotels.rest", "booking.rest"
@@ -18,5 +18,5 @@ foreach ($file in $files) {
     elseif ($copyFlag -eq $true) {
       $_
     }
-  } | Out-File -Append mock\main.rest
+  } | Out-File -Append mock\main.auto.rest
 }
