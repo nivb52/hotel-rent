@@ -109,6 +109,21 @@ Cache-Control: "no-cache"
     "tillDate": "{{$datetime iso8601 5 d}}"
 }
 
+###
+# @name cancelBooking 
+
+###
+# @name CancelBooking
+@BOOKING_ID_FOR_CANCEL = {{GetBookingsByFilter.response.body.$.[0].id}}
+@ROOM_ID_FOR_CANCEL_BOOKING =  {{GetBookingsByFilter.response.body.$.[0].roomID}}
+Delete {{host}}/rooms/{{ROOM_ID_FOR_CANCEL_BOOKING}}/bookings/{{BOOKING_ID_FOR_CANCEL}} HTTP/1.1
+X-Api-Token: {{token}}
+content-type: {{contentType}}
+Cache-Control: "no-cache"
+
+{
+
+}
 
 # ###
 # # @name GetBooking-ForRoomId-AndDates-Custom
