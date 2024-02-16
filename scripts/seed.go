@@ -1,5 +1,6 @@
 package main
 
+//@Attention: currently seeding is to the main DB - if still command using: db.DBNAME
 import (
 	"context"
 	"fmt"
@@ -32,6 +33,8 @@ var (
 	roomStore  *db.MongoRoomStore
 	userStore  *db.MongoUserStore
 	ctx        = context.Background()
+	isDrop     = false
+	mongoURL   = db.DBURI
 )
 
 func seedUser(seed *SeedUser) error {
@@ -134,13 +137,16 @@ func seedHotels(numberOfHotels int) {
 }
 
 func main() {
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(db.DBURI))
+	//@Todo read from env INITDB_USERNAME & PASSWORD
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoURL))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if err := client.Database(db.DBNAME).Drop(ctx); err != nil {
-		log.Fatal(err)
+	if isDrop {
+		if err := client.Database(db.DBNAME).Drop(ctx); err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	hotelStore = db.NewMongoHotelStore(client, db.DBNAME)
