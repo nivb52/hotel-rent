@@ -152,12 +152,21 @@ func (s *MongoBookingStore) InsertBooking(ctx context.Context, rawData *types.Bo
 }
 
 func (s *MongoBookingStore) CancelBooking(ctx context.Context, id string) error {
-	oid, err := primitive.ObjectIDFromHex(id)
+	bookOID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return err
 	}
 
-	s.coll.UpdateByID(ctx, oid, bson.M{"isCanceled": true})
+	values := bson.M{"isCanceled": true}
+	_, err = s.coll.UpdateOne(ctx,
+		bson.M{"_id": bookOID}, // filter
+		bson.M{"$set": values},
+	)
+
+	if err != nil {
+		fmt.Println("Failed to delete booking, due: ", err)
+		return err
+	}
 
 	return nil
 }
