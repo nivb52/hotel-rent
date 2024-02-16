@@ -26,9 +26,9 @@ seed:
 	go run ./scripts/seed.go
 
 # CONSINSTENT DB
-db_up: db_down
+db_up: 
 	@echo "Docker compose up: db image..."
-	@docker-compose --env-file .env --env-file local.env -p hotel_rent  up -d  
+	@docker compose --env-file .env --env-file .env.local -p hotel_rent  up -d  
 	@echo "Docker db up!"
 
 db_down:
