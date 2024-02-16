@@ -1,7 +1,7 @@
 package db
 
 const (
-	DBURI      = "mongodb://localhost:27017"
+	DBURI      = "mongodb://root:myrootpassword@localhost:27017"
 	DBNAME     = "hotel-rent"
 	TestDBNAME = "hotel-rent-testing"
 )
