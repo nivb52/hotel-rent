@@ -104,15 +104,20 @@ func (s *MongoBookingStore) IsRoomAvailable(ctx context.Context, where *types.Bo
 	}
 
 	var reserved *types.Booking
-	if err = s.coll.FindOne(ctx, filter).Decode(&reserved); err != nil {
+	err = s.coll.FindOne(ctx, filter).Decode(&reserved)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return false, nil
+		}
+
 		return false, err
 	}
 
 	if reserved.ID.IsZero() {
-		return false, nil
+		return true, nil
 	}
 
-	return true, nil
+	return false, nil
 }
 
 // ## Updates

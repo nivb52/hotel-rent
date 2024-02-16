@@ -1,4 +1,9 @@
 # Release Notes
+### v14: (33)
+Room booking
+    - FIX: Booking room when booking collection is missing 
+        (commit: db/fix IsRoomAvailable room function)
+
 
 ### v13: (32)
 Room booking
