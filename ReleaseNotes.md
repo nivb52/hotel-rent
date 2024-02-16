@@ -1,6 +1,7 @@
 # Release Notes
 ### v14: (33)
 Room booking
+    - FEAT: Cancel Booking
     - FIX: Booking room when booking collection is missing 
         (commit: db/fix IsRoomAvailable room function)
 
