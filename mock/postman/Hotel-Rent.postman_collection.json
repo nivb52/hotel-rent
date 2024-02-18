@@ -1,0 +1,102 @@
+{
+	"info": {
+		"_postman_id": "0fe0c560-2579-4193-8e4b-a6c5e63ffe54",
+		"name": "GO - Hotel-Rent",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Reservation",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Reservation",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "X-Api-Token",
+						"type": "text",
+						"value": "{{token}}"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{host}}/bookings/65cf72ea4332d8ea7527a891",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"bookings",
+						"65cf72ea4332d8ea7527a891"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Reservation",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Api-Token",
+						"type": "text",
+						"value": "{{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"fromDate\": \"2024-02-16T16:00:00Z\",\n    \"tillDate\": \"2024-02-26T16:00:00Z\",\n    \"numPersons\": 2\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/rooms/{{ROOM_ID}}/book",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"rooms",
+						"{{ROOM_ID}}",
+						"book"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
