@@ -1,20 +1,20 @@
 # Release Notes
-### v15: (34)
-Room booking
-    - FEAT: Extract db functions from seed script to fixtures (to use in test)
-    - FEAT: Extract mmocking functions from seed script to mock package (to use in test)
-    - FEAT: add postman collection for testing (some function are easier to test this way)
-    - FIX: room filter build - typo mistake (which affect logic)
+### v15: (35)
+Creating Test Fixtures (step 1)
+- FEAT: Extract db functions from seed script to fixtures (to use in test)
+- FEAT: Extract mmocking functions from seed script to mock package (to use in test)
+- FEAT: add postman collection for testing (some function are easier to test this way)
+- FIX: room filter build - typo mistake (which affect logic)
 
 
-### v14: (33)
-Room booking
-    - FEAT: Cancel Booking
-    - FIX: Booking room when booking collection is missing 
-        (commit: db/fix IsRoomAvailable room function)
+### v14:
+Cancel booking
+- FEAT: Cancel Booking
+- FIX: Booking room when booking collection is missing 
+    (commit: db/fix IsRoomAvailable room function)
 
 
-### v13: (32)
+### v13:
 Room booking
 - API+DB+Types:
     - feat: booking system (store, handler, types)
@@ -59,7 +59,7 @@ Complete implement JWT Auth
     - func names,
     - remove unused
 
-### v7: 
+### v7:
 - API: Get Hotel/s
 - Types: Hotel - add rating
 
@@ -93,5 +93,5 @@ Add get users, create user, validation
 ### v2: 
 Integrate with MongoDB, init user handler
 
-### v1 
+### v1
 Start
