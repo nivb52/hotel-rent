@@ -177,7 +177,7 @@ func buildHotelRoomsFilter(filterData *types.HotelFilter) (bson.M, error) {
 		}
 	}
 
-	if filterData.TillPrice > 0 && filterData.TillPrice > 0 {
+	if filterData.TillPrice > 0 && filterData.FromPrice > 0 {
 		filter["price"] = bson.M{
 			"$gte": filterData.TillPrice,
 			"$lte": filterData.TillPrice,
