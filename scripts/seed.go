@@ -17,7 +17,7 @@ func seedUsers(numberOfUsers int, store *db.Store) int {
 	seedUsers := mock.MockUsersMainData(numberOfUsers)
 	var errors []error = make([]error, len(*seedUsers))
 	for _, user := range *seedUsers {
-		err := fixtures.AddUser(store, &user)
+		_, err := fixtures.AddUser(store, &user, "")
 		if err != nil {
 			errors = append(errors, err)
 		}

@@ -16,7 +16,7 @@ func TestHandleCreateUser(t *testing.T) {
 	tdb := SetupTest(t)
 
 	app := fiber.New()
-	UserHandler := NewUserHandler(tdb.UserStore)
+	UserHandler := NewUserHandler(tdb.Store.User)
 	app.Post("/", UserHandler.HandleCreateUser)
 
 	params := types.UserParamsForCreate{

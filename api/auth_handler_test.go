@@ -2,67 +2,46 @@ package api
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/nivb52/hotel-rent/api/middleware"
-	"github.com/nivb52/hotel-rent/db"
+	"github.com/nivb52/hotel-rent/db/fixtures"
 	"github.com/nivb52/hotel-rent/types"
 )
 
-// END COMMON
-func insertUser(userStore db.UserStore, userParams types.UserParamsForCreate) (*types.User, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	userData, err := types.NewUserFromParams(userParams)
-
-	if err != nil {
-		return nil, err
-	}
-
-	user, err := userStore.InsertUser(ctx, userData)
-	if err != nil {
-		return nil, err
-	}
-	fmt.Println("seed user created in db")
-	return user, nil
-}
-
 func TestHandlAuthUser(t *testing.T) {
-	tdb := setup(t)
+	tdb := SetupTest(t)
 	defer tdb.teardown(t)
 	// # Test (Success) Auth Request & Token
 
 	// stage
-	userData := types.UserParamsForCreate{
-		FirstName: "Bob",
-		LastName:  "Alice",
-		Email:     "alice@google.com",
-		Password:  "12345678",
+	userData := &types.UserRequiredData{
+		Email: "alice@google.com",
+		FName: "Bob",
+		LName: "Alice",
 	}
 
-	insertedUser, err := insertUser(tdb.UserStore, userData)
+	pass := "12345678"
+
+	insertedUser, err := fixtures.AddUser(&tdb.Store, userData, pass)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	params := AuthParams{
 		Email:    "alice@google.com",
-		Password: "12345678",
+		Password: pass,
 	}
 
 	app := fiber.New()
-	AuthHandler := NewAuthHandler(tdb.UserStore)
+	AuthHandler := NewAuthHandler(tdb.Store.User)
 	app.Post("/auth", AuthHandler.HandleAuthenticate)
 
 	b, _ := json.Marshal(params)

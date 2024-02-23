@@ -13,24 +13,31 @@ var (
 	ctx = context.Background()
 )
 
-func AddUser(store *db.Store, input *types.UserRequiredData) error {
+func AddUser(store *db.Store, input *types.UserRequiredData, overridePass string) (*types.User, error) {
+	var pass string
+	if len(overridePass) < 1 {
+		pass = "supersecretpassword"
+	} else {
+		pass = overridePass
+	}
+
 	user, err := types.NewUserFromParams(types.UserParamsForCreate{
 		Email:     input.Email,
 		FirstName: input.FName,
 		LastName:  input.LName,
-		Password:  "supersecretpassword",
+		Password:  pass,
 	})
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	_, err = store.User.InsertUser(ctx, user)
+	insertedUser, err := store.User.InsertUser(ctx, user)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return insertedUser, nil
 }
 
 func AddHotel(store *db.Store, hotel *types.Hotel) (*types.Hotel, error) {
