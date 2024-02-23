@@ -1,4 +1,10 @@
 # Release Notes
+### v15: (34)
+Room booking
+    - FEAT: Extract db functions from seed script to fixtures (to use in test)
+    - FEAT: Extract mmocking functions from seed script to mock package (to use in test)
+    - FEAT: add postman collection for testing (some function are easier to test this way)
+
 ### v14: (33)
 Room booking
     - FEAT: Cancel Booking
