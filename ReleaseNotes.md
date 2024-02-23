@@ -7,7 +7,7 @@ Creating Test Fixtures (step 1)
 - FIX: room filter build - typo mistake (which affect logic)
 
 
-### v14:
+### v14: (34)
 Cancel booking
 - FEAT: Cancel Booking
 - FIX: Booking room when booking collection is missing 
@@ -34,7 +34,7 @@ Test JWT Auth
 - API:
     - ref: use invalid credentials response 
 
-### v10:
+### v10: (29)
 Complete implement JWT Auth
 - API: 
     - Protect users route by JWT Auth
@@ -48,7 +48,7 @@ Complete implement JWT Auth
 - Scripts: add new data + seed users
     
 
-### v8: 
+### v8: (27)
 - API: 
     - Get Rooms By Ids
     - Get Hotel Rooms
@@ -63,7 +63,7 @@ Complete implement JWT Auth
 - API: Get Hotel/s
 - Types: Hotel - add rating
 
-### v6:
+### v6: (26½)
 Seeding hotel and rooms - 
 Using Insert Many for rooms and update the corresponding hotel,
 the room store interface includes the hotel store interface.
@@ -81,10 +81,10 @@ partly implement rooms
  - types/fix: ID type should be primitive.ObjectID
  - api/fix: create user should return valid ID 
 
-### v5:
+### v5: (24)
 Adding the first test for the User API
 
-### v4:
+### v4: (23)
 Users complte CRUD with validation functions
 
 ### v3:
