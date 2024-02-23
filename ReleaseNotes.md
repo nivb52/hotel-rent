@@ -4,6 +4,8 @@ Room booking
     - FEAT: Extract db functions from seed script to fixtures (to use in test)
     - FEAT: Extract mmocking functions from seed script to mock package (to use in test)
     - FEAT: add postman collection for testing (some function are easier to test this way)
+    - FIX: room filter build - typo mistake (which affect logic)
+
 
 ### v14: (33)
 Room booking
