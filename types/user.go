@@ -14,6 +14,12 @@ const (
 	minPasswordLen = 7
 )
 
+type UserRequiredData struct {
+	FName string
+	LName string
+	Email string
+}
+
 type User struct {
 	ID                primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
 	FirstName         string             `bson:"firstName" json:"firstName"`

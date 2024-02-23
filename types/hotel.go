@@ -6,6 +6,12 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+type HotelRequiredData struct {
+	Name     string
+	Location string
+	Rating   int8
+}
+
 type Hotel struct {
 	ID       primitive.ObjectID   `bson:"_id,omitempty" json:"id,omitempty"`
 	Name     string               `bson:"name" json:"name"`
