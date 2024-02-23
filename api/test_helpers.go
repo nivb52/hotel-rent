@@ -16,6 +16,9 @@ const dbname = "hotel-rent-testing"
 
 type testdb struct {
 	db.UserStore
+	db.BookingStore
+	db.HotelStore
+	db.RoomStore
 }
 
 func (tdb *testdb) teardown(t *testing.T) {
@@ -32,8 +35,12 @@ func SetupTest(t *testing.T) *testdb {
 		log.Fatal(err)
 	}
 
+	hotelStore := db.NewMongoHotelStore(client, dbname)
 	return &testdb{
-		UserStore: db.NewMongoUserStore(client, dbname),
+		UserStore:    db.NewMongoUserStore(client, dbname),
+		HotelStore:   hotelStore,
+		RoomStore:    db.NewMongoRoomStore(client, hotelStore, dbname),
+		BookingStore: db.NewMongoBookingStore(client, dbname),
 	}
 }
 
