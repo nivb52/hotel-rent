@@ -13,13 +13,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var (
-	client   *mongo.Client
-	ctx      = context.Background()
-	isDrop   = false
-	mongoURL = db.DBURI
-)
-
 func seedUsers(numberOfUsers int, store *db.Store) int {
 	seedUsers := mock.MockUsersMainData(numberOfUsers)
 	var errors []error = make([]error, len(*seedUsers))
@@ -52,6 +45,11 @@ func seedHotels(numberOfHotels int, store *db.Store) {
 
 func main() {
 	//@Todo read from env INITDB_USERNAME & PASSWORD
+	mongoURL := db.DBURI
+	isDrop := false
+	//end env config
+
+	ctx := context.Background()
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoURL))
 	if err != nil {
 		log.Fatal(err)
