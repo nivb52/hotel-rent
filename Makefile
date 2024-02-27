@@ -35,6 +35,17 @@ db_down:
 	@echo "Docker compose down: db image..."
 	@docker-compose  -p hotel_rent down
 	@echo "Docker db down!"
+
+# TEST DB
+dbtest_up: 
+	@echo "Docker compose up: dbtest image..."
+	@docker compose --env-file .env --env-file .env.local --env-file .env.test.local -p hotel_rent_test  up -d  
+	@echo "Docker db up!"
+
+dbtest_down:
+	@echo "Docker compose down: dbtest image..."
+	@docker-compose  -p hotel_rent_test down
+	@echo "Docker dbtest down!"
 # TEMP DB
 dbtemp_up:
 	@echo running db (temp mode)

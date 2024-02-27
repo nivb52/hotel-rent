@@ -7,8 +7,10 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/joho/godotenv"
 	"github.com/nivb52/hotel-rent/api"
 	"github.com/nivb52/hotel-rent/api/middleware"
 	"github.com/nivb52/hotel-rent/db"
@@ -16,7 +18,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const dburi = db.DBURI
 const dbname = db.DBNAME
 
 var appConfig = fiber.Config{
@@ -33,6 +34,17 @@ var appConfig = fiber.Config{
 }
 
 func main() {
+
+	err := godotenv.Load(".env", ".env.local")
+	if err != nil {
+		log.Fatal("Error loading .env files")
+	}
+
+	dburi := os.Getenv("DB_CONNECTION_STRING")
+	if len(dburi) < 1 {
+		dburi = db.DEFAULT_DBURI
+	}
+
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(dburi))
 	if err != nil {
 		log.Fatal(err)

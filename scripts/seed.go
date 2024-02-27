@@ -5,7 +5,9 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 
+	"github.com/joho/godotenv"
 	"github.com/nivb52/hotel-rent/db"
 	"github.com/nivb52/hotel-rent/db/fixtures"
 	"github.com/nivb52/hotel-rent/mock"
@@ -44,9 +46,18 @@ func seedHotels(numberOfHotels int, store *db.Store) {
 }
 
 func main() {
-	//@Todo read from env INITDB_USERNAME & PASSWORD
-	mongoURL := db.DBURI
+	err := godotenv.Load(".env", ".env.test.local")
+	if err != nil {
+		log.Fatal("Error loading .env files")
+	}
+	mongoURL := os.Getenv("TESTDB_CONNECTION_STRING")
+
+	isDropString := os.Getenv("TESTDB_DROP")
 	isDrop := false
+	if isDropString == "true" || isDropString == "True" || isDropString == "TRUE" {
+		isDrop = true
+	}
+
 	//end env config
 
 	ctx := context.Background()
