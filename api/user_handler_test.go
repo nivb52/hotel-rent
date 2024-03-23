@@ -21,8 +21,8 @@ func TestHandleCreateUser(t *testing.T) {
 
 	params := types.UserParamsForCreate{
 		FirstName: "Bob",
-		LastName:  "Alice",
-		Email:     "alice@google.com",
+		LastName:  "Bob",
+		Email:     "bob@google.com",
 		Password:  "12345678",
 	}
 	b, _ := json.Marshal(params)
@@ -53,6 +53,6 @@ func TestHandleCreateUser(t *testing.T) {
 	}
 
 	if user.EncryptedPassword == params.Password {
-		t.Errorf("expected Passwordto not be found but found %s", user.EncryptedPassword)
+		t.Errorf("expected Password to not be found but found %s", user.EncryptedPassword)
 	}
 }
