@@ -10,7 +10,7 @@ run: build
 	go run main.go
 
 start: db_up
-	run
+	serve
 
 debug_back:
 	@echo Debugging...
