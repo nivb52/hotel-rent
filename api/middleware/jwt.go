@@ -80,6 +80,7 @@ func validateToken(tokenStr string) (jwt.MapClaims, error) {
 	return claims, nil
 }
 
+// fn normelize admin data/miss data to boolean
 func IsAdminNormelize(isAdmin any) bool {
 	if isAdmin == nil {
 		return false
