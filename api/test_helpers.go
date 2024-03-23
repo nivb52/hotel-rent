@@ -31,10 +31,8 @@ func SetupTest(t *testing.T) *testdb {
 	if err != nil {
 		log.Fatal("Error loading .env files")
 	}
-	dburi := os.Getenv("TESTDB_CONNECTION_STRING")
-	if len(dburi) < 1 {
-		dburi = DEFAULT_testdb_uri
-	}
+	envDBuri := os.Getenv("TESTDB_CONNECTION_STRING")
+	dburi := db.GetDBUri(envDBuri, DEFAULT_testdb_uri)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

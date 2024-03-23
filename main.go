@@ -41,10 +41,7 @@ func main() {
 	}
 
 	dburi := os.Getenv("DB_CONNECTION_STRING")
-	if len(dburi) < 1 {
-		dburi = db.DEFAULT_DBURI
-	}
-
+	dburi = db.GetDBUri(dburi)
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(dburi))
 	if err != nil {
 		log.Fatal(err)
