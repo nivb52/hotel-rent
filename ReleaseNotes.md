@@ -1,4 +1,11 @@
 # Release Notes
+### v15.5: (35)
+Test Fixtures (step 2)
+- FEAT: DB connection 
+- FEAT: Add Booknig Fixtures
+- FIX: Auth test (+ renames)
+
+
 ### v15: (35)
 Creating Test Fixtures (step 1)
 - FEAT: Extract db functions from seed script to fixtures (to use in test)
