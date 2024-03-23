@@ -19,7 +19,7 @@ import (
 )
 
 // # Test Success Auth Request & Token  -  Fn: HandleAuthenticate
-func TestSuccessHandleAuthUser(t *testing.T) {
+func TestAuthWithCorrectPassword(t *testing.T) {
 	tdb := SetupTest(t)
 	randomInt := mock.RandomIntByMaxAndMin(100, 1)
 	randomStr := strconv.Itoa(randomInt)
@@ -104,8 +104,8 @@ func TestSuccessHandleAuthUser(t *testing.T) {
 	}
 }
 
-// # Test Failed Auth Request (Wrong Password) - Fn: HandleAuthenticate
-func TestFailedHandlAuthUser(t *testing.T) {
+// # Test Failed Auth Request - Fn: HandleAuthenticate
+func TestAuthWithWrongPassword(t *testing.T) {
 	tdb := SetupTest(t)
 	// add randomness in the name:
 	randomInt := mock.RandomIntByMaxAndMin(100, 1)
