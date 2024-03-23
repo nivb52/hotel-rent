@@ -40,7 +40,7 @@ func seedHotels(numberOfHotels int, store *db.Store) {
 			rooms[i].HotelID = insertedHotel.ID
 		}
 
-		updatedCount, _ := fixtures.AddRoom(store, &rooms, insertedHotel.ID.Hex())
+		updatedCount, _ := fixtures.AddRooms(store, &rooms, insertedHotel.ID.Hex())
 		fmt.Printf("Update Hotel with %d rooms \n", updatedCount)
 	}
 }

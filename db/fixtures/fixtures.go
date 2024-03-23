@@ -13,12 +13,12 @@ var (
 	ctx = context.Background()
 )
 
-func AddUser(store *db.Store, input *types.UserRequiredData, overridePass string) (*types.User, error) {
+func AddUser(store *db.Store, input *types.UserRequiredData, overridePass ...string) (*types.User, error) {
 	var pass string
 	if len(overridePass) < 1 {
 		pass = "supersecretpassword"
 	} else {
-		pass = overridePass
+		pass = overridePass[0]
 	}
 
 	user, err := types.NewUserFromParams(types.UserParamsForCreate{
@@ -49,11 +49,29 @@ func AddHotel(store *db.Store, hotel *types.Hotel) (*types.Hotel, error) {
 	return hotel, err
 }
 
-func AddRoom(store *db.Store, rooms *[]types.Room, hotelID string) (int, error) {
+func AddRooms(store *db.Store, rooms *[]types.Room, hotelID string) (int, error) {
 	updatedCount, err := store.Room.InsertRooms(ctx, rooms, hotelID)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	return updatedCount, err
+}
+
+func AddRoom(store *db.Store, room *types.Room) (*types.Room, error) {
+	insertedRoom, err := store.Room.InsertRoom(ctx, room)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return insertedRoom, err
+}
+
+func AddBooking(store *db.Store, booking *types.BookingParamsForCreate) (*types.Booking, error) {
+	insertedBooking, err := store.Booking.InsertBooking(ctx, booking)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return insertedBooking, err
 }
