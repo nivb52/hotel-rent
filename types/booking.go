@@ -18,7 +18,7 @@ type Booking struct {
 	// Number Of Guests Adults And young
 	NumPersons int `bson:"numPersons" json:"numPersons"`
 
-	IsCanceled bool `bson:"isCanceled,omitempty" json:"isCanceled"`
+	// IsCanceled bool `bson:"isCanceled,omitempty" json:"isCanceled"`
 	// is Cofirmed, is Canceled, is Payed, privateNotes, ....
 }
 
@@ -29,6 +29,17 @@ type BookingParamsForCreate struct {
 	FromDate   time.Time `bson:"fromDate,omitempty" json:"fromDate"`
 	TillDate   time.Time `bson:"tillDate,omitempty" json:"tillDate"`
 	NumPersons int       `bson:"numPersons" json:"numPersons"`
+}
+
+type GetBookingOptions struct {
+	UserBookingOnly bool
+}
+
+type BookingFilter struct {
+	UserID   string    `bson:"user_id,omitempty" json:"userId"`
+	RoomID   string    `bson:"room_id,omitempty" json:"roomId"`
+	FromDate time.Time `bson:"fromDate,omitempty" json:"fromDate"`
+	TillDate time.Time `bson:"tillDate,omitempty" json:"tillDate"`
 }
 
 func (p BookingParamsForCreate) Validate() map[string]string {
@@ -71,11 +82,4 @@ func (p BookingParamsForCreate) Validate() map[string]string {
 	}
 
 	return errors
-}
-
-type BookingFilter struct {
-	UserID   string    `bson:"user_id,omitempty" json:"userId"`
-	RoomID   string    `bson:"room_id,omitempty" json:"roomId"`
-	FromDate time.Time `bson:"fromDate,omitempty" json:"fromDate"`
-	TillDate time.Time `bson:"tillDate,omitempty" json:"tillDate"`
 }

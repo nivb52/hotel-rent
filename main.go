@@ -14,6 +14,7 @@ import (
 	"github.com/nivb52/hotel-rent/api"
 	"github.com/nivb52/hotel-rent/api/middleware"
 	"github.com/nivb52/hotel-rent/db"
+	"github.com/nivb52/hotel-rent/types"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -108,16 +109,22 @@ func main() {
 	apiv1Room.Post("/:id/book", middleware.JWTAuthentication, bookingHandler.BookARoomByUser)
 	apiv1Room.Post("/:id/gbook", bookingHandler.BookARoomByGuest)
 	apiv1Room.Post("/:id/bookings", middleware.JWTAuthentication, func(c *fiber.Ctx) error {
-		return bookingHandler.GetBookingsByFilter(c, false)
+		opt := &types.GetBookingOptions{
+			UserBookingOnly: true,
+		}
+		return bookingHandler.GetBookingsByFilter(c, opt)
 	})
 
 	// ROUTES - BOOKINGS
 	apiv1Bookings := apiv1.Group("/bookings")
 	apiv1Bookings.Get("/", middleware.JWTAuthentication, func(c *fiber.Ctx) error {
-		return bookingHandler.GetBookingsByFilter(c, true) // guest only bookings
+		opt := &types.GetBookingOptions{
+			UserBookingOnly: true,
+		}
+		return bookingHandler.GetBookingsByFilter(c, opt)
 	})
 
-	apiv1Bookings.Get("/admin", middleware.JWTAuthentication, middleware.IsAdminAuth, bookingHandler.GetBookings)
+	apiv1Bookings.Get("/admin", middleware.JWTAuthentication, middleware.IsAdminAuth, bookingHandler.AdminGetBookings)
 	apiv1Bookings.Get("/:id/", middleware.JWTAuthentication, bookingHandler.GetBookingsById)
 	apiv1Bookings.Delete("/:id/", middleware.JWTAuthentication, bookingHandler.HandleCancelBooking)
 

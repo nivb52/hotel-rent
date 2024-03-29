@@ -30,7 +30,7 @@ func (h *BookingHandler) GetBookingsById(c *fiber.Ctx) error {
 }
 
 // --- GET Bookings ---
-func (h *BookingHandler) GetBookings(c *fiber.Ctx) error {
+func (h *BookingHandler) AdminGetBookings(c *fiber.Ctx) error {
 	var (
 		whereClause types.BookingFilter
 	)
@@ -49,13 +49,18 @@ func (h *BookingHandler) GetBookings(c *fiber.Ctx) error {
 }
 
 // --- GET Bookings ---
-func (h *BookingHandler) GetBookingsByFilter(c *fiber.Ctx, isUserOnlyBookings bool) error {
+func (h *BookingHandler) GetBookingsByFilter(c *fiber.Ctx, opt *types.GetBookingOptions) error {
 	var (
-		roomID      = c.Params("id")
-		whereClause types.BookingFilter
+		roomID             = c.Params("id")
+		whereClause        types.BookingFilter
+		isUserBookingsOnly = true
 	)
 
-	if roomID == "" && !isUserOnlyBookings {
+	if !opt.UserBookingOnly {
+		isUserBookingsOnly = false
+	}
+
+	if roomID == "" && !isUserBookingsOnly {
 		fmt.Printf("\n Booking Data missing RoomID: %s", roomID)
 		return c.Status(fiber.ErrBadRequest.Code).SendString(fiber.ErrBadRequest.Message)
 	}
@@ -67,12 +72,12 @@ func (h *BookingHandler) GetBookingsByFilter(c *fiber.Ctx, isUserOnlyBookings bo
 	}
 
 	fmt.Println("whereClause: ", whereClause)
-	if !isUserOnlyBookings {
+	if !isUserBookingsOnly {
 		whereClause.RoomID = roomID
 	}
 
 	isAdmin := c.Context().UserValue("isAdmin").(bool)
-	if !isAdmin || isUserOnlyBookings {
+	if !isAdmin || isUserBookingsOnly {
 		whereClause.UserID = c.Context().UserValue("userID").(string)
 	}
 
