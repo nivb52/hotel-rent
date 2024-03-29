@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/nivb52/hotel-rent/types"
@@ -39,6 +40,11 @@ func NewMongoBookingStore(client *mongo.Client, dbname string) *MongoBookingStor
 
 // get booking by id
 func (s *MongoBookingStore) GetBookingsById(ctx context.Context, ID string) (*types.Booking, error) {
+	isExistID := primitive.NilObjectID.IsZero()
+	if !isExistID {
+		return nil, errors.New("missing Booking ID")
+	}
+
 	OID, err := primitive.ObjectIDFromHex(ID)
 	if err != nil {
 		return nil, err

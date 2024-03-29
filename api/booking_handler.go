@@ -26,6 +26,10 @@ func (h *BookingHandler) GetBookingsById(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).SendString(fiber.ErrInternalServerError.Message)
 	}
 
+	if booking == nil {
+		return c.Status(fiber.StatusNotFound).SendString(fiber.ErrNotFound.Message)
+	}
+
 	return c.JSON(booking)
 }
 
