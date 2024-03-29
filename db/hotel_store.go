@@ -146,25 +146,23 @@ func (s *MongoHotelStore) AddHotelRoom(ctx context.Context, hotelID string, room
 	)
 
 	if err != nil {
-		fmt.Printf("(1st try) Failed to update room id %s in Hotel, reason: %s", roomID, err)
-
-		errorWhichCanBeHandeld := `The field 'rooms' must be an array but is of type null in document`
-		isNilInRoomField := strings.Contains(err.Error(), errorWhichCanBeHandeld)
-		fmt.Println(isNilInRoomField)
-		if isNilInRoomField == true {
+		errorNilInRoomField := `The field 'rooms' must be an array but is of type null in document`
+		isErrorCanBeAutoHandled := strings.Contains(err.Error(), errorNilInRoomField)
+		if isErrorCanBeAutoHandled == true {
 			_, err = s.coll.UpdateOne(ctx,
 				bson.M{"_id": hotelOid},
 				bson.M{"$set": bson.M{"rooms": []primitive.ObjectID{roomOid}}},
 			)
 			if err != nil {
-				fmt.Printf("(2nd try) Failed to create room array of room id %s in Hotel, reason: %s", roomID, err)
+				fmt.Printf("(1st try out of 2) Failed to update room id %s in Hotel, reason: %s", roomID, err)
+				fmt.Printf("(2nd try out of 2) Failed to create room array of room id %s in Hotel, reason: %s", roomID, err)
 				return err
 			}
 		} else {
-
 			return err
 		}
 	}
+
 	return nil
 }
 
