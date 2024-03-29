@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"os"
+	"reflect"
 	"testing"
 	"time"
 
@@ -34,7 +35,7 @@ func SetupTest(t *testing.T) *testdb {
 	envDBuri := os.Getenv("TESTDB_CONNECTION_STRING")
 	dburi := db.GetDBUri(envDBuri, DEFAULT_testdb_uri)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(dburi))
 	if err != nil {
@@ -57,3 +58,86 @@ func SetupTest(t *testing.T) *testdb {
 func (tdb *testdb) afterAll(t *testing.T) {
 	defer tdb.teardown(t)
 }
+
+// Data Compare -- START
+type FieldValueType int
+
+const (
+	String FieldValueType = iota
+	Int
+	Float32
+	Bool
+	Date
+	// Add more field types as needed
+)
+
+type TestByField struct {
+	ErrStr    string
+	ValueType FieldValueType
+}
+
+type DataCompare struct {
+	Fields   map[string]TestByField
+	source   any
+	testData any
+}
+
+func NewDataCompare(feildDefenitions map[string]TestByField) *DataCompare {
+	return &DataCompare{
+		Fields: feildDefenitions,
+	}
+}
+
+func (o *DataCompare) SetSource(prop any) error {
+	o.source = prop
+	return nil
+}
+
+func (o *DataCompare) SetTestData(prop any) error {
+	o.testData = prop
+	return nil
+}
+
+func (o *DataCompare) Compare(t *testing.T) {
+	// var errors []error = make([]error, len( o.Fields))
+
+	rActual := reflect.ValueOf(o.testData)
+	rSource := reflect.ValueOf(o.source)
+	for key, field := range o.Fields {
+		actual := reflect.Indirect(rActual).FieldByName(key)
+		expected := reflect.Indirect(rSource).FieldByName(key)
+		switch field.ValueType {
+		case String:
+			if expected.String() != actual.String() {
+				t.Errorf(field.ErrStr, expected, actual)
+			}
+
+		case Int:
+			if !expected.Equal(actual) && expected.Int() != actual.Int() {
+				t.Errorf(field.ErrStr, expected.Int(), actual.Int())
+			}
+
+		case Float32:
+			if !expected.Equal(actual) {
+				t.Errorf(field.ErrStr, expected, actual)
+			}
+
+		case Bool:
+			if !expected.Equal(actual) {
+				t.Errorf(field.ErrStr, expected, actual)
+			}
+
+		case Date:
+			if !expected.Equal(actual) && expected.Interface().(time.Time).Format("01/02/2006") != actual.Interface().(time.Time).Format("01/02/2006") {
+				formattedActual := actual.Interface().(time.Time).Format("01/02/2006")
+				formattedExpected := expected.Interface().(time.Time).Format("01/02/2006")
+				t.Errorf(field.ErrStr, formattedExpected, formattedActual)
+			}
+
+		default:
+			t.Errorf("Type not implemented")
+		}
+	}
+}
+
+// Data Compare -- END
