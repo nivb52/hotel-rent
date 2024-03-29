@@ -81,14 +81,14 @@ func TestGetBookingsById(t *testing.T) {
 	// act
 	app := fiber.New()
 	BookingHandler := NewBookingHandler(&tdb.Store)
+	// 		Make a request to the endpoint with a specific id
 	app.Get("/:id", BookingHandler.GetBookingsById, nil)
 
-	// Make a request to the endpoint with a specific id
 	resp, err := app.Test(req)
 	if err != nil {
 		t.Error(err)
 	}
-	// Assert that the id parameter is extracted correctly
+
 	var resBooking types.Booking
 	json.NewDecoder(resp.Body).Decode(&resBooking)
 
@@ -107,4 +107,83 @@ func TestGetBookingsById(t *testing.T) {
 	assertion.SetSource(bookingData)
 	assertion.SetTestData(resBooking)
 	assertion.Compare(t)
+}
+
+func TestAdminGetBookings(t *testing.T) {
+	tdb := SetupTest(t)
+	// defer tdb.teardown(t)
+
+	// TODO: refactor to use the mock functions to make it shorter
+
+	//stage
+	userData := &types.UserRequiredData{
+		Email: "mockEmail@a.com",
+		FName: "Alice",
+		LName: "Alice",
+	}
+
+	insertedUser, err := fixtures.AddUser(&tdb.Store, userData)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	hotel := types.Hotel{
+		Name:     "Grand Hotel",
+		Location: "Los Angeles, California",
+		Rating:   4,
+		CreateAt: primitive.NewDateTimeFromTime(time.Now()),
+		UpdateAt: primitive.NewDateTimeFromTime(time.Now()),
+	}
+
+	room := types.Room{
+		Type:     types.TripleRoomType,
+		BedType:  types.TwinBedType,
+		Size:     types.RoomSizeKingSize,
+		Price:    250,
+		CreateAt: primitive.NewDateTimeFromTime(time.Now()),
+		UpdateAt: primitive.NewDateTimeFromTime(time.Now()),
+	}
+
+	insertedHotel, _ := fixtures.AddHotel(&tdb.Store, &hotel)
+	room.HotelID = insertedHotel.ID
+	rooms := []types.Room{}
+	rooms = append(rooms, room)
+	insertedRoom, err := fixtures.AddRoom(&tdb.Store, &room)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	from := time.Now()
+	till := from.AddDate(0, 0, 5)
+	params := types.BookingParamsForCreate{
+		UserID:     insertedUser.ID.Hex(),
+		RoomID:     insertedRoom.ID.Hex(),
+		FromDate:   from,
+		TillDate:   till,
+		NumPersons: 4,
+	}
+
+	_, err = fixtures.AddBooking(&tdb.Store, &params)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	req := httptest.NewRequest("GET", "/", nil)
+
+	// act
+	app := fiber.New()
+	BookingHandler := NewBookingHandler(&tdb.Store)
+	app.Get("/", BookingHandler.AdminGetBookings, nil)
+
+	resp, err := app.Test(req)
+	if err != nil {
+		t.Error(err)
+	}
+	var resBooking []types.Booking
+	json.NewDecoder(resp.Body).Decode(&resBooking)
+
+	// assert
+	assert.Equal(t, http.StatusOK, resp.StatusCode, "Expected to found booking")
+	assert.NotNil(t, resBooking)
+	assert.GreaterOrEqual(t, len(resBooking), 1)
 }
