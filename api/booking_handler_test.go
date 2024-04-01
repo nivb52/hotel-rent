@@ -98,11 +98,11 @@ func TestGetBookingsById(t *testing.T) {
 
 	// (prepare for assersion )
 	m := make(map[string]TestByField)
-	m["FromDate"] = TestByField{ErrStr: "expected FromDate to be %s but found %s", ValueType: Date}
-	m["ToDate"] = TestByField{ErrStr: "expected ToDate to be %s but found %s", ValueType: Date}
-	m["NumPersons"] = TestByField{ErrStr: "expected NumPersons to be %n but found %n", ValueType: Int}
-	m["UserID"] = TestByField{ErrStr: "expected UserID to be %s but found %s", ValueType: String}
-	m["RoomID"] = TestByField{ErrStr: "expected RoomID to be %s but found %s", ValueType: String}
+	m["FromDate"] = TestByField{ErrStr: "", ValueType: Date}
+	m["ToDate"] = TestByField{ErrStr: "", ValueType: Date}
+	m["NumPersons"] = TestByField{ErrStr: "", ValueType: Int}
+	m["UserID"] = TestByField{ErrStr: "", ValueType: String}
+	m["RoomID"] = TestByField{ErrStr: "", ValueType: String}
 
 	assertion := NewDataCompare(m)
 	assertion.SetSource(bookingData)

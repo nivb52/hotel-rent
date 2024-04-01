@@ -109,29 +109,49 @@ func (o *DataCompare) Compare(t *testing.T) {
 		switch field.ValueType {
 		case String:
 			if expected.String() != actual.String() {
-				t.Errorf(field.ErrStr, expected, actual)
+				if len(field.ErrStr) > 0 {
+					t.Errorf(field.ErrStr, expected, actual)
+				} else {
+					t.Errorf("expected %s to be %s but found %s", key, expected, actual)
+				}
 			}
 
 		case Int:
 			if !expected.Equal(actual) && expected.Int() != actual.Int() {
-				t.Errorf(field.ErrStr, expected.Int(), actual.Int())
+				if len(field.ErrStr) > 0 {
+					t.Errorf(field.ErrStr, expected, actual)
+				} else {
+					t.Errorf("expected %s to be %d but found %d", key, expected.Int(), actual.Int())
+				}
 			}
 
 		case Float32:
 			if !expected.Equal(actual) {
-				t.Errorf(field.ErrStr, expected, actual)
+				if len(field.ErrStr) > 0 {
+					t.Errorf(field.ErrStr, expected, actual)
+				} else {
+					t.Errorf("expected %s to be %f but found %f", key, expected.Float(), actual.Float())
+				}
 			}
 
 		case Bool:
 			if !expected.Equal(actual) {
-				t.Errorf(field.ErrStr, expected, actual)
+				if len(field.ErrStr) > 0 {
+					t.Errorf(field.ErrStr, expected, actual)
+				} else {
+					t.Errorf("expected %s to be %s but found %s", key, expected, actual)
+				}
 			}
 
 		case Date:
 			if !expected.Equal(actual) && expected.Interface().(time.Time).Format("01/02/2006") != actual.Interface().(time.Time).Format("01/02/2006") {
 				formattedActual := actual.Interface().(time.Time).Format("01/02/2006")
 				formattedExpected := expected.Interface().(time.Time).Format("01/02/2006")
-				t.Errorf(field.ErrStr, formattedExpected, formattedActual)
+				if len(field.ErrStr) > 0 {
+					t.Errorf(field.ErrStr, formattedExpected, formattedActual)
+				} else {
+					t.Errorf("expected %s to be %s but found %s", key, formattedExpected, formattedActual)
+				}
 			}
 
 		default:
