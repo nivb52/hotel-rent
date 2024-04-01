@@ -1,4 +1,12 @@
 # Release Notes
+### v16: (36)
+Test Booking (step 3 - last step)
+- FEAT: Test Helper -  Auto Data Compare 
+- FEAT: Test GetBookingsById
+- FEAT: Test AdminGetBookings
+- FIX: Is Admin func
+
+
 ### v15.5: (35)
 Test Fixtures (step 2)
 - FEAT: DB connection 
