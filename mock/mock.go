@@ -63,6 +63,37 @@ func User() types.UserRequiredData {
 	return sub[0]
 }
 
+func Booking(userID string, roomID string, intSeeds ...int) types.BookingParamsForCreate {
+	randomDays := 5
+	randomPersonsMax := 4
+	randomPersonsMin := 2
+
+	for idx, val := range intSeeds {
+		if idx == 0 {
+			randomDays = val
+		}
+		if idx == 1 {
+			randomPersonsMax = val
+		}
+		if idx == 2 {
+			randomPersonsMin = val
+		}
+
+	}
+
+	from := time.Now()
+	till := from.AddDate(0, 0, randomDays)
+	bookingData := types.BookingParamsForCreate{
+		UserID:     userID,
+		RoomID:     roomID,
+		FromDate:   from,
+		TillDate:   till,
+		NumPersons: RandomIntByMaxAndMin(randomPersonsMax, randomPersonsMin),
+	}
+
+	return bookingData
+}
+
 func MockUsersMainData(numberOfUsers int) *[]types.UserRequiredData {
 
 	usersMock := []types.UserRequiredData{
