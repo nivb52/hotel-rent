@@ -75,3 +75,13 @@ func AddBooking(store *db.Store, booking *types.BookingParamsForCreate) (*types.
 
 	return insertedBooking, err
 }
+
+func SetAdminUser(store *db.Store, user *types.User) error {
+	user.IsAdmin = true
+	_, err := store.User.UpdateUserByID(ctx, user.ID.Hex(), user)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

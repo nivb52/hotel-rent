@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/nivb52/hotel-rent/api/middleware"
 	"github.com/nivb52/hotel-rent/db/fixtures"
 	"github.com/nivb52/hotel-rent/types"
 	"github.com/stretchr/testify/assert"
@@ -115,7 +116,7 @@ func TestAdminGetBookings(t *testing.T) {
 
 	// TODO: refactor to use the mock functions to make it shorter
 
-	//stage
+	//stage - insert into database
 	userData := &types.UserRequiredData{
 		Email: "mockEmail@a.com",
 		FName: "Alice",
@@ -168,13 +169,25 @@ func TestAdminGetBookings(t *testing.T) {
 		log.Fatal(err)
 	}
 
+	err = fixtures.SetAdminUser(&tdb.Store, insertedUser)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	BookingHandler := NewBookingHandler(&tdb.Store)
+	app := fiber.New()
+	adminRoute := app.Group("/")
+	adminRoute.Get("/", middleware.JWTAuthentication, BookingHandler.AdminGetBookings, nil)
+
+	token, err := createToken(insertedUser.ID.String(), insertedUser.Email, insertedUser.IsAdmin)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	req := httptest.NewRequest("GET", "/", nil)
+	req.Header.Add("X-Api-Token", token)
 
 	// act
-	app := fiber.New()
-	BookingHandler := NewBookingHandler(&tdb.Store)
-	app.Get("/", BookingHandler.AdminGetBookings, nil)
-
 	resp, err := app.Test(req)
 	if err != nil {
 		t.Error(err)
