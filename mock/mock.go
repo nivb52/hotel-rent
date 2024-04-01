@@ -10,6 +10,15 @@ import (
 
 /** ============= Data ============= */
 
+func Hotel() types.Hotel {
+	hotelInputOptions := MockHotelsMainData(52)
+	int := RandomIntByMaxAndMin(51, 0)
+	sub := hotelInputOptions[int : int+1]
+	input := sub[0]
+	hotel := MockHotelByInput(&input)
+	return hotel
+}
+
 func MockHotelByInput(input *types.HotelRequiredData) types.Hotel {
 	hotel := types.Hotel{
 		Name:     input.Name,
@@ -44,6 +53,14 @@ func MockRoom(numberOfRooms int) []types.Room {
 	}
 
 	return rooms
+}
+
+func User() types.UserRequiredData {
+	userInputs := MockUsersMainData(40)
+	int := RandomIntByMaxAndMin(40, 0)
+	userDereference := *userInputs
+	sub := userDereference[int : int+1]
+	return sub[0]
 }
 
 func MockUsersMainData(numberOfUsers int) *[]types.UserRequiredData {

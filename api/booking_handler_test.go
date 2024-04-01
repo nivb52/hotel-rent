@@ -12,9 +12,9 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/nivb52/hotel-rent/api/middleware"
 	"github.com/nivb52/hotel-rent/db/fixtures"
+	"github.com/nivb52/hotel-rent/mock"
 	"github.com/nivb52/hotel-rent/types"
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // TODO: refactor to use the mock functions to make it shorter
@@ -24,33 +24,13 @@ func TestGetBookingsById(t *testing.T) {
 	// defer tdb.teardown(t)
 
 	//stage
-	userData := &types.UserRequiredData{
-		Email: "mockEmail@a.com",
-		FName: "Alice",
-		LName: "Alice",
-	}
-
-	insertedUser, err := fixtures.AddUser(&tdb.Store, userData)
+	user := mock.User()
+	insertedUser, err := fixtures.AddUser(&tdb.Store, &user)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	hotel := types.Hotel{
-		Name:     "Grand Hotel",
-		Location: "Los Angeles, California",
-		Rating:   4,
-		CreateAt: primitive.NewDateTimeFromTime(time.Now()),
-		UpdateAt: primitive.NewDateTimeFromTime(time.Now()),
-	}
-
-	room := types.Room{
-		Type:     types.TripleRoomType,
-		BedType:  types.TwinBedType,
-		Size:     types.RoomSizeKingSize,
-		Price:    250,
-		CreateAt: primitive.NewDateTimeFromTime(time.Now()),
-		UpdateAt: primitive.NewDateTimeFromTime(time.Now()),
-	}
+	hotel := mock.Hotel()
+	room := mock.MockRoom(1)[0]
 
 	insertedHotel, _ := fixtures.AddHotel(&tdb.Store, &hotel)
 	room.HotelID = insertedHotel.ID
@@ -115,33 +95,14 @@ func TestAdminGetBookings(t *testing.T) {
 	// defer tdb.teardown(t)
 
 	//stage - insert into database
-	userData := &types.UserRequiredData{
-		Email: "admin@a.com",
-		FName: "Alice",
-		LName: "Alice",
-	}
-
-	insertedUser, err := fixtures.AddUser(&tdb.Store, userData)
+	//stage
+	user := mock.User()
+	insertedUser, err := fixtures.AddUser(&tdb.Store, &user)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	hotel := types.Hotel{
-		Name:     "Grand Hotel",
-		Location: "Los Angeles, California",
-		Rating:   4,
-		CreateAt: primitive.NewDateTimeFromTime(time.Now()),
-		UpdateAt: primitive.NewDateTimeFromTime(time.Now()),
-	}
-
-	room := types.Room{
-		Type:     types.TripleRoomType,
-		BedType:  types.TwinBedType,
-		Size:     types.RoomSizeKingSize,
-		Price:    250,
-		CreateAt: primitive.NewDateTimeFromTime(time.Now()),
-		UpdateAt: primitive.NewDateTimeFromTime(time.Now()),
-	}
+	hotel := mock.Hotel()
+	room := mock.MockRoom(1)[0]
 
 	insertedHotel, _ := fixtures.AddHotel(&tdb.Store, &hotel)
 	room.HotelID = insertedHotel.ID
@@ -204,34 +165,14 @@ func TestAdminGetBookingsWithNonAdmin(t *testing.T) {
 	tdb := SetupTest(t)
 	// defer tdb.teardown(t)
 
-	//stage - insert into database
-	userData := &types.UserRequiredData{
-		Email: "nonAdminEmail@a.com",
-		FName: "Alice",
-		LName: "Alice",
-	}
-
-	insertedUser, err := fixtures.AddUser(&tdb.Store, userData)
+	//stage
+	user := mock.User()
+	insertedUser, err := fixtures.AddUser(&tdb.Store, &user)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	hotel := types.Hotel{
-		Name:     "Grand Hotel",
-		Location: "Los Angeles, California",
-		Rating:   4,
-		CreateAt: primitive.NewDateTimeFromTime(time.Now()),
-		UpdateAt: primitive.NewDateTimeFromTime(time.Now()),
-	}
-
-	room := types.Room{
-		Type:     types.TripleRoomType,
-		BedType:  types.TwinBedType,
-		Size:     types.RoomSizeKingSize,
-		Price:    250,
-		CreateAt: primitive.NewDateTimeFromTime(time.Now()),
-		UpdateAt: primitive.NewDateTimeFromTime(time.Now()),
-	}
+	hotel := mock.Hotel()
+	room := mock.MockRoom(1)[0]
 
 	insertedHotel, _ := fixtures.AddHotel(&tdb.Store, &hotel)
 	room.HotelID = insertedHotel.ID
