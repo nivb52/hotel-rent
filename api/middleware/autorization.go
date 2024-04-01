@@ -11,7 +11,7 @@ func IsAdminAuth(c *fiber.Ctx) error {
 	}
 	isAdmin = isAdmin.(bool)
 	if isAdmin == true {
-		return nil
+		return c.Next()
 	}
 
 	return c.Status(fiber.StatusForbidden).SendString(fiber.ErrForbidden.Message)
