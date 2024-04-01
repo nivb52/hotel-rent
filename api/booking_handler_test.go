@@ -27,8 +27,6 @@ func insertBooking(tdb *testdb) (*types.Booking, *types.User) {
 
 	insertedHotel, _ := fixtures.AddHotel(&tdb.Store, &hotel)
 	room.HotelID = insertedHotel.ID
-	rooms := []types.Room{}
-	rooms = append(rooms, room)
 	insertedRoom, err := fixtures.AddRoom(&tdb.Store, &room)
 	if err != nil {
 		log.Fatal(err)
