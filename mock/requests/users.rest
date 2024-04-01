@@ -59,9 +59,9 @@ content-type: {{contentType}}
 
 ### Update USER 
 # @name UpdateUser
-@userId = {{GetUser.response.body.$.id}}
+@userid = {{GetUser.response.body.$.id}}
 
-PUT  {{host}}/users/{{userId}} HTTP/1.1
+PUT  {{host}}/users/{{userid}} HTTP/1.1
 X-Api-Token: {{token}}
 content-type: {{contentType}}
 Cache-Control: "no-cache"
@@ -75,9 +75,9 @@ Cache-Control: "no-cache"
 
 ### INVALID Update USER
 # @name UpdateUserInvalid
-@userId = {{GetUser.response.body.$.id}}
+@userid = {{GetUser.response.body.$.id}}
 
-PUT  {{host}}/users/{{userId}} HTTP/1.1
+PUT  {{host}}/users/{{userid}} HTTP/1.1
 X-Api-Token: {{token}}
 
 content-type: {{contentType}}
@@ -94,9 +94,9 @@ content-type: {{contentType}}
 
 ### DELETE USER 
 # @name DeleteUser
-@userId = {{GetUser.response.body.$.id}}
+@userid = {{GetUser.response.body.$.id}}
 
-DELETE  {{host}}/users/{{userId}} HTTP/1.1
+DELETE  {{host}}/users/{{userid}} HTTP/1.1
 X-Api-Token: {{token}}
 Cache-Control: "no-cache"
 
