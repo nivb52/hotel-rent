@@ -7,6 +7,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
+	e "github.com/nivb52/hotel-rent/api/errors"
 )
 
 var SECRET []byte
@@ -27,7 +28,7 @@ func GetSecret() []byte {
 func JWTAuthentication(c *fiber.Ctx) error {
 	token, ok := c.GetReqHeaders()["X-Api-Token"]
 	if !ok {
-		return fmt.Errorf("Unauthorized")
+		return e.ErrUnAuthorized()
 	}
 
 	claims, err := validateToken(token)
@@ -57,24 +58,24 @@ func validateToken(tokenStr string) (jwt.MapClaims, error) {
 
 	if err != nil {
 		fmt.Println("failed to parse JWT token", err)
-		return nil, fmt.Errorf("Unauthorized")
+		return nil, e.ErrUnAuthorized()
 	}
 
 	if !token.Valid {
 		fmt.Println("invalid token", err)
-		return nil, fmt.Errorf("Unauthorized")
+		return nil, e.ErrUnAuthorized()
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
 		fmt.Println("invalid claims", claims)
-		return nil, fmt.Errorf("Unauthorized")
+		return nil, e.ErrUnAuthorized()
 	}
 
 	exp := int64(claims["exp"].(float64))
 	if time.Now().UTC().Unix() > exp {
 		fmt.Printf("\n token expired, current value: %d, token value: %d", time.Now().UTC().Unix(), exp)
-		return nil, fmt.Errorf("token expired")
+		return nil, e.ErrTokenExpired()
 	}
 
 	return claims, nil

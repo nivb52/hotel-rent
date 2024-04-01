@@ -2,17 +2,18 @@ package middleware
 
 import (
 	"github.com/gofiber/fiber/v2"
+	e "github.com/nivb52/hotel-rent/api/errors"
 )
 
 func IsAdminAuth(c *fiber.Ctx) error {
 	isAdmin := c.Context().UserValue("isAdmin")
 	if isAdmin == nil {
-		return c.Status(fiber.StatusForbidden).SendString(fiber.ErrForbidden.Message)
+		return e.ErrForbidden(c)
 	}
 	isAdmin = isAdmin.(bool)
 	if isAdmin == true {
 		return c.Next()
 	}
 
-	return c.Status(fiber.StatusForbidden).SendString(fiber.ErrForbidden.Message)
+	return e.ErrForbidden(c)
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
+	e "github.com/nivb52/hotel-rent/api/errors"
 	"github.com/nivb52/hotel-rent/db"
 	"github.com/nivb52/hotel-rent/types"
 )
@@ -23,11 +24,11 @@ func (h *BookingHandler) GetBookingsById(c *fiber.Ctx) error {
 	id := c.Params("id")
 	booking, err := h.store.Booking.GetBookingsById(c.Context(), id)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).SendString(fiber.ErrInternalServerError.Message)
+		return e.ErrInternalServerError(c)
 	}
 
 	if booking == nil {
-		return c.Status(fiber.StatusNotFound).SendString(fiber.ErrNotFound.Message)
+		return e.ErrResourceNotFound(c)
 	}
 
 	return c.JSON(booking)
@@ -42,14 +43,14 @@ func (h *BookingHandler) AdminGetBookings(c *fiber.Ctx) error {
 	bookings, err := h.store.Booking.GetBookings(c.Context(), &whereClause)
 	if err != nil {
 		fmt.Println("GetBookings with filter failed, due: ", err)
-		return c.Status(fiber.StatusInternalServerError).SendString(fiber.ErrInternalServerError.Message)
+		return e.ErrInternalServerError(c)
 	}
 
 	if len(bookings) > 0 {
 		return c.JSON(bookings)
 	}
 
-	return c.Status(fiber.StatusNotFound).SendString(fiber.ErrNotFound.Message)
+	return e.ErrResourceNotFound(c)
 }
 
 // --- GET Bookings ---
@@ -88,7 +89,7 @@ func (h *BookingHandler) GetBookingsByFilter(c *fiber.Ctx, opt *types.GetBooking
 	bookings, err := h.store.Booking.GetBookings(c.Context(), &whereClause)
 	if err != nil {
 		fmt.Println("GetBookings with filter failed, due: ", err)
-		return c.Status(fiber.StatusInternalServerError).SendString(fiber.ErrInternalServerError.Message)
+		return e.ErrInternalServerError(c)
 	}
 
 	fmt.Println("bookings: ", bookings)
@@ -96,7 +97,7 @@ func (h *BookingHandler) GetBookingsByFilter(c *fiber.Ctx, opt *types.GetBooking
 		return c.JSON(bookings)
 	}
 
-	return c.Status(fiber.StatusNotFound).SendString(fiber.ErrNotFound.Message)
+	return e.ErrResourceNotFound(c)
 }
 
 //	--- Make Bookings ---
@@ -104,7 +105,7 @@ func (h *BookingHandler) GetBookingsByFilter(c *fiber.Ctx, opt *types.GetBooking
 // Make a booking without register
 // not implemented
 func (h *BookingHandler) BookARoomByGuest(c *fiber.Ctx) error {
-	return c.Status(fiber.StatusNotImplemented).SendString(fiber.ErrNotImplemented.Message)
+	return e.ErrNotImplemented(c)
 
 }
 
@@ -120,12 +121,12 @@ func (h *BookingHandler) BookARoomByUser(c *fiber.Ctx) error {
 	err := c.BodyParser(&params)
 	if err != nil {
 		fmt.Println("Booking Params to create - Failed to parse, due: ", err)
-		return c.Status(fiber.ErrBadRequest.Code).SendString(fiber.ErrBadRequest.Message)
+		return e.ErrBadRequest(c)
 	}
 
 	if userID == "" || roomID == "" {
 		fmt.Printf("\n Booking Data missing RoomID: %s or UserID: %s", roomID, userID)
-		return c.Status(fiber.ErrBadRequest.Code).SendString(fiber.ErrBadRequest.Message)
+		return e.ErrBadRequest(c)
 	}
 
 	params.RoomID = roomID
@@ -142,21 +143,21 @@ func (h *BookingHandler) BookARoomByUser(c *fiber.Ctx) error {
 	isBooked, err := h.store.Booking.IsRoomAvailable(c.Context(), &whereClause)
 	if err != nil {
 		fmt.Println("Booking Failed - no available room, due: ", err)
-		return c.Status(fiber.ErrConflict.Code).SendString(fiber.ErrConflict.Message)
+		return e.ErrConflict(c)
 	}
 
 	if isBooked {
 		fmt.Println("Booked Already")
-		return c.Status(fiber.ErrConflict.Code).SendString("Those dates where just booked for this room")
+		return e.ErrConflict(c, "Those dates where just booked for this room")
 	}
 
 	booking, err := h.store.Booking.InsertBooking(c.Context(), &params)
 	if err != nil {
 		fmt.Println("Booking Insertion Failed, due: ", err)
-		return c.Status(fiber.ErrConflict.Code).SendString(fiber.ErrConflict.Message)
+		return e.ErrConflict(c)
 	}
 
-	return c.JSON(booking)
+	return c.Status(fiber.StatusAccepted).JSON(booking)
 }
 
 // Cancel Booking
@@ -165,25 +166,25 @@ func (h *BookingHandler) HandleCancelBooking(c *fiber.Ctx) error {
 	booking, err := h.store.Booking.GetBookingsById(c.Context(), id)
 	if err != nil {
 		fmt.Println("GetBookingsById failed, due: ", err)
-		return c.Status(fiber.StatusInternalServerError).SendString(fiber.ErrInternalServerError.Message)
+		return e.ErrInternalServerError(c)
 	}
 
 	userID, ok := c.Context().UserValue("userID").(string)
 	if !ok {
-		return c.Status(fiber.StatusInternalServerError).SendString(fiber.ErrInternalServerError.Message)
+		return e.ErrInternalServerError(c)
 	}
 
 	isSameId, err := db.CompareIDs(userID, booking.UserID)
 	if !isSameId {
 		fmt.Println("CompareIDs failed, due: ", err)
-		return c.Status(fiber.StatusMethodNotAllowed).SendString(fiber.ErrMethodNotAllowed.Message)
+		return e.ErrMethodNotAllowed(c)
 	}
 
 	err = h.store.Booking.CancelBooking(c.Context(), id)
 	if err != nil {
 		fmt.Println("CancelBooking failed, due: ", err)
-		return c.Status(fiber.StatusInternalServerError).SendString(fiber.ErrInternalServerError.Message)
+		return e.ErrInternalServerError(c)
 	}
 
-	return c.Status(fiber.StatusAccepted).SendString("success")
+	return c.Status(fiber.StatusAccepted).JSON(map[string]string{"msg": "ok", "canceld": id})
 }

@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/gofiber/fiber/v2"
+	e "github.com/nivb52/hotel-rent/api/errors"
 	"github.com/nivb52/hotel-rent/db"
 	"github.com/nivb52/hotel-rent/types"
 )
@@ -27,7 +28,7 @@ func (h *UserHandler) HandleGetUser(c *fiber.Ctx) error {
 		return err
 	}
 
-	return c.JSON(user)
+	return c.Status(fiber.StatusAccepted).JSON(user)
 }
 
 func (h *UserHandler) GetUserByEmail(c *fiber.Ctx) error {
@@ -50,7 +51,11 @@ func (h *UserHandler) HandleGetUsers(c *fiber.Ctx) error {
 		return err
 	}
 
-	return c.JSON(users)
+	if len(users) > 0 {
+		return c.JSON(users)
+	}
+
+	return e.ErrResourceNotFound(c)
 }
 
 // Function create a user and returning Json of the new user
@@ -61,7 +66,7 @@ func (h *UserHandler) HandleCreateUser(c *fiber.Ctx) error {
 	}
 
 	if errors := params.Validate(); len(errors) > 0 {
-		return c.JSON(errors)
+		return c.Status(fiber.ErrConflict.Code).JSON(errors)
 	}
 
 	userData, err := types.NewUserFromParams(params)
@@ -74,7 +79,7 @@ func (h *UserHandler) HandleCreateUser(c *fiber.Ctx) error {
 		return err
 	}
 
-	return c.JSON(newUser)
+	return c.Status(fiber.StatusAccepted).JSON(newUser)
 }
 
 // Function delete a user and returning Json {msg: "ok", deleted: id}
@@ -88,7 +93,7 @@ func (h *UserHandler) HandleDeleteUser(c *fiber.Ctx) error {
 		return err
 	}
 
-	return c.JSON(map[string]string{"msg": "ok", "deleted": id})
+	return c.Status(fiber.StatusAccepted).JSON(map[string]string{"msg": "ok", "deleted": id})
 }
 
 // Function update a user and returning Json {msg: "ok", update: id}
@@ -97,7 +102,7 @@ func (h *UserHandler) HandleUpdateUser(c *fiber.Ctx) error {
 
 	var params types.UserParamsForUpdate
 	if err := c.BodyParser(&params); err != nil {
-		return err
+		return e.ErrBadRequest(c, "Invalid Data (JSON) - failed to parse data")
 	}
 
 	if errors := params.Validate(); len(errors) > 0 {
@@ -114,5 +119,5 @@ func (h *UserHandler) HandleUpdateUser(c *fiber.Ctx) error {
 		return err
 	}
 
-	return c.JSON(map[string]string{"msg": "ok", "update": id})
+	return c.Status(fiber.StatusAccepted).JSON(map[string]string{"msg": "ok", "update": id})
 }
