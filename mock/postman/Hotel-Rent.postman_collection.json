@@ -1,78 +1,993 @@
 {
 	"info": {
-		"_postman_id": "0fe0c560-2579-4193-8e4b-a6c5e63ffe54",
+		"_postman_id": "c902276d-4c84-474d-89de-7db52e284d81",
 		"name": "GO - Hotel-Rent",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "7965131"
 	},
 	"item": [
 		{
-			"name": "Get Reservation",
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Auth",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const res = pm.response.json();\r",
+									"pm.environment.set(\"token\", res.token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "content-type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"john.smith@email.com\",\n    \"password\" : \"supersecretpassword\"\n\n}"
+						},
+						"url": {
+							"raw": "{{hostNoVersion}}/auth",
+							"host": [
+								"{{hostNoVersion}}"
+							],
+							"path": [
+								"auth"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "GET ALL USERS",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// const res = pm.response.json()\r",
+									"// console.log(res);\r",
+									"// if (res && res.length) {\r",
+									"//     pm.environment.set(\"userid\", res[2].id);\r",
+									"// }\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Api-Token",
+								"value": "{{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/users",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET USER",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Api-Token",
+								"value": "{{token}}"
+							},
+							{
+								"key": "Cache-Control",
+								"value": "\"no-cache\""
+							}
+						],
+						"url": {
+							"raw": "{{host}}/users/{{userid}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"users",
+								"{{userid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "INVALID USER",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Token",
+								"value": "{{token}}"
+							},
+							{
+								"key": "content-type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"invalid\",\n    \"lastName\": \"data\",\n    \"email\": \"no-valid-email\",\n    \"password\" : \"2\"\n\n}"
+						},
+						"url": {
+							"raw": "{{host}}/users",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CREATE VALID USER",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"\r",
+									"// const res = pm.response.json()\r",
+									"// console.log(res);\r",
+									"// if (res.id) {\r",
+									"//     pm.environment.set(\"userid\", res.id);\r",
+									"// }\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Token",
+								"value": "{{token}}"
+							},
+							{
+								"key": "content-type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Me\",\n    \"lastName\": \"Ali\",\n    \"email\": \"Me_Ali@google.com\",\n    \"password\" : \"12345678\"\n\n}"
+						},
+						"url": {
+							"raw": "{{host}}/users",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update USER",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-Api-Token",
+								"value": "{{token}}"
+							},
+							{
+								"key": "content-type",
+								"value": "application/json"
+							},
+							{
+								"key": "Cache-Control",
+								"value": "\"no-cache\""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Alice\",\n    \"lastName\": \"Bob\"\n}"
+						},
+						"url": {
+							"raw": "{{host}}/users/660c6ee4c493d2fcac39ae61",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"users",
+								"660c6ee4c493d2fcac39ae61"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "INVALID Update USER",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-Api-Token",
+								"value": "{{token}}"
+							},
+							{
+								"key": "content-type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Bob\",\n    \"lastName\": \"Alice\",\n    \"email\": \"alice@google.com\",\n    \"password\" : \"12345678\"\n\n}"
+						},
+						"url": {
+							"raw": "{{host}}/users/660c6ee4c493d2fcac39ae61",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"users",
+								"660c6ee4c493d2fcac39ae61"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE USER",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Api-Token",
+								"value": "{{token}}"
+							},
+							{
+								"key": "Cache-Control",
+								"value": "\"no-cache\""
+							}
+						],
+						"url": {
+							"raw": "{{host}}/users/660c6ee4c493d2fcac39ae61",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"users",
+								"660c6ee4c493d2fcac39ae61"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Hotel",
+			"item": [
+				{
+					"name": "GET ALL HOTELS",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "content-type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/hotels",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"hotels"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET HOTEL",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "content-type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/hotels/{{hotelid}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"hotels",
+								"{{hotelid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET HOTEL ROOMS",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "content-type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/hotels/{{hotelid}}/rooms",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"hotels",
+								"{{hotelid}}",
+								"rooms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE HOTEL - TO BE IMPLEMENT",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "content-type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/hotels/{{hotelid}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"hotels",
+								"{{hotelid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update HOTEL - TO BE IMPLEMENT",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "content-type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"??\": \"??\",\n    \"??\": \"??\"\n}"
+						},
+						"url": {
+							"raw": "{{host}}/hotels/{{hotelid}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"hotels",
+								"{{hotelid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "INVALID Update HOTEL - TO BE IMPLEMENT",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "content-type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"??\": \"??\",\n    \"??\": \"??\"\n}"
+						},
+						"url": {
+							"raw": "{{host}}/hotels/65131d11018dc4d220422108",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"hotels",
+								"65131d11018dc4d220422108"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Booking",
+			"item": [
+				{
+					"name": "GetAllBookings",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Api-Token",
+								"value": "{{token}}"
+							},
+							{
+								"key": "content-type",
+								"value": "application/json"
+							},
+							{
+								"key": "Cache-Control",
+								"value": "\"no-cache\""
+							}
+						],
+						"url": {
+							"raw": "{{host}}/bookings/admin",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"bookings",
+								"admin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetSingleBooking",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Api-Token",
+								"value": "{{token}}"
+							},
+							{
+								"key": "content-type",
+								"value": "application/json"
+							},
+							{
+								"key": "Cache-Control",
+								"value": "\"no-cache\""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/bookings/{{BOOKING_ID}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"bookings",
+								"{{BOOKING_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetAllUserBookings",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Api-Token",
+								"value": "{{token}}"
+							},
+							{
+								"key": "content-type",
+								"value": "application/json"
+							},
+							{
+								"key": "Cache-Control",
+								"value": "\"no-cache\""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/bookings/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"bookings",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetBookingsByFilter-Room-Only",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Token",
+								"value": "{{token}}"
+							},
+							{
+								"key": "content-type",
+								"value": "application/json"
+							},
+							{
+								"key": "Cache-Control",
+								"value": "\"no-cache\""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{host}}/rooms/{{ROOM_ID}}/bookings",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"rooms",
+								"{{ROOM_ID}}",
+								"bookings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetBookingsByFilter-Dates",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Token",
+								"value": "{{token}}"
+							},
+							{
+								"key": "content-type",
+								"value": "application/json"
+							},
+							{
+								"key": "Cache-Control",
+								"value": "\"no-cache\""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "   {\r\n        \"fromDate\": \"2024-04-03T21:56:11.616Z\",\r\n        \"tillDate\": \"2024-04-05T21:56:11.617Z\"\r\n    }"
+						},
+						"url": {
+							"raw": "{{host}}/rooms/{{ROOM_ID}}/bookings",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"rooms",
+								"{{ROOM_ID}}",
+								"bookings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Reservation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Token",
+								"type": "text",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fromDate\": \"2024-02-16T16:00:00Z\",\n    \"tillDate\": \"2024-02-26T16:00:00Z\",\n    \"numPersons\": 2\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/rooms/{{ROOM_ID}}/book",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"rooms",
+								"{{ROOM_ID}}",
+								"book"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Reservation",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": ""
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Reservation",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Api-Token",
+								"type": "text",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{host}}/bookings/65cf72ea4332d8ea7527a891",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"bookings",
+								"65cf72ea4332d8ea7527a891"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "cancelBooking",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": ""
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateBooking",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Token",
+								"value": "{{token}}"
+							},
+							{
+								"key": "content-type",
+								"value": "application/json"
+							},
+							{
+								"key": "Cache-Control",
+								"value": "\"no-cache\""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fromDate\": \"{{$datetime iso8601 1 d}}\",\n    \"tillDate\": \"{{$datetime iso8601 5 d}}\",\n    \"numPersons\": 2\n}"
+						},
+						"url": {
+							"raw": "{{host}}/rooms/{{ROOM_ID}}/book",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"rooms",
+								"{{ROOM_ID}}",
+								"book"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateBooking-Error-InvalidAvilability",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Token",
+								"value": "{{token}}"
+							},
+							{
+								"key": "content-type",
+								"value": "application/json"
+							},
+							{
+								"key": "Cache-Control",
+								"value": "\"no-cache\""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fromDate\": \"{{$datetime iso8601 1 d}}\",\n    \"tillDate\": \"{{$datetime iso8601 4 d}}\",\n    \"numPersons\": 3\n}"
+						},
+						"url": {
+							"raw": "{{host}}/rooms/{{ROOM_ID}}/book",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"rooms",
+								"{{ROOM_ID}}",
+								"book"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateBooking-Error-InvalidDate-DateInThePast",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Token",
+								"value": "{{token}}"
+							},
+							{
+								"key": "content-type",
+								"value": "application/json"
+							},
+							{
+								"key": "Cache-Control",
+								"value": "\"no-cache\""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fromDate\": \"{{$datetime iso8601 -5 d}}\",\n    \"tillDate\": \"{{$datetime iso8601 -2 d}}\",\n    \"numPersons\": 1\n}"
+						},
+						"url": {
+							"raw": "{{host}}/rooms/{{ROOM_ID}}/book",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"rooms",
+								"{{ROOM_ID}}",
+								"book"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateBooking-Error-InvalidePersons-MoreThen100",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Token",
+								"value": "{{token}}"
+							},
+							{
+								"key": "content-type",
+								"value": "application/json"
+							},
+							{
+								"key": "Cache-Control",
+								"value": "\"no-cache\""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fromDate\": \"{{$datetime iso8601}}\",\n    \"tillDate\": \"{{$datetime iso8601 1 d}}\",\n    \"numPersons\": 101\n}"
+						},
+						"url": {
+							"raw": "{{host}}/rooms/{{ROOM_ID}}/book",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"rooms",
+								"{{ROOM_ID}}",
+								"book"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateBooking-Error-InvalidDate-TillSmallerThenFrom",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Token",
+								"value": "{{token}}"
+							},
+							{
+								"key": "content-type",
+								"value": "application/json"
+							},
+							{
+								"key": "Cache-Control",
+								"value": "\"no-cache\""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fromDate\": \"{{$datetime iso8601 5 d}}\",\n    \"tillDate\": \"{{$datetime iso8601 2 d}}\",\n    \"numPersons\": 1\n}"
+						},
+						"url": {
+							"raw": "{{host}}/rooms/{{ROOM_ID}}/book",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"rooms",
+								"{{ROOM_ID}}",
+								"book"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateBooking-Error-InvalidePersons-LessThen1",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Token",
+								"value": "{{token}}"
+							},
+							{
+								"key": "content-type",
+								"value": "application/json"
+							},
+							{
+								"key": "Cache-Control",
+								"value": "\"no-cache\""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fromDate\": \"{{$datetime iso8601}}\",\n    \"tillDate\": \"{{$datetime iso8601 1 d}}\",\n    \"numPersons\": 0\n}"
+						},
+						"url": {
+							"raw": "{{host}}/rooms/{{ROOM_ID}}/book",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"rooms",
+								"{{ROOM_ID}}",
+								"book"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Test",
 			"request": {
 				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": ""
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Delete Reservation",
-			"request": {
-				"method": "DELETE",
 				"header": [
 					{
-						"key": "X-Api-Token",
-						"type": "text",
-						"value": "{{token}}"
+						"key": "content-type",
+						"value": "application/json"
 					}
 				],
-				"body": {
-					"mode": "formdata",
-					"formdata": []
-				},
 				"url": {
-					"raw": "{{host}}/bookings/65cf72ea4332d8ea7527a891",
-					"host": [
-						"{{host}}"
-					],
+					"raw": "{{hostNoVersion}}:///",
+					"protocol": "{{hostNoVersion}}",
 					"path": [
-						"bookings",
-						"65cf72ea4332d8ea7527a891"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Reservation",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "X-Api-Token",
-						"type": "text",
-						"value": "{{token}}"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"fromDate\": \"2024-02-16T16:00:00Z\",\n    \"tillDate\": \"2024-02-26T16:00:00Z\",\n    \"numPersons\": 2\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{host}}/rooms/{{ROOM_ID}}/book",
-					"host": [
-						"{{host}}"
-					],
-					"path": [
-						"rooms",
-						"{{ROOM_ID}}",
-						"book"
+						""
 					]
 				}
 			},
@@ -97,6 +1012,16 @@
 					""
 				]
 			}
+		}
+	],
+	"variable": [
+		{
+			"key": "host",
+			"value": "host"
+		},
+		{
+			"key": "hostNoVersion",
+			"value": "http://localhost:5000/api"
 		}
 	]
 }
