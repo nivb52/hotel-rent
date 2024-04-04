@@ -1,4 +1,10 @@
 # Release Notes
+### v17: (37)
+Error Handler
+- FEAT: Error Handler 
+- FIX: Dates lookup in IsRoomAvailable func
+
+
 ### v16: (36)
 Test Booking (step 3 - last step)
 - FEAT: Test Helper -  Auto Data Compare 
