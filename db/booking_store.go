@@ -53,7 +53,11 @@ func (s *MongoBookingStore) GetBookingsById(ctx context.Context, ID string) (*ty
 	var booking types.Booking
 	err = s.coll.FindOne(ctx, bson.M{"_id": OID}).Decode(&booking)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, nil
+		} else {
+			return nil, err
+		}
 	}
 
 	return &booking, nil
@@ -112,8 +116,8 @@ func (s *MongoBookingStore) IsRoomAvailable(ctx context.Context, where *types.Bo
 	var reserved *types.Booking
 	err = s.coll.FindOne(ctx, filter).Decode(&reserved)
 	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return false, nil
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return true, nil
 		}
 
 		return false, err
@@ -127,7 +131,6 @@ func (s *MongoBookingStore) IsRoomAvailable(ctx context.Context, where *types.Bo
 }
 
 // ## Updates
-
 func (s *MongoBookingStore) InsertBooking(ctx context.Context, rawData *types.BookingParamsForCreate) (*types.Booking, error) {
 
 	RoomOID, err := primitive.ObjectIDFromHex(rawData.RoomID)
@@ -179,8 +182,7 @@ func (s *MongoBookingStore) CancelBooking(ctx context.Context, id string) error 
 
 // ## Helpers
 
-// build query for lookup a booking
-// return example bson.M{"_id": roomOID, "fromDate": {$gte: fromDate}, "tillDate": {$lte: tillDate}}
+// build query for lookup a booking, includes filter by dates to find existing booking
 func buildBookingFilter(filterData *types.BookingFilter) (bson.M, error) {
 	filter := bson.M{}
 
@@ -193,16 +195,108 @@ func buildBookingFilter(filterData *types.BookingFilter) (bson.M, error) {
 		filter["roomID"] = roomOID
 	}
 
-	if !filterData.FromDate.IsZero() {
-		filter["fromDate"] = bson.M{
-			"$gte": filterData.FromDate,
+	// Find Apartment which ALREADY reserved:
+	// fromDate       	   tillDate    start----end new reservation
+	//  <------------------------->    *--------**     <-- should be allowed to book
+	//  start---end     fromDate  		   tillDate
+	//  *--------** <----------------------------->    <-- should be allowed to book
+	// fromDate        new reservation    tillDate
+	//  <----------------*-----------**------------>   <-- should NOT be allowed to book
+	//  start    fromDate   end reservation   tillDate
+	//  *--------------<------**------------------>   <-- should NOT be allowed to book
+	//  fromDate   start reservation   tillDate   end reservation
+	//  <----------------*--------------------->----**   <-- should NOT be allowed to book
+	if !filterData.FromDate.IsZero() && !filterData.TillDate.IsZero() {
+		if filter["$or"] == nil {
+			filter["$or"] = []bson.M{}
 		}
+		startDate := (filterData.FromDate)
+		endDate := (filterData.TillDate)
+
+		filter["$or"] = append(filter["$or"].([]bson.M),
+			bson.M{"$and": []bson.M{
+				{"fromDate": bson.M{"$gte": startDate}},
+				{"fromDate": bson.M{"$lte": endDate}},
+			}},
+			bson.M{"$and": []bson.M{
+				{"tillDate": bson.M{"$gte": startDate}},
+				{"tillDate": bson.M{"$lte": endDate}},
+			}},
+			bson.M{"$and": []bson.M{
+				{"fromDate": bson.M{"$lte": startDate}},
+				{"tillDate": bson.M{"$gte": endDate}},
+			}},
+		)
+	} else if !filterData.FromDate.IsZero() {
+		if filter["$and"] == nil {
+			filter["$and"] = []bson.M{}
+		}
+		endDate := (filterData.TillDate)
+		filter["$and"] = append(filter["$and"].([]bson.M),
+			bson.M{"tillDate": bson.M{"$lte": endDate}},
+		)
+	} else if !filterData.TillDate.IsZero() {
+		if filter["$and"] == nil {
+			filter["$and"] = []bson.M{}
+		}
+		startDate := (filterData.FromDate)
+		filter["$and"] = append(filter["$and"].([]bson.M),
+			bson.M{"fromDate": bson.M{"$gte": startDate}},
+		)
 	}
 
-	if !filterData.TillDate.IsZero() {
-		filter["tillDate"] = bson.M{
-			"$lte": filterData.TillDate,
+	fmt.Println("built filter: ", filter, " Out of: ", filterData)
+	return filter, nil
+}
+
+// build query for lookup a booking
+func buildFreeDatesBookingFilter(filterData *types.BookingFilter) (bson.M, error) {
+	filter := bson.M{}
+
+	if filterData.RoomID != "" {
+		roomOID, err := primitive.ObjectIDFromHex(filterData.RoomID)
+		if err != nil {
+			return nil, err
 		}
+
+		filter["roomID"] = roomOID
+	}
+
+	if filter["$and"] == nil {
+		filter["$and"] = []bson.M{}
+	}
+	// Find Apartment which IS NOT reserved:
+	// fromDate       	   tillDate    start----end new reservation
+	//  <------------------------->    *--------**     <-- should be allowed to book
+	//  start---end     fromDate  		   tillDate
+	//  *--------** <----------------------------->    <-- should be allowed to book
+	// fromDate        new reservation    tillDate
+	//  <----------------*-----------**------------>   <-- should NOT be allowed to book
+	//  start    fromDate   end reservation   tillDate
+	//  *--------------<------**------------------>   <-- should NOT be allowed to book
+	//  fromDate   start reservation   tillDate   end reservation
+	//  <----------------*--------------------->----**   <-- should NOT be allowed to book
+	if !filterData.FromDate.IsZero() && !filterData.TillDate.IsZero() {
+		startDate := (filterData.FromDate)
+		endDate := (filterData.TillDate)
+		filter["$and"] = append(filter["$and"].([]bson.M),
+			bson.M{"$or": []bson.M{
+				{"fromDate": bson.M{"$gt": endDate}},
+			}},
+			bson.M{"$or": []bson.M{
+				{"tillDate": bson.M{"$lt": startDate}},
+			}},
+		)
+	} else if !filterData.FromDate.IsZero() {
+		startDate := (filterData.FromDate)
+		filter["$and"] = append(filter["$and"].([]bson.M),
+			bson.M{"tillDate": bson.M{"$lt": startDate}},
+		)
+	} else if !filterData.TillDate.IsZero() {
+		endDate := (filterData.TillDate)
+		filter["$and"] = append(filter["$and"].([]bson.M),
+			bson.M{"fromDate": bson.M{"$gt": endDate}},
+		)
 	}
 
 	fmt.Println("built filter: ", filter, " Out of: ", filterData)
