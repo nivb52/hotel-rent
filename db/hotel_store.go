@@ -14,8 +14,7 @@ import (
 
 const hotelColl = "hotels"
 
-//@TODO: consider not use in the interface the filter as bson.M
-// maybe try use []*FilterString, []*FilterInt or json ?
+type Map map[string]any
 
 type HotelStore interface {
 	GetHotelByID(context.Context, string) (*types.Hotel, error)
@@ -23,7 +22,7 @@ type HotelStore interface {
 	InsertHotel(context.Context, *types.Hotel) (*types.Hotel, error)
 	UpdateHotelByID(context.Context, string, *types.Hotel) (*types.Hotel, error)
 
-	UpdateHotel(context.Context, bson.M, bson.M) error
+	UpdateHotel(context.Context, Map, Map) error
 	AddHotelRoom(context.Context, string, string) error
 	AddHotelRooms(context.Context, primitive.ObjectID, *[]primitive.ObjectID) error
 }
@@ -91,7 +90,7 @@ func (s *MongoHotelStore) InsertHotel(ctx context.Context, hotel *types.Hotel) (
 }
 
 // deprecated
-func (s *MongoHotelStore) UpdateHotel(ctx context.Context, filter bson.M, update bson.M) error {
+func (s *MongoHotelStore) UpdateHotel(ctx context.Context, filter Map, update Map) error {
 	_, err := s.coll.UpdateOne(ctx,
 		filter,
 		update,
