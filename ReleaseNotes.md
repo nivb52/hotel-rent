@@ -1,4 +1,7 @@
 # Release Notes
+### v18: (38)
+- REF: Remove interface dependency in mongo (small architecture change)
+
 ### v17.5: (37)
 Error Handler 2
 - REF: Improve custom booking errors 
