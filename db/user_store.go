@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/nivb52/hotel-rent/types"
@@ -25,7 +26,6 @@ type UserStore interface {
 	InsertUser(context.Context, *types.User) (*types.User, error)
 	DeleteUser(context.Context, string) error
 	UpdateUserByID(context.Context, string, *types.User) (*types.User, error)
-	// UpdateUser(context.Context, *[]types.User) (*types.User, error)
 }
 
 type MongoUserStore struct {
@@ -96,7 +96,7 @@ func (s *MongoUserStore) InsertUser(ctx context.Context, user *types.User) (*typ
 		user.ID = insertedID
 	} else {
 		fmt.Printf("Failed:: res.InsertedID is not a primitive.ObjectID: %v", res.InsertedID)
-		// Handle the case where the type assertion failed (?)
+		return nil, errors.New("Update Failed")
 	}
 	return user, nil
 }
