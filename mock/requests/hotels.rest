@@ -27,30 +27,30 @@ content-type: {{contentType}}
 
 ### GET HOTEL
 # @name GetHotel
-@hotelId = {{GetHotels.response.body.$.id}}
+@hotelid = {{GetHotels.response.body.$.id}}
 
-GET {{host}}/hotels/{{hotelId}} HTTP/1.1
+GET {{host}}/hotels/{{hotelid}} HTTP/1.1
 content-type: {{contentType}}
 
 ### GET HOTEL ROOMS
 # @name GetHotelRooms
-@hotelId = {{GetHotel.response.body.$.id}}
+@hotelid = {{GetHotel.response.body.$.id}}
 
-GET {{host}}/hotels/{{hotelId}}/rooms HTTP/1.1
+GET {{host}}/hotels/{{hotelid}}/rooms HTTP/1.1
 content-type: {{contentType}}
 
 ### DELETE HOTEL - TO BE IMPLEMENT 
 # @name DeleteHotel
-@hotelId = {{GetHotel.response.body.$.id}}
+@hotelid = {{GetHotel.response.body.$.id}}
 
-DELETE  {{host}}/hotels/{{hotelId}} HTTP/1.1
+DELETE  {{host}}/hotels/{{hotelid}} HTTP/1.1
 content-type: {{contentType}}
 
 ### Update HOTEL - TO BE IMPLEMENT 
 # @name  UpdateHotel
-@hotelId = {{GetHotel.response.body.$.id}}
+@hotelid = {{GetHotel.response.body.$.id}}
 
-PUT  {{host}}/hotels/{{hotelId}} HTTP/1.1
+PUT  {{host}}/hotels/{{hotelid}} HTTP/1.1
 content-type: {{contentType}}
 
 {
