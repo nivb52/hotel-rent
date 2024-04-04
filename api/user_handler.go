@@ -1,6 +1,8 @@
 package api
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 	e "github.com/nivb52/hotel-rent/api/errors"
 	"github.com/nivb52/hotel-rent/db"
@@ -76,7 +78,8 @@ func (h *UserHandler) HandleCreateUser(c *fiber.Ctx) error {
 
 	newUser, err := h.userStore.InsertUser(c.Context(), userData)
 	if err != nil {
-		return err
+		fmt.Println("InsertUsere Failed, due: ", err)
+		return e.ErrInternalServerError(c)
 	}
 
 	return c.Status(fiber.StatusAccepted).JSON(newUser)
