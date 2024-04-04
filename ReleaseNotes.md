@@ -1,4 +1,8 @@
 # Release Notes
+### v17.5: (37)
+Error Handler 2
+- REF: Improve custom booking errors 
+
 ### v17: (37)
 Error Handler
 - FEAT: Error Handler 
