@@ -78,7 +78,6 @@ func Booking(userID string, roomID string, intSeeds ...int) types.BookingParamsF
 		if idx == 2 {
 			randomPersonsMin = val
 		}
-
 	}
 
 	from := time.Now()
