@@ -55,7 +55,7 @@ func ErrForbidden(c *fiber.Ctx) error {
 }
 
 func ErrBadRequest(c *fiber.Ctx, reason ...string) error {
-	msg := fiber.ErrBadRequest.Message
+	msg := "Invalid Input"
 	if len(reason) > 0 {
 		msg = reason[0]
 	}
@@ -66,8 +66,12 @@ func ErrResourceNotFound(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusNotFound).SendString(fiber.ErrNotFound.Message)
 }
 
-func ErrMethodNotAllowed(c *fiber.Ctx) error {
-	return c.Status(fiber.StatusMethodNotAllowed).SendString(fiber.ErrMethodNotAllowed.Message)
+func ErrMethodNotAllowed(c *fiber.Ctx, reason ...string) error {
+	msg := fiber.ErrMethodNotAllowed.Message
+	if len(reason) > 0 {
+		msg = reason[0]
+	}
+	return c.Status(fiber.StatusMethodNotAllowed).SendString(msg)
 }
 
 func ErrConflict(c *fiber.Ctx, reason ...string) error {
@@ -78,8 +82,12 @@ func ErrConflict(c *fiber.Ctx, reason ...string) error {
 	return c.Status(fiber.ErrConflict.Code).SendString(msg)
 }
 
-func ErrInternalServerError(c *fiber.Ctx) error {
-	return c.Status(fiber.StatusInternalServerError).SendString(fiber.ErrInternalServerError.Message)
+func ErrInternalServerError(c *fiber.Ctx, reason ...string) error {
+	msg := fiber.ErrInternalServerError.Message
+	if len(reason) > 0 {
+		msg = reason[0]
+	}
+	return c.Status(fiber.StatusInternalServerError).SendString(msg)
 }
 
 func ErrNotImplemented(c *fiber.Ctx) error {

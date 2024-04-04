@@ -125,8 +125,7 @@ func (h *BookingHandler) BookARoomByUser(c *fiber.Ctx) error {
 	}
 
 	if userID == "" || roomID == "" {
-		fmt.Printf("\n Booking Data missing RoomID: %s or UserID: %s", roomID, userID)
-		return e.ErrBadRequest(c)
+		return e.ErrBadRequest(c, fmt.Sprintf("Booking Data missing RoomID: %s or UserID: %s", roomID, userID))
 	}
 
 	params.RoomID = roomID
@@ -142,8 +141,8 @@ func (h *BookingHandler) BookARoomByUser(c *fiber.Ctx) error {
 	whereClause.TillDate = params.TillDate
 	isAvailable, err := h.store.Booking.IsRoomAvailable(c.Context(), &whereClause)
 	if err != nil {
-		fmt.Println("Booking Failed - no available room, due: ", err)
-		return e.ErrConflict(c)
+		fmt.Println("IsRoomAvailable Failed, due: ", err)
+		return e.ErrInternalServerError(c, "Pre booking proccess failed - We couldn't find if those dates are free")
 	}
 	if !isAvailable {
 		fmt.Println("Booked Already")
@@ -152,8 +151,8 @@ func (h *BookingHandler) BookARoomByUser(c *fiber.Ctx) error {
 
 	booking, err := h.store.Booking.InsertBooking(c.Context(), &params)
 	if err != nil {
-		fmt.Println("Booking Insertion Failed, due: ", err)
-		return e.ErrConflict(c)
+		fmt.Println("InsertBooking Failed, due: ", err)
+		return e.ErrInternalServerError(c, "Booking proccess failed")
 	}
 
 	return c.Status(fiber.StatusAccepted).JSON(booking)
@@ -170,13 +169,17 @@ func (h *BookingHandler) HandleCancelBooking(c *fiber.Ctx) error {
 
 	userID, ok := c.Context().UserValue("userID").(string)
 	if !ok {
-		return e.ErrInternalServerError(c)
+		return e.ErrConflict(c, "Token may expired")
 	}
 
 	isSameId, err := db.CompareIDs(userID, booking.UserID)
-	if !isSameId {
+	if err != nil {
 		fmt.Println("CompareIDs failed, due: ", err)
-		return e.ErrMethodNotAllowed(c)
+		return e.ErrInternalServerError(c)
+	}
+	if !isSameId {
+		fmt.Println("User not own this reservation")
+		return e.ErrMethodNotAllowed(c, "Please login again")
 	}
 
 	err = h.store.Booking.CancelBooking(c.Context(), id)
