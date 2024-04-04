@@ -140,13 +140,12 @@ func (h *BookingHandler) BookARoomByUser(c *fiber.Ctx) error {
 	whereClause.RoomID = roomID
 	whereClause.FromDate = params.FromDate
 	whereClause.TillDate = params.TillDate
-	isBooked, err := h.store.Booking.IsRoomAvailable(c.Context(), &whereClause)
+	isAvailable, err := h.store.Booking.IsRoomAvailable(c.Context(), &whereClause)
 	if err != nil {
 		fmt.Println("Booking Failed - no available room, due: ", err)
 		return e.ErrConflict(c)
 	}
-
-	if isBooked {
+	if !isAvailable {
 		fmt.Println("Booked Already")
 		return e.ErrConflict(c, "Those dates where just booked for this room")
 	}
