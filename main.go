@@ -30,7 +30,7 @@ var appConfig = fiber.Config{
 		if errors.As(err, &e) {
 			code = e.Code
 		}
-		return ctx.Status(fiber.StatusInternalServerError).SendString(fmt.Sprintf("Internal Server Error: %s | code: %d", err.Error(), code))
+		return ctx.Status(code).SendString(fmt.Sprintf("Internal Server Error: %s | code: %d", err.Error(), code))
 	},
 }
 
