@@ -8,21 +8,20 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/nivb52/hotel-rent/types"
 )
 
 const hotelColl = "hotels"
 
-type Map map[string]any
-
 type HotelStore interface {
 	GetHotelByID(context.Context, string) (*types.Hotel, error)
-	GetHotels(context.Context) (*[]types.Hotel, error)
+	GetHotels(context.Context, *types.HotelFilter, *Pagination) (*[]types.Hotel, error)
 	InsertHotel(context.Context, *types.Hotel) (*types.Hotel, error)
 	UpdateHotelByID(context.Context, string, *types.Hotel) (*types.Hotel, error)
 
-	UpdateHotel(context.Context, Map, Map) error
+	UpdateHotel(context.Context, types.Map, types.Map) error
 	AddHotelRoom(context.Context, string, string) error
 	AddHotelRooms(context.Context, primitive.ObjectID, *[]primitive.ObjectID) error
 }
@@ -57,9 +56,21 @@ func (s *MongoHotelStore) GetHotelByID(ctx context.Context, id string) (*types.H
 	return &hotel, nil
 }
 
-func (s *MongoHotelStore) GetHotels(ctx context.Context) (*[]types.Hotel, error) {
+func (s *MongoHotelStore) GetHotels(ctx context.Context, filter *types.HotelFilter, p *Pagination) (*[]types.Hotel, error) {
 	var hotels []types.Hotel
-	cur, err := s.coll.Find(ctx, bson.M{})
+	// set max results
+	if p.Limit > 50 {
+		p.Limit = 50
+	}
+	opts := options.FindOptions{}
+	opts.SetSkip(int64((p.Page - 1) * p.Limit))
+	opts.SetLimit(int64(p.Limit))
+
+	//@TODO: change to build filter same as in bookink_store
+	mongofilter := bson.M{}
+	mongofilter["rating"] = bson.M{"$gte": filter.Rating}
+
+	cur, err := s.coll.Find(ctx, mongofilter, &opts)
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +101,7 @@ func (s *MongoHotelStore) InsertHotel(ctx context.Context, hotel *types.Hotel) (
 }
 
 // deprecated
-func (s *MongoHotelStore) UpdateHotel(ctx context.Context, filter Map, update Map) error {
+func (s *MongoHotelStore) UpdateHotel(ctx context.Context, filter types.Map, update types.Map) error {
 	_, err := s.coll.UpdateOne(ctx,
 		filter,
 		update,
