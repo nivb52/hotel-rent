@@ -71,14 +71,17 @@ type Room struct {
 }
 
 type HotelFilter struct {
+	Rating int8 `bson:"rating,omitempty" json:"rating,omitempty"`
+	RoomsFilter
+}
+
+type RoomsFilter struct {
+	Rooms    bool      `json:"rooms,omitempty"`
 	FromDate time.Time `bson:"fromDate,omitempty" json:"fromDate"`
 	TillDate time.Time `bson:"tillDate,omitempty" json:"tillDate"`
-	//future option to include rooms details
-	Rooms     bool `json:"rooms,omitempty"`
-	Rating    int8 `bson:"rating,omitempty" json:"rating,omitempty"`
-	RoomType  int  `bson:"type,omitempty" json:"type,omitempty"`
-	BedType   int  `bson:"bedType,omitempty" json:"bedType,omitempty"`
-	RoomSize  int  `bson:"size,omitempty" json:"size,omitempty"`
-	TillPrice int  `bson:"tillPrice,omitempty" json:"tillPrice,omitempty"`
-	FromPrice int  `bson:"from_price,omitempty" json:"fromPrice,omitempty"`
+	RoomType int       `bson:"type,omitempty" json:"type,omitempty"`
+	BedType  int       `bson:"bedType,omitempty" json:"bedType,omitempty"`
+	RoomSize int       `bson:"size,omitempty" json:"size,omitempty"`
+	MinPrice int       `bson:"price,omitempty" json:"minPrice,omitempty"`
+	MaxPrice int       `bson:"price,omitempty" json:"maxPrice,omitempty"`
 }

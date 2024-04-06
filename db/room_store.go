@@ -177,19 +177,19 @@ func buildHotelRoomsFilter(filterData *types.HotelFilter) (bson.M, error) {
 		}
 	}
 
-	if filterData.TillPrice > 0 && filterData.FromPrice > 0 {
+	if filterData.MaxPrice > 0 && filterData.MinPrice > 0 {
 		filter["price"] = bson.M{
-			"$gte": filterData.TillPrice,
-			"$lte": filterData.TillPrice,
+			"$gte": filterData.MaxPrice,
+			"$lte": filterData.MaxPrice,
 		}
 	} else {
-		if filterData.TillPrice > 0 && filterData.FromPrice == 0 {
+		if filterData.MaxPrice > 0 && filterData.MinPrice == 0 {
 			filter["price"] = bson.M{
-				"$gte": filterData.TillPrice,
+				"$gte": filterData.MaxPrice,
 			}
-		} else if filterData.FromPrice > 0 && filterData.TillPrice == 0 {
+		} else if filterData.MinPrice > 0 && filterData.MaxPrice == 0 {
 			filter["price"] = bson.M{
-				"$lte": filterData.FromPrice,
+				"$lte": filterData.MinPrice,
 			}
 		}
 	}
