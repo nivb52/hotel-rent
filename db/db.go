@@ -13,14 +13,9 @@ type Store struct {
 	Booking BookingStore
 }
 
-type FilterString struct {
-	Key   string
-	Value string
-}
-
-type FilterInt struct {
-	Key   string
-	Value int
+type Pagination struct {
+	Page  int `json:"page"`
+	Limit int `json:"limit"`
 }
 
 func GetDBUri(dburi string, customDburi ...string) string {
