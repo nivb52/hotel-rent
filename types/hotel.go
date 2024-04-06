@@ -73,7 +73,8 @@ type Room struct {
 type HotelFilter struct {
 	FromDate time.Time `bson:"fromDate,omitempty" json:"fromDate"`
 	TillDate time.Time `bson:"tillDate,omitempty" json:"tillDate"`
-
+	//future option to include rooms details
+	Rooms     bool `json:"rooms,omitempty"`
 	Rating    int8 `bson:"rating,omitempty" json:"rating,omitempty"`
 	RoomType  int  `bson:"type,omitempty" json:"type,omitempty"`
 	BedType   int  `bson:"bedType,omitempty" json:"bedType,omitempty"`
