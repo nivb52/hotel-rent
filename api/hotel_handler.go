@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
+	e "github.com/nivb52/hotel-rent/api/errors"
 	"github.com/nivb52/hotel-rent/db"
 	"github.com/nivb52/hotel-rent/types"
 )
@@ -19,18 +20,18 @@ func NewHotelHandler(store *db.Store) *HotelHandler {
 }
 
 type HotelQueryParams struct {
-	Rooms  bool
-	Rating int
+	types.HotelFilter
+	db.Pagination
 }
 
 func (h *HotelHandler) HandleGetHotels(c *fiber.Ctx) error {
-	// var qParams HotelQueryParams
-	// err := c.QueryParser(qParams)
-	// if err != nil {
-	// 	return err
-	// }
+	var qParams HotelQueryParams
+	err := c.QueryParser(&qParams)
+	if err != nil {
+		return e.ErrConflict(c, "Those missing filter data")
+	}
 
-	hotels, err := h.store.Hotel.GetHotels(c.Context())
+	hotels, err := h.store.Hotel.GetHotels(c.Context(), &qParams.HotelFilter, &qParams.Pagination)
 	if err != nil {
 		return err
 	}
