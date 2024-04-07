@@ -1,8 +1,6 @@
 package types
 
 import (
-	"time"
-
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -13,11 +11,12 @@ type HotelRequiredData struct {
 }
 
 type Hotel struct {
-	ID       primitive.ObjectID   `bson:"_id,omitempty" json:"id,omitempty"`
-	Name     string               `bson:"name" json:"name"`
-	Location string               `bson:"location" json:"location"`
-	Rooms    []primitive.ObjectID `bson:"rooms" json:"rooms"`
-	Rating   int8                 `bson:"rating" json:"rating"` // Rating by the rating oganization (not reviwers)
+	ID        primitive.ObjectID   `bson:"_id,omitempty" json:"id,omitempty"`
+	Name      string               `bson:"name" json:"name"`
+	Location  string               `bson:"location" json:"location"`
+	Rooms     []primitive.ObjectID `bson:"rooms" json:"rooms"`
+	RoomsInfo []Room               `bson:"rooms_info" json:"rooms_info,omitempty"`
+	Rating    int8                 `bson:"rating" json:"rating"` // Rating by the rating oganization (not reviwers)
 	// Reviewers   int32                `bson:"reviewers" json:"reviewers"`
 	// ReviersScore
 
@@ -75,13 +74,27 @@ type HotelFilter struct {
 	RoomsFilter
 }
 
+func (hf HotelFilter) HasHotelilter() bool {
+	if hf.Rating > 0 {
+		return true // Struct is considerd not empty
+	}
+
+	return false
+}
+
 type RoomsFilter struct {
-	Rooms    bool      `json:"rooms,omitempty"`
-	FromDate time.Time `bson:"fromDate,omitempty" json:"fromDate"`
-	TillDate time.Time `bson:"tillDate,omitempty" json:"tillDate"`
-	RoomType int       `bson:"type,omitempty" json:"type,omitempty"`
-	BedType  int       `bson:"bedType,omitempty" json:"bedType,omitempty"`
-	RoomSize int       `bson:"size,omitempty" json:"size,omitempty"`
-	MinPrice int       `bson:"price,omitempty" json:"minPrice,omitempty"`
-	MaxPrice int       `bson:"price,omitempty" json:"maxPrice,omitempty"`
+	Rooms bool `json:"rooms,omitempty"`
+	// RoomType int       `json:"type,omitempty"`
+	BedType  int    `json:"bedType,omitempty"`
+	RoomSize string `json:"size,omitempty"`
+	MinPrice int    `json:"minPrice,omitempty"`
+	MaxPrice int    `json:"maxPrice,omitempty"`
+	DatesFilter
+}
+
+func (rf RoomsFilter) HasRoomsFilter() bool {
+	if rf.Rooms {
+		return true // Struct is considerd not empty
+	}
+	return false
 }
