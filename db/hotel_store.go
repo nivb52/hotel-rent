@@ -16,7 +16,7 @@ const hotelColl = "hotels"
 
 type HotelStore interface {
 	GetHotelByID(context.Context, string) (*types.Hotel, error)
-	GetHotels(context.Context, *types.HotelFilter, *Pagination) (*[]types.Hotel, error)
+	GetHotels(context.Context, *types.HotelFilter, *Pagination) (*[]types.Hotel, int64, error)
 	InsertHotel(context.Context, *types.Hotel) (*types.Hotel, error)
 	UpdateHotelByID(context.Context, string, *types.Hotel) (*types.Hotel, error)
 
@@ -55,35 +55,37 @@ func (s *MongoHotelStore) GetHotelByID(ctx context.Context, id string) (*types.H
 	return &hotel, nil
 }
 
-func (s *MongoHotelStore) GetHotels(ctx context.Context, filter *types.HotelFilter, p *Pagination) (*[]types.Hotel, error) {
+func (s *MongoHotelStore) GetHotels(ctx context.Context, filter *types.HotelFilter, p *Pagination) (*[]types.Hotel, int64, error) {
 	where, pipeline := buildHotelFilter(filter)
 	opts := buildPaginationOpts(p)
 
 	var (
 		hotels []types.Hotel
 		cur    *mongo.Cursor
+		count  int64
 		err    error
 	)
 
-	if true {
+	if pipeline != nil {
 		// aggops := &options.AggregateOptions{
 		// 	// BatchSize: &int32(10),
 		// }
 		cur, err = s.coll.Aggregate(ctx, pipeline)
 	} else {
+		count, err = s.coll.CountDocuments(ctx, where)
 		cur, err = s.coll.Find(ctx, where, opts)
 	}
 
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	err = cur.All(ctx, &hotels)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	return &hotels, nil
+	return &hotels, count, nil
 }
 
 func (s *MongoHotelStore) InsertHotel(ctx context.Context, hotel *types.Hotel) (*types.Hotel, error) {

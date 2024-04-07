@@ -31,12 +31,12 @@ func (h *HotelHandler) HandleGetHotels(c *fiber.Ctx) error {
 		return e.ErrConflict(c, "Those missing filter data")
 	}
 
-	hotels, err := h.store.Hotel.GetHotels(c.Context(), &qParams.HotelFilter, &qParams.Pagination)
+	hotels, total, err := h.store.Hotel.GetHotels(c.Context(), &qParams.HotelFilter, &qParams.Pagination)
 	if err != nil {
 		return err
 	}
 
-	return c.JSON(hotels)
+	return c.JSON(newResourceResp(hotels, total, qParams.Page))
 }
 
 func (h *HotelHandler) HandleGetHotel(c *fiber.Ctx) error {
