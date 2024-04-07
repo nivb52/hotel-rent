@@ -1,5 +1,7 @@
 # WIN
 SHELL=cmd
+DOCKER_PORT=5000
+DOCKER_TAG=hotel_rent_app
 
 dev:
 	@air -c .air.conf
@@ -60,7 +62,11 @@ build:
 	@echo Building app..
 	go build -o bin/main main.go
 
-
+docker:
+	@echo Building Docker
+	@docker build -t $(DOCKER_TAG) .
+	@echo "Running App inside Docker at $(DOCKER_PORT)"
+	@docker run -p $(DOCKER_PORT):5000 $(DOCKER_TAG)
 
 ########### Make Rest File  ###########
 rest: 

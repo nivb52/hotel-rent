@@ -1,0 +1,26 @@
+# OS & IDE
+.vscode
+.git
+.gitignore
+hotel-rent.code-workspace
+
+# Folders
+tmp
+bin
+
+# Pattern files
+*.md
+*.myprivate.*
+
+# Envs
+# .env
+.env.example
+.env.production
+.env.test.local
+
+# Files
+docker-compose.yml
+generate_main_rest_file.ps1
+.air.conf
+.air.linux.toml
+Makefile
