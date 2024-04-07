@@ -35,6 +35,9 @@ func (h *HotelHandler) HandleGetHotels(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
+	if hotels == nil {
+		return e.ErrResourceNotFound(c)
+	}
 
 	return c.JSON(newResourceResp(hotels, total, qParams.Page))
 }
@@ -47,7 +50,11 @@ func (h *HotelHandler) HandleGetHotel(c *fiber.Ctx) error {
 		return err
 	}
 
-	return c.JSON(hotel)
+	if hotel == nil {
+		return e.ErrResourceNotFound(c)
+	}
+
+	return c.JSON(newResourceResp(hotel, 1, 0))
 }
 
 // func find the free dates of a room
@@ -63,11 +70,15 @@ func (h *HotelHandler) HandleGetHotelRooms(c *fiber.Ctx) error {
 		return c.Status(fiber.ErrBadRequest.Code).SendString(fiber.ErrBadRequest.Message)
 	}
 
-	hotel, err := h.store.Room.GetHotelRooms(c.Context(), id, &whereClause)
+	rooms, err := h.store.Room.GetHotelRooms(c.Context(), id, &whereClause)
 	if err != nil {
 		fmt.Println("GetHotelRooms with filter failed, due: ", err)
 		return c.Status(fiber.StatusInternalServerError).SendString(fiber.ErrInternalServerError.Message)
 	}
 
-	return c.JSON(hotel)
+	if rooms == nil {
+		return e.ErrResourceNotFound(c)
+	}
+
+	return c.JSON(newResourceResp(rooms, int64(len(*rooms)), 0))
 }

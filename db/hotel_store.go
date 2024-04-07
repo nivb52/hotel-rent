@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -49,7 +50,11 @@ func (s *MongoHotelStore) GetHotelByID(ctx context.Context, id string) (*types.H
 	var hotel types.Hotel
 	err = s.coll.FindOne(ctx, bson.M{"_id": oid}).Decode(&hotel)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, nil
+		} else {
+			return nil, err
+		}
 	}
 
 	return &hotel, nil
@@ -77,7 +82,11 @@ func (s *MongoHotelStore) GetHotels(ctx context.Context, filter *types.HotelFilt
 	}
 
 	if err != nil {
-		return nil, 0, err
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, 0, nil
+		} else {
+			return nil, 0, err
+		}
 	}
 
 	err = cur.All(ctx, &hotels)

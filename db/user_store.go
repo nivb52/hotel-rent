@@ -22,7 +22,7 @@ type UserStore interface {
 
 	GetUserByID(context.Context, string) (*types.User, error)
 	GetUserByEmail(context.Context, string) (*types.User, error)
-	GetUsers(context.Context) ([]*types.User, error)
+	GetUsers(context.Context) ([]*types.User, int64, error)
 	InsertUser(context.Context, *types.User) (*types.User, error)
 	DeleteUser(context.Context, string) error
 	UpdateUserByID(context.Context, string, *types.User) (*types.User, error)
@@ -71,18 +71,23 @@ func (s *MongoUserStore) GetUserByEmail(ctx context.Context, email string) (*typ
 	return &user, nil
 }
 
-func (s *MongoUserStore) GetUsers(ctx context.Context) ([]*types.User, error) {
+func (s *MongoUserStore) GetUsers(ctx context.Context) ([]*types.User, int64, error) {
 	cur, err := s.coll.Find(ctx, bson.M{})
 	if err != nil {
-		return nil, err
+		return nil, 0, err
+	}
+
+	count, err := s.coll.CountDocuments(ctx, bson.M{})
+	if err != nil {
+		count = 0
 	}
 
 	var users []*types.User
 	err = cur.All(ctx, &users)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return users, nil
+	return users, count, nil
 }
 
 func (s *MongoUserStore) InsertUser(ctx context.Context, user *types.User) (*types.User, error) {

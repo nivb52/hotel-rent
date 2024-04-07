@@ -48,13 +48,17 @@ func (h *UserHandler) GetUserByEmail(c *fiber.Ctx) error {
 
 // Function get a users, returning Json list of the a users
 func (h *UserHandler) HandleGetUsers(c *fiber.Ctx) error {
-	users, err := h.userStore.GetUsers(c.Context())
+	users, total, err := h.userStore.GetUsers(c.Context())
 	if err != nil {
 		return err
 	}
 
+	if users == nil {
+		return e.ErrResourceNotFound(c)
+	}
+
 	if len(users) > 0 {
-		return c.JSON(users)
+		return c.JSON(newResourceResp(users, total, 0))
 	}
 
 	return e.ErrResourceNotFound(c)

@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -56,7 +57,11 @@ func (s *MongoRoomStore) GetHotelRooms(ctx context.Context, id string, where *ty
 	var rooms []types.Room
 	cur, err := s.coll.Find(ctx, filter)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, nil
+		} else {
+			return nil, err
+		}
 	}
 
 	err = cur.All(ctx, &rooms)
@@ -163,6 +168,7 @@ func (s *MongoRoomStore) InsertRooms(ctx context.Context, rooms *[]types.Room, h
 	return len(verefiedInsertedIDs), nil
 }
 
+/** ============= Helpers ============= */
 func buildHotelRoomsFilter(filterData *types.HotelFilter) bson.M {
 	filter := bson.M{}
 	if !filterData.FromDate.IsZero() || !filterData.TillDate.IsZero() {
