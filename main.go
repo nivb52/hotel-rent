@@ -36,16 +36,29 @@ var appConfig = fiber.Config{
 
 func main() {
 
+	isRunningFromDocker := os.Getenv("IS_DOCKERIZE")
 	err := godotenv.Load(".env", ".env.local")
 	if err != nil {
-		log.Fatal("Error loading .env files")
+		if isRunningFromDocker == "" {
+			log.Fatal("Error loading .env files")
+		} else {
+			log.Println("Couldn't fine loading .env files")
+		}
+		// Required envs
+		if os.Getenv("DB_CONNECTION_STRING") == "" {
+			log.Fatal("DB_CONNECTION_STRING is required env varible")
+		}
 	}
 
 	dburi := os.Getenv("DB_CONNECTION_STRING")
 	dburi = db.GetDBUri(dburi)
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(dburi))
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Cannot connect to DB, Due:", err)
+	}
+	// Ping the primary DB
+	if err := client.Ping(context.Background(), nil); err != nil {
+		log.Fatal("DB connection Failed, due", err)
 	}
 
 	hostName := os.Getenv("HOSTNAME")
