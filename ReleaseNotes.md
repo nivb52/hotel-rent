@@ -1,4 +1,10 @@
 # Release Notes
+
+### v19.5 (39)
+- FEAT: Return Response of a specific type: ```ResourceResp```
+- FIX: Check for error of ```mongo.ErrNoDocuments``` and return Not Found
+
+
 ### v19 (39)
 - FEAT: Aggregation for Hotels (including rooms)
 - FEAT: Pagination for Hotels & Rooms
