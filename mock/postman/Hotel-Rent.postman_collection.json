@@ -320,12 +320,51 @@
 							}
 						],
 						"url": {
-							"raw": "{{host}}/hotels",
+							"raw": "{{host}}/hotels/?&limit=10&page=1&bedType=5&rooms=true&maxPrice=50&rating=5&fromDate=2024-04-04T18:00:00Z&tillDate=2024-04-06T22:00:00Z",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
-								"hotels"
+								"hotels",
+								""
+							],
+							"query": [
+								{
+									"key": null,
+									"value": null
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "bedType",
+									"value": "5"
+								},
+								{
+									"key": "rooms",
+									"value": "true"
+								},
+								{
+									"key": "maxPrice",
+									"value": "50"
+								},
+								{
+									"key": "rating",
+									"value": "5"
+								},
+								{
+									"key": "fromDate",
+									"value": "2024-04-04T18:00:00Z"
+								},
+								{
+									"key": "tillDate",
+									"value": "2024-04-06T22:00:00Z"
+								}
 							]
 						}
 					},
