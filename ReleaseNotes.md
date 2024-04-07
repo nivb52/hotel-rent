@@ -1,5 +1,10 @@
 # Release Notes
 
+### v20 (40)
+- FEAT: add ```HOSTNAME``` as ENVIROMENT varible
+- DOC: add the ENVIROMENTS insructions into the Readme.md
+
+
 ### v19.5 (39)
 - FEAT: Return Response of a specific type: ```ResourceResp```
 - FIX: Check for error of ```mongo.ErrNoDocuments``` and return Not Found
