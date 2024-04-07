@@ -218,18 +218,20 @@ func convertToMongoUpdateValues(values *types.Hotel) (*bson.M, error) {
 	return &update, nil
 }
 
-/**
-*Returns simple filter or pipeline for the aggregation
-*@exmplae:
-*	pipeline := bson.A{
-*		bson.D{{"$lookup", bson.D{
-*			{"from", "rooms"},        Rooms collection
-*			{"localField", "rooms"},  Field from the hotels collection
-*			{"foreignField", "_id"},  Field from the rooms collection
-*			{"as", "rooms_info"},     Alias for the joined rooms data
-*		}}},
-*	}
- */
+/*
+*
+Returns simple filter or pipeline for the aggregation
+@exmplae:
+
+	pipeline := bson.A{
+		bson.D{{"$lookup", bson.D{
+			{"from", "rooms"},        Rooms collection
+			{"localField", "rooms"},  Field from the hotels collection
+			{"foreignField", "_id"},  Field from the rooms collection
+			{"as", "rooms_info"},     Alias for the joined rooms data
+		}}},
+	}
+*/
 func buildHotelFilter(filterData *types.HotelFilter) (bson.M, bson.A) {
 	hotelFilter := bson.M{}
 	if filterData.Rating > 0 {
@@ -248,12 +250,12 @@ func buildHotelFilter(filterData *types.HotelFilter) (bson.M, bson.A) {
 
 		roomsBasicFilter := buildHotelRoomsFilter(filterData)
 		/**
-		* convert it to bson filter
-		* @example:
-		* bson.D{{"rooms_info.size", roomSize}},
-		* bson.D{{"rooms_info.price", bson.D{{"$gte", minPrice}}}},
-		* bson.D{{"rooms_info.bedType", bedType}},
-		 */
+		convert it to bson filter
+		@example:
+		bson.D{{"rooms_info.size", roomSize}},
+		bson.D{{"rooms_info.price", bson.D{{"$gte", minPrice}}}},
+		bson.D{{"rooms_info.bedType", bedType}},
+		*/
 		var roomsBsonFilter bson.A
 		for key, value := range roomsBasicFilter {
 			if !strings.HasPrefix(key, "$") {
@@ -270,8 +272,8 @@ func buildHotelFilter(filterData *types.HotelFilter) (bson.M, bson.A) {
 		}
 
 		/**
-		* @note: at the moment all our filters are of type and
-		 */
+		@note: at the moment all our filters are of type and
+		*/
 		if len(roomsBasicFilter) > 1 || filterData.HasHotelilter() {
 			roomsFilter = append(roomsFilter,
 				bson.D{{"$match", bson.D{
