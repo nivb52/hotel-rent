@@ -180,7 +180,7 @@ func (s *MongoBookingStore) CancelBooking(ctx context.Context, id string) error 
 	return nil
 }
 
-// ## Helpers
+/** ============= Helpers ============= */
 
 // build query for lookup a booking, includes filter by dates to find existing booking
 func buildBookingFilter(filterData *types.BookingFilter) (bson.M, error) {
@@ -250,17 +250,9 @@ func buildBookingFilter(filterData *types.BookingFilter) (bson.M, error) {
 }
 
 // build query for lookup a booking
-func buildFreeDatesBookingFilter(filterData *types.BookingFilter) (bson.M, error) {
+// return []bson.M{} at "$and" option
+func buildFreeDatesBookingFilter(filterData *types.DatesFilter) bson.M {
 	filter := bson.M{}
-
-	if filterData.RoomID != "" {
-		roomOID, err := primitive.ObjectIDFromHex(filterData.RoomID)
-		if err != nil {
-			return nil, err
-		}
-
-		filter["roomID"] = roomOID
-	}
 
 	if filter["$and"] == nil {
 		filter["$and"] = []bson.M{}
@@ -299,6 +291,5 @@ func buildFreeDatesBookingFilter(filterData *types.BookingFilter) (bson.M, error
 		)
 	}
 
-	fmt.Println("built filter: ", filter, " Out of: ", filterData)
-	return filter, nil
+	return filter
 }
