@@ -1,4 +1,10 @@
 # Release Notes
+### v19 (39)
+- FEAT: Aggregation for Hotels (including rooms)
+- FEAT: Pagination for Hotels & Rooms
+- FEAT: Add all rooms filter options (currently single value per property)
+- REF: Common types & common store method (Mongo pagination builder)
+
 ### v18: (38)
 - REF: Remove interface dependency in mongo (small architecture change)
 

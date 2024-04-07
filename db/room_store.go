@@ -165,6 +165,9 @@ func (s *MongoRoomStore) InsertRooms(ctx context.Context, rooms *[]types.Room, h
 
 func buildHotelRoomsFilter(filterData *types.HotelFilter) bson.M {
 	filter := bson.M{}
+	if !filterData.FromDate.IsZero() || !filterData.TillDate.IsZero() {
+		filter = buildFreeDatesBookingFilter(&filterData.DatesFilter)
+	}
 
 	if filterData.MaxPrice > 0 && filterData.MinPrice > 0 {
 		filter["price"] = bson.M{
