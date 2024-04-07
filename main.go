@@ -54,11 +54,11 @@ func main() {
 	dburi = db.GetDBUri(dburi)
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(dburi))
 	if err != nil {
-		log.Fatal("Cannot connect to DB, Due:", err)
+		log.Fatal("Cannot create client for MongoDB, Due:", err)
 	}
 	// Ping the primary DB
 	if err := client.Ping(context.Background(), nil); err != nil {
-		log.Fatal("DB connection Failed, due", err)
+		log.Fatal("MongoDB ping Failed, due", err)
 	}
 
 	hostName := os.Getenv("HOSTNAME")
