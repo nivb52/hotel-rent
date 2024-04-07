@@ -310,7 +310,7 @@
 			"name": "Hotel",
 			"item": [
 				{
-					"name": "GET ALL HOTELS",
+					"name": "GET HOTELS Filter",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -320,7 +320,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{host}}/hotels/?&limit=10&page=1&bedType=5&rooms=true&maxPrice=50&rating=5&fromDate=2024-04-04T18:00:00Z&tillDate=2024-04-06T22:00:00Z",
+							"raw": "{{host}}/hotels/?limit=10&page=1&bedType=5&rooms=true&maxPrice=50&rating=5&fromDate=2024-04-04T18:00:00Z&tillDate=2024-04-06T22:00:00Z",
 							"host": [
 								"{{host}}"
 							],
@@ -329,10 +329,6 @@
 								""
 							],
 							"query": [
-								{
-									"key": null,
-									"value": null
-								},
 								{
 									"key": "limit",
 									"value": "10"
@@ -393,13 +389,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{host}}/hotels/{{hotelid}}",
+							"raw": "{{host}}/hotels/{{HOTEL_ID}}",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
 								"hotels",
-								"{{hotelid}}"
+								"{{HOTEL_ID}}"
 							]
 						}
 					},
@@ -428,13 +424,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{host}}/hotels/{{hotelid}}/rooms",
+							"raw": "{{host}}/hotels/{{HOTEL_ID}}/rooms",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
 								"hotels",
-								"{{hotelid}}",
+								"{{HOTEL_ID}}",
 								"rooms"
 							]
 						}
@@ -452,13 +448,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{host}}/hotels/{{hotelid}}",
+							"raw": "{{host}}/hotels/{{HOTEL_ID_TO_UPDATE_AND_DELETE}}",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
 								"hotels",
-								"{{hotelid}}"
+								"{{HOTEL_ID_TO_UPDATE_AND_DELETE}}"
 							]
 						}
 					},
@@ -479,13 +475,13 @@
 							"raw": "{\n    \"??\": \"??\",\n    \"??\": \"??\"\n}"
 						},
 						"url": {
-							"raw": "{{host}}/hotels/{{hotelid}}",
+							"raw": "{{host}}/hotels/{{HOTEL_ID_TO_UPDATE_AND_DELETE}}",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
 								"hotels",
-								"{{hotelid}}"
+								"{{HOTEL_ID_TO_UPDATE_AND_DELETE}}"
 							]
 						}
 					},
@@ -990,7 +986,7 @@
 								"exec": [
 									"// Calculate the dates\r",
 									"var fromDate = new Date();\r",
-									"fromDate.setDate(fromDate.getDate() + 1 ); \r",
+									"fromDate.setDate(fromDate.getDate() + 1); \r",
 									"\r",
 									"var tillDate = new Date();\r",
 									"tillDate.setDate(tillDate.getDate() + 2); \r",
@@ -1165,10 +1161,9 @@
 					}
 				],
 				"url": {
-					"raw": "{{hostNoVersion}}:///",
-					"protocol": "{{hostNoVersion}}",
-					"path": [
-						""
+					"raw": "{{hostNoVersion}}",
+					"host": [
+						"{{hostNoVersion}}"
 					]
 				}
 			},
