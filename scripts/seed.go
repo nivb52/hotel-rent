@@ -51,7 +51,7 @@ func main() {
 		log.Fatal("Error loading .env files")
 	}
 	mongoURL := os.Getenv("TESTDB_CONNECTION_STRING")
-
+	mongoDBName := os.Getenv("TESTDB_DATABASE")
 	isDropString := os.Getenv("TESTDB_DROP")
 	isDrop := false
 	if isDropString == "true" || isDropString == "True" || isDropString == "TRUE" {
@@ -66,16 +66,20 @@ func main() {
 		log.Fatal(err)
 	}
 
+	if mongoDBName == "" {
+		mongoDBName = db.DBNAME
+	}
+
 	if isDrop {
-		if err := client.Database(db.DBNAME).Drop(ctx); err != nil {
+		if err := client.Database(mongoDBName).Drop(ctx); err != nil {
 			log.Fatal(err)
 		}
 	}
 
-	hotelStore := db.NewMongoHotelStore(client, db.DBNAME)
-	roomStore := db.NewMongoRoomStore(client, hotelStore, db.DBNAME)
-	userStore := db.NewMongoUserStore(client, db.DBNAME)
-	bookingStore := db.NewMongoBookingStore(client, db.DBNAME)
+	hotelStore := db.NewMongoHotelStore(client, mongoDBName)
+	roomStore := db.NewMongoRoomStore(client, hotelStore, mongoDBName)
+	userStore := db.NewMongoUserStore(client, mongoDBName)
+	bookingStore := db.NewMongoBookingStore(client, mongoDBName)
 	store := &db.Store{
 		User:    userStore,
 		Hotel:   hotelStore,
