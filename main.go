@@ -48,7 +48,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	listenAddr := flag.String("listenAddr", ":5000", "API PORT")
+	hostName := os.Getenv("HOSTNAME")
+	if hostName == "" {
+		hostName = ":5000"
+	}
+	listenAddr := flag.String("listenAddr", hostName, "API HOST & PORT")
 	flag.Parse()
 
 	var (
