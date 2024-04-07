@@ -1,5 +1,9 @@
 # Release Notes
 
+### v21 (41)
+- FEAT: Dockerrize app
+- DOC: better error logs
+
 ### v20 (40)
 - FEAT: add ```HOSTNAME``` as ENVIROMENT varible
 - DOC: add the ENVIROMENTS insructions into the Readme.md
@@ -16,8 +20,10 @@
 - FEAT: Add all rooms filter options (currently single value per property)
 - REF: Common types & common store method (Mongo pagination builder)
 
+
 ### v18: (38)
 - REF: Remove interface dependency in mongo (small architecture change)
+
 
 ### v17.5: (37)
 Error Handler 2
