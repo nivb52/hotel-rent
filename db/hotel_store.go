@@ -8,7 +8,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/nivb52/hotel-rent/types"
 )
@@ -57,20 +56,24 @@ func (s *MongoHotelStore) GetHotelByID(ctx context.Context, id string) (*types.H
 }
 
 func (s *MongoHotelStore) GetHotels(ctx context.Context, filter *types.HotelFilter, p *Pagination) (*[]types.Hotel, error) {
-	var hotels []types.Hotel
-	// set max results
-	if p.Limit > 50 {
-		p.Limit = 50
+	where, pipeline := buildHotelFilter(filter)
+	opts := buildPaginationOpts(p)
+
+	var (
+		hotels []types.Hotel
+		cur    *mongo.Cursor
+		err    error
+	)
+
+	if true {
+		// aggops := &options.AggregateOptions{
+		// 	// BatchSize: &int32(10),
+		// }
+		cur, err = s.coll.Aggregate(ctx, pipeline)
+	} else {
+		cur, err = s.coll.Find(ctx, where, opts)
 	}
-	opts := options.FindOptions{}
-	opts.SetSkip(int64((p.Page - 1) * p.Limit))
-	opts.SetLimit(int64(p.Limit))
 
-	//@TODO: change to build filter same as in bookink_store
-	mongofilter := bson.M{}
-	mongofilter["rating"] = bson.M{"$gte": filter.Rating}
-
-	cur, err := s.coll.Find(ctx, mongofilter, &opts)
 	if err != nil {
 		return nil, err
 	}
@@ -202,4 +205,74 @@ func convertToMongoUpdateValues(values *types.Hotel) (*bson.M, error) {
 		return nil, err
 	}
 	return &update, nil
+}
+
+/**
+*Returns simple filter or pipeline for the aggregation
+*@exmplae:
+*	pipeline := bson.A{
+*		bson.D{{"$lookup", bson.D{
+*			{"from", "rooms"},        Rooms collection
+*			{"localField", "rooms"},  Field from the hotels collection
+*			{"foreignField", "_id"},  Field from the rooms collection
+*			{"as", "rooms_info"},     Alias for the joined rooms data
+*		}}},
+*	}
+ */
+func buildHotelFilter(filterData *types.HotelFilter) (bson.M, bson.A) {
+	hotelFilter := bson.M{}
+	if filterData.Rating > 0 {
+		hotelFilter["rating"] = bson.M{"$gte": filterData.Rating}
+	}
+
+	if filterData.RoomsFilter.HasRoomsFilter() {
+		roomsFilter := bson.A{
+			bson.D{{"$lookup", bson.D{
+				{"from", roomColl},
+				{"localField", "rooms"},
+				{"foreignField", "_id"},
+				{"as", "rooms_info"},
+			}}},
+		}
+
+		roomsBasicFilter := buildHotelRoomsFilter(filterData)
+		/**
+		* convert it to bson filter
+		* @example:
+		* bson.D{{"rooms_info.size", roomSize}},
+		* bson.D{{"rooms_info.price", bson.D{{"$gte", minPrice}}}},
+		* bson.D{{"rooms_info.bedType", bedType}},
+		 */
+		var roomsBsonFilter bson.A
+		for key, value := range roomsBasicFilter {
+			if !strings.HasPrefix(key, "$") {
+				//same to the "as" key  "rooms_info"
+				newKey := "rooms_info." + key
+				roomsBsonFilter = append(roomsBsonFilter,
+					bson.D{{Key: newKey, Value: value}},
+				)
+			}
+		}
+		// add hotel filters
+		if filterData.HasHotelilter() {
+			roomsBsonFilter = append(roomsBsonFilter, hotelFilter)
+		}
+
+		/**
+		* @note: at the moment all our filters are of type and
+		 */
+		if len(roomsBasicFilter) > 1 || filterData.HasHotelilter() {
+			roomsFilter = append(roomsFilter,
+				bson.D{{"$match", bson.D{
+					{"$and",
+						roomsBsonFilter,
+					}},
+				}},
+			)
+		}
+
+		return nil, roomsFilter
+	}
+
+	return hotelFilter, nil
 }
