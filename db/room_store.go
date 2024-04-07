@@ -46,12 +46,7 @@ func NewMongoRoomStore(client *mongo.Client, HotelStore *MongoHotelStore, dbname
 // function to retrive rooms data using the hotel ID
 func (s *MongoRoomStore) GetHotelRooms(ctx context.Context, id string, where *types.HotelFilter) (*[]types.Room, error) {
 
-	filter, err := buildHotelRoomsFilter(where)
-	if err != nil {
-		fmt.Println("Failed to build hotel-rooms filter due: ", err)
-		return nil, err
-	}
-
+	filter := buildHotelRoomsFilter(where)
 	oid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, err
@@ -168,14 +163,8 @@ func (s *MongoRoomStore) InsertRooms(ctx context.Context, rooms *[]types.Room, h
 	return len(verefiedInsertedIDs), nil
 }
 
-func buildHotelRoomsFilter(filterData *types.HotelFilter) (bson.M, error) {
+func buildHotelRoomsFilter(filterData *types.HotelFilter) bson.M {
 	filter := bson.M{}
-
-	if filterData.Rating > 0 {
-		filter["rating"] = bson.M{
-			"$gte": filterData.Rating,
-		}
-	}
 
 	if filterData.MaxPrice > 0 && filterData.MinPrice > 0 {
 		filter["price"] = bson.M{
@@ -194,10 +183,16 @@ func buildHotelRoomsFilter(filterData *types.HotelFilter) (bson.M, error) {
 		}
 	}
 
-	// @TODO: find better way to validate IOTA
-	// if filterData.BedType > 0 && filterData.BedType < int(types.ClosedBedType) {
-	// 	filter["bedType"] =
-	// }
+	if filterData.BedType > 0 && filterData.BedType < int(types.ClosedBedType) {
+		filter["bedType"] = filterData.BedType
+	}
 
-	return filter, nil
+	if len(filterData.RoomSize) > 0 &&
+		(filterData.RoomSize == types.RoomSizeKingSize ||
+			filterData.RoomSize == types.RoomSizeNormal ||
+			filterData.RoomSize == types.RoomSizeSmall) {
+		filter["size"] = filterData.RoomSize
+	}
+
+	return filter
 }
